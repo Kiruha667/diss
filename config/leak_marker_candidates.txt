@@ -1,0 +1,29 @@
+# Candidate outcome markers (AGENTS.md E0, "Проверка на утечку метки").
+# E0 counts how often each one occurs in trajectory texts, by class, and writes the ones that
+# occur to config/leak_markers.txt, which E1 masks as [MASKED]. Matching is case-insensitive,
+# literal substring. One marker per line.
+
+# generic markers from the spec
+tests passed
+all tests
+resolved
+task completed
+submission successful
+FINAL ANSWER
+
+# common analogues
+all tests pass
+tests pass
+test passed
+successfully fixed
+issue is fixed
+issue has been fixed
+fix is complete
+task is complete
+task complete
+successfully resolved
+has been resolved
+
+# mini-SWE-agent submission sentinels (the final command that ends a run)
+MICRO_SWE_AGENT_FINAL_OUTPUT
+COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT

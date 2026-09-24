@@ -1,0 +1,21 @@
+# Written by E0 (src/inventory.py): candidate outcome markers found in the texts.
+# E1 replaces them with [MASKED] (case-insensitive, word-bounded).
+tests passed
+all tests
+resolved
+task completed
+submission successful
+FINAL ANSWER
+all tests pass
+tests pass
+test passed
+successfully fixed
+issue is fixed
+issue has been fixed
+fix is complete
+task is complete
+task complete
+successfully resolved
+has been resolved
+MICRO_SWE_AGENT_FINAL_OUTPUT
+COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT

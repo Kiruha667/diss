@@ -1,0 +1,11 @@
+# raw data, interim artifacts and embedding caches are never committed (AGENTS.md 2.3)
+data/
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+kaggle/build/
+kaggle/pulled/
+
+# features.csv is 109 MB (> GitHub 100 MB limit): the repo keeps outputs/features.csv.gz
+outputs/features.csv

@@ -1,0 +1,6 @@
+outer_fold,combo,inner_delta,n_test
+0,"('reason_sent', 'cos_task', 200, 4)",0.023810580336471654,65
+1,"('reason_sent', 'cos_task', 100, 4)",0.02276043848624487,59
+2,"('reason_sent', 'cos_task', 200, 4)",0.016669997023350147,51
+3,"('reason_sent', 'cos_task', 100, 4)",0.019747912670238676,64
+4,"('reason_sent', 'cos_task', 100, 4)",0.025721010737988714,61

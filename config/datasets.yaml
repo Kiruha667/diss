@@ -1,0 +1,61 @@
+# Data sources. Raw data never goes to git (data/ is in .gitignore).
+# Facts below were verified by live requests on 2026-09-23 (see reports/E0_inventory.md once built).
+
+swebench_bashonly:
+  description: >
+    SWE-bench Verified, mini-SWE-agent "bash-only" runs: one scaffold, many LLMs, the same 500 tasks.
+    Label = SWE-bench harness test result (report.json "resolved"), not an LLM judge.
+  adapter: src.adapters.swebench_bashonly
+  # Public bucket, unsigned HTTPS. NOTE: the bucket is swe-bench-submissions (swe-bench-experiments
+  # does not exist), and bash-only runs live under bash-only/<sub>/ (analysis/download_logs.py looks
+  # under verified/<sub>/ and silently finds nothing).
+  s3_base: https://swe-bench-submissions.s3.amazonaws.com
+  s3_prefix: bash-only
+  metadata_base: https://raw.githubusercontent.com/SWE-bench/experiments/main/evaluation/verified
+  traj_key: "{prefix}/{sub}/trajs/{task}/{task}.traj.json"
+  report_key: "{prefix}/{sub}/logs/{task}/report.json"
+  # Subset "D2": runs whose models expose visible reasoning text. Chosen BEFORE looking at any
+  # chaos features, by text availability only (not by labels); logged as a selection step in E0.
+  # Excluded on the same rule: OpenAI o-series / GPT-5.x (encrypted reasoning, ~30-50 sentences),
+  # claude-sonnet-4 / claude-4-opus / opus-4.5+ / kimi-k2-instruct / qwen (short visible text).
+  runs:
+    - {sub: 20250726_mini-v1.0.0_gemini-2.5-pro,               family: google}
+    - {sub: 20250822_mini-v1.9.1_glm-4.5,                      family: zhipu}
+    - {sub: 20250929_mini-v1.13.3_sonnet-4-5-20250929,         family: anthropic}
+    - {sub: 20251118_mini-v1.15.0_gemini-3-pro-preview-20251118, family: google}
+    - {sub: 20251124_mini-v1.17.0_minimax-m2,                  family: minimax}
+    - {sub: 20251201_mini-v1.17.1_glm-4.6,                     family: zhipu}
+    - {sub: 20251209_mini-v1.17.2_devstral-2512,               family: mistral}
+    - {sub: 20251209_mini-v1.17.2_devstral-small-2512,         family: mistral}
+    - {sub: 20260217_mini-v2.0.0_gemini-3-flash-high,          family: google}
+    - {sub: 20260226_mini-v2.0.0_gemini-3-pro-high,            family: google}   # NOT the 20260217 duplicate prefix
+    - {sub: 20260217_mini-v2.0.0_deepseek-3-2-high,            family: deepseek}
+    - {sub: 20260217_mini-v2.0.0_glm-5-high,                   family: zhipu}
+    - {sub: 20260217_mini-v2.0.0_kimi-k2-5-high,               family: moonshot}
+    - {sub: 20260217_mini-v2.0.0_minimax-2-5-high,             family: minimax}
+    - {sub: 20260217_mini-v2.0.0_claude-4-5-sonnet-high,       family: anthropic}
+    - {sub: 20260217_mini-v2.0.0_claude-4-5-haiku-high,        family: anthropic}
+  # Runs ending on infrastructure errors (provider outage, API timeout) are excluded and logged by
+  # class (substring match on info.exit_status). Agent-side terminations (step/cost limits, format
+  # errors, context-window overflow = BadRequestError/ContextWindowExceededError) are KEPT: they are
+  # real failures of the agent, not of the infrastructure.
+  infra_exit_statuses:
+    - ServiceUnavailableError
+    - Timeout
+    - APIConnectionError
+    - APIError
+    - InternalServerError
+    - RateLimitError
+    - AuthenticationError
+
+mahmoud_vectors:
+  description: >
+    Precomputed per-STEP nomic embeddings with SUCCESS/FAIL labels. Used ONLY as an E4 smoke test
+    and an explicitly labelled step-level control (AGENTS.md 2.2 #4). No text available.
+  adapter: src.adapters.mahmoud_vectors
+  hf_repo: Mahmoud-queens/swe-agent-subset-selection-vectors
+  files: [multi_model_vectors.tar.gz]
+
+# Optional, later: Exgentic/agent-llm-traces-v2 for cross-domain Test 6 (no task_id column -> rebuild
+# from text; SWE-bench label is `score`, not `success`; BrowseCompPlus is LLM-judged -> excluded).
+# Reserve: nvidia/Open-SWE-Traces (outcome-dependent filtering removed looping / step-limit failures).
