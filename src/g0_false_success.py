@@ -544,8 +544,88 @@ def _write_report(df, res, path, n_boot):
           "- **Верификация ≠ корректность.** «Верификация после последней правки» означает, что агент запускал тесты "
           "или проверки, но не то, что они прошли, и не то, что это были тесты SWE-bench (FAIL_TO_PASS).",
           "- Один бенчмарк, один каркас агента, 16 моделей с видимыми рассуждениями (отбор E0).", ""]
+    review = Path(path).parent / "G0_manual_review.md"  # human-written section, kept across re-runs
+    if review.exists():
+        L += [review.read_text(encoding="utf-8").strip(), ""]
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text("\n".join(L) + "\n", encoding="utf-8")
+
+
+# ------------------------------------------------------------------------------------------ Kaggle run
+# The full run needs all 7975 raw trajectories (~7.5 GB). It runs as its own private Kaggle kernel "diss-g0"
+# (CPU + internet), with the E0 kernel's output as input (for outputs/traj_index.csv), so existing stage
+# scripts stay untouched:  python -m src.g0_false_success push|status|pull --user <kaggle_username>
+
+_G0_RUNNER = r'''
+import base64, glob, io, os, shutil, subprocess, sys, tarfile
+W, CODE = "/kaggle/working", "/tmp/diss"
+os.makedirs(CODE, exist_ok=True)
+tarfile.open(fileobj=io.BytesIO(base64.b64decode("__PAYLOAD__")), mode="r:gz").extractall(CODE)
+hits = glob.glob("/kaggle/input/**/outputs/traj_index.csv", recursive=True)
+if not hits:
+    sys.exit("outputs/traj_index.csv (E0 output) not found in kernel inputs")
+for d in ("outputs", "reports"):
+    os.makedirs(os.path.join(W, d), exist_ok=True)
+shutil.copy(hits[0], os.path.join(W, "outputs", "traj_index.csv"))
+env = dict(os.environ, PYTHONUNBUFFERED="1", DISS_RAW="/tmp/raw", DISS_OUTPUTS=W + "/outputs",
+           DISS_REPORTS=W + "/reports")
+subprocess.run([sys.executable, "-m", "src.cli", "g0", "--download", "--workers", "32"], check=True, env=env, cwd=CODE)
+print("G0 DONE", flush=True)
+'''
+
+
+def _g0_payload() -> str:
+    import base64
+    import io
+    import tarfile
+
+    from src.common import ROOT
+
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w:gz") as tf:
+        for p in sorted((ROOT / "src").rglob("*.py")):
+            tf.add(p, arcname=str(p.relative_to(ROOT)).replace("\\", "/"))
+        for p in sorted((ROOT / "config").glob("*")):
+            if p.suffix in (".yaml", ".txt"):
+                tf.add(p, arcname=f"config/{p.name}")
+    return base64.b64encode(buf.getvalue()).decode()
+
+
+def kaggle_push(user: str) -> None:
+    import shutil
+
+    from src.common import ROOT
+    from src.kaggle_job import _kaggle
+
+    d = ROOT / "kaggle" / "build" / "g0"
+    if d.exists():
+        shutil.rmtree(d)
+    d.mkdir(parents=True)
+    (d / "run.py").write_text(_G0_RUNNER.replace("__PAYLOAD__", _g0_payload()), encoding="utf-8")
+    meta = {"id": f"{user}/diss-g0", "title": "diss-g0", "code_file": "run.py", "language": "python",
+            "kernel_type": "script", "is_private": True, "enable_gpu": False, "enable_internet": True,
+            "dataset_sources": [], "competition_sources": [], "model_sources": [],
+            "kernel_sources": [f"{user}/diss-e0"]}
+    (d / "kernel-metadata.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    r = _kaggle("kernels", "push", "-p", str(d))
+    print(r.stdout or r.stderr)
+
+
+def kaggle_pull(user: str) -> None:
+    import shutil
+
+    from src.common import ROOT
+    from src.kaggle_job import _kaggle
+
+    dest = ROOT / "kaggle" / "pulled" / "g0"
+    dest.mkdir(parents=True, exist_ok=True)
+    r = _kaggle("kernels", "output", f"{user}/diss-g0", "-p", str(dest), "-o", "--file-pattern",
+                r"^(outputs/g0_|reports/G0_)")
+    print(r.stdout[-1500:] if r.stdout else r.stderr)
+    for rel in ("outputs/g0_final_messages.csv", "outputs/g0_manual_sample.csv", "reports/G0_false_success.md"):
+        if (dest / rel).exists():
+            shutil.copy(dest / rel, ROOT / rel)
+            print("copied", rel)
 
 
 def download_for(index_csv: Path, raw_dir: Path, run_ids: list[str] | None = None, workers: int = 16) -> None:
@@ -561,3 +641,25 @@ def download_for(index_csv: Path, raw_dir: Path, run_ids: list[str] | None = Non
         by_sub.setdefault(sub, []).append(task)
     for sub, tasks in by_sub.items():
         download(cfg, raw_dir, workers=workers, tasks=sorted(tasks), runs=[sub])
+
+
+def main(argv=None):
+    import argparse
+
+    from src.kaggle_job import _kaggle
+
+    p = argparse.ArgumentParser(prog="python -m src.g0_false_success")
+    p.add_argument("action", choices=["push", "status", "pull"])
+    p.add_argument("--user", required=True, help="Kaggle username")
+    a = p.parse_args(argv)
+    if a.action == "push":
+        kaggle_push(a.user)
+    elif a.action == "pull":
+        kaggle_pull(a.user)
+    else:
+        r = _kaggle("kernels", "status", f"{a.user}/diss-g0")
+        print((r.stdout or r.stderr).strip())
+
+
+if __name__ == "__main__":
+    main()
