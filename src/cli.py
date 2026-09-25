@@ -191,6 +191,14 @@ def cmd_g0(a):
         print(f"FALSE_SUCCESS among failed: {res['share_false_success']:.4f} (n={res['n_fail']})")
 
 
+def cmd_e5(a):
+    from src.e5_claims import run_e5
+
+    seed_everything()
+    res = run_e5(stage=a.stage, n_boot=a.n_boot)
+    print(res if a.stage == "audit" else res["gate"])
+
+
 def cmd_smoke(a):
     from src.adapters import mahmoud_vectors as mv
 
@@ -252,6 +260,11 @@ def main(argv=None):
     s.add_argument("--workers", type=int, default=16)
     s.add_argument("--n-boot", type=int, default=1000)
     s.set_defaults(fn=cmd_g0)
+
+    s = sub.add_parser("e5", help="E5: reliability of the agent's success claims (E5_PROMPT.md)")
+    s.add_argument("--stage", choices=["audit", "all"], default="all", help="audit = Stage 1 gate only")
+    s.add_argument("--n-boot", type=int, default=1000)
+    s.set_defaults(fn=cmd_e5)
 
     s = sub.add_parser("smoke-mahmoud")
     s.add_argument("--skip-download", action="store_true")
