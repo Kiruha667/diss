@@ -170,6 +170,27 @@ def cmd_encoder_check(a):
                   REPORTS / "E4_encoder_check.md", append_to=REPORTS / "E4_results.md")
 
 
+def cmd_g0(a):
+    from src import g0_false_success as g0
+
+    seed_everything()
+    index = OUTPUTS / "traj_index.csv"
+    raw = RAW / SOURCE
+    if a.limit:
+        ids = list(pd.read_csv(index, dtype={"run_id": str}).sample(n=a.limit, random_state=SEED).run_id)
+    else:
+        ids = None
+    if a.download:
+        g0.download_for(index, raw, ids, workers=a.workers)
+    df = g0.run_g0(index, raw, limit=a.limit)
+    if a.limit:  # pilot: separate folder, no final report
+        res = g0.write_outputs(df, OUTPUTS / "g0_pilot", None, n_boot=a.n_boot)
+        print({k: (round(v, 4) if isinstance(v, float) else v) for k, v in res.items()})
+    else:
+        res = g0.write_outputs(df, OUTPUTS, REPORTS / "G0_false_success.md", n_boot=a.n_boot)
+        print(f"FALSE_SUCCESS among failed: {res['share_false_success']:.4f} (n={res['n_fail']})")
+
+
 def cmd_smoke(a):
     from src.adapters import mahmoud_vectors as mv
 
@@ -224,6 +245,13 @@ def main(argv=None):
 
     s = sub.add_parser("encoder-check", help="control encoder: MiniLM vs nomic on the same trajectories")
     s.set_defaults(fn=cmd_encoder_check)
+
+    s = sub.add_parser("g0", help="G0: false success claims in final agent messages (G0_PROMPT.md)")
+    s.add_argument("--limit", type=int, help="pilot on this many random trajectories (seed 42), outputs/g0_pilot/")
+    s.add_argument("--download", action="store_true", help="download the needed raw trajectories first")
+    s.add_argument("--workers", type=int, default=16)
+    s.add_argument("--n-boot", type=int, default=1000)
+    s.set_defaults(fn=cmd_g0)
 
     s = sub.add_parser("smoke-mahmoud")
     s.add_argument("--skip-download", action="store_true")
