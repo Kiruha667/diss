@@ -467,9 +467,14 @@ def strengths(d: pd.DataFrame, cols: list[str]) -> dict[str, float]:
     return {c: abs(auroc(y, d[c].to_numpy(float)) - 0.5) for c in cols}
 
 
-def select(d: pd.DataFrame, cols: list[str], anchor: str | None = ANCHOR) -> tuple[list[str], dict[str, str]]:
-    """Greedy one-per-group cleaning (block-2 rules). Returns (kept, {dropped: representative | 'composition'})."""
+def select(d: pd.DataFrame, cols: list[str], anchor: str | None = ANCHOR,
+           literal: bool = False) -> tuple[list[str], dict[str, str]]:
+    """Greedy one-per-group cleaning (block-2 rules). Returns (kept, {dropped: representative | 'composition'}).
+    literal=True ranks by the AUROC value itself instead of |AUROC - 0.5| (sensitivity only)."""
     s = strengths(d, cols)
+    if literal:
+        y = d.label.to_numpy()
+        s = {c: auroc(y, d[c].to_numpy(float)) for c in cols}
     R = d[cols].corr().abs()
     rest = sorted((c for c in cols if c != anchor), key=lambda c: (-s[c], c))
     order = ([anchor] if anchor in cols else []) + rest
@@ -567,6 +572,7 @@ def run_block2(n_boot: int = 1000) -> dict:
     plot_corr(R, REPORTS / "figures" / "e6_corr.png")
     kept, dropped = select(df, cols, ANCHOR)
     kept_pure, dropped_pure = select(df, cols, None)
+    kept_lit, dropped_lit = select(df, cols, None, literal=True)
     v_full, v_clean = vif(df, cols), vif(df, kept)
     pd.DataFrame({"vif_full": v_full, "vif_clean": v_clean}).rename_axis("feature").to_csv(OUTPUTS / "e6_vif.csv")
 
@@ -574,13 +580,14 @@ def run_block2(n_boot: int = 1000) -> dict:
     preds = {"M_E5": oof(df, e5_cols), "M_E6_full": oof(df, cols), "M_E6_clean": oof(df, kept)}
     if kept_pure != kept:
         preds["M_E6_clean_pure"] = oof(df, kept_pure)
+    preds["M_E6_clean_literal"] = oof(df, kept_lit)
     preds["M_E6_clean_nested"], kept_by_fold = nested_clean_oof(df, cols, ANCHOR)
-    pairs = [("M_E6_full", "M_E5"), ("M_E6_clean", "M_E5")]
+    pairs = [("M_E6_full", "M_E5"), ("M_E6_clean", "M_E5"), ("M_E6_clean", "M_E6_clean_literal")]
     if "M_E6_clean_pure" in preds:
         pairs.append(("M_E6_clean_pure", "M_E6_clean"))
     summ, extra = evaluate(df, preds, n_boot, ref="M_E6_full", pairs=pairs)
     nfeat = {"M_E5": len(e5_cols), "M_E6_full": len(cols), "M_E6_clean": len(kept),
-             "M_E6_clean_pure": len(kept_pure),
+             "M_E6_clean_pure": len(kept_pure), "M_E6_clean_literal": len(kept_lit),
              "M_E6_clean_nested": float(np.mean([len(v) for v in kept_by_fold.values()]))}
     summ.insert(1, "n_features", summ.model_name.map(nfeat))
     summ.insert(0, "block", 2)
@@ -589,12 +596,14 @@ def run_block2(n_boot: int = 1000) -> dict:
     main = "M_E6_clean" if a["M_E6_full"] - a["M_E6_clean"] <= 0.01 else "M_E6_full"
     SELECTION_OUT.write_text(json.dumps({"full": cols, "clean": kept, "clean_pure": kept_pure, "dead": dead,
                                          "dropped": dropped, "dropped_pure": dropped_pure, "main": main,
+                                         "clean_literal": kept_lit, "dropped_literal": dropped_lit,
                                          "kept_by_fold": kept_by_fold}, indent=1), encoding="utf-8")
     imp_clean = e5.importance(df, kept)
     imp_full = e5.importance(df, cols)
     s_all = strengths(df, cols)
     out = {"df": df, "cols": cols, "dead": dead, "dup_diff": dup_diff, "R": R, "kept": kept, "dropped": dropped,
-           "kept_pure": kept_pure, "dropped_pure": dropped_pure, "v_full": v_full, "v_clean": v_clean,
+           "kept_pure": kept_pure, "dropped_pure": dropped_pure, "kept_lit": kept_lit, "dropped_lit": dropped_lit,
+           "v_full": v_full, "v_clean": v_clean,
            "summary": summ, "extra": extra, "main": main, "kept_by_fold": kept_by_fold, "imp_clean": imp_clean,
            "imp_full": imp_full, "single": {c: auroc(df.label.to_numpy(), df[c].to_numpy(float)) for c in cols},
            "strength": s_all}
@@ -654,7 +663,18 @@ def write_block2(o: dict, path: Path, n_boot: int) -> None:
               + (", ".join(f"`{c}`" for c in only_p) or "—") + ". Удаления без якоря: " +
               "; ".join(f"`{c}` → `{r}`" for c, r in o["dropped_pure"].items()) + ".", ""]
     else:
-        L += ["Исходное правило без якоря дало бы тот же набор: поправка на результат не повлияла.", ""]
+        L += ["Исходное правило без якоря (сила = |AUROC − 0.5|) дало бы тот же набор: энтропия биграмм сама сильнее "
+              "всех признаков своей группы по |AUROC − 0.5| (" + ", ".join(
+                  f"`{c}` {single[c]:.3f}" for c, r in o["dropped"].items() if r == ANCHOR) +
+              f" против {single[ANCHOR]:.3f}).", ""]
+    s_lit = [c for c in cols if c not in o["kept_lit"]]
+    L += ["*Добавлено после расчёта (описательно, на выбор основного набора не влияет).* При **буквальном** прочтении "
+          "правила — «выше по одиночному AUROC» как по числу, без учёта направления (признак с AUROC 0.39 при этом "
+          "считается слабее признака с 0.55) — " +
+          (f"`{ANCHOR}` **был бы удалён** (представитель — `{o['dropped_lit'][ANCHOR]}`, AUROC "
+           f"{single[o['dropped_lit'][ANCHOR]]:.3f})" if ANCHOR in s_lit else f"`{ANCHOR}` сохранился бы") +
+          f"; такой набор — {len(o['kept_lit'])} признаков, его AUROC в таблице моделей. Якорь защищает признак "
+          "именно от этого прочтения.", ""]
     stab = Counter(c for v in o["kept_by_fold"].values() for c in v)
     diff = sorted(c for c in set(stab) | set(kept) if stab.get(c, 0) != (5 if c in kept else 0))
     L += ["Устойчивость: та же процедура внутри каждого из 5 обучающих фолдов " +
@@ -671,6 +691,7 @@ def write_block2(o: dict, path: Path, n_boot: int) -> None:
     # models
     names = {"M_E5": "E5 `M_struct+len` (пересчёт)", "M_E6_full": "E6 полный", "M_E6_clean": "E6 очищенный (с якорем)",
              "M_E6_clean_pure": "E6 очищенный, без якоря (чувствительность)",
+             "M_E6_clean_literal": "E6 очищенный, буквальное прочтение без якоря (чувствительность)",
              "M_E6_clean_nested": "E6 очищенный, отбор внутри обучающих фолдов"}
     L += ["## Сравнение моделей", "",
           f"Логистическая регрессия (L2, C=1, стандартизация), 5 фолдов по task_id; AUROC/PR-AUC усреднены по фолдам; "
@@ -695,7 +716,18 @@ def write_block2(o: dict, path: Path, n_boot: int) -> None:
           "| признак | коэффициент | среднее \\|SHAP\\| | AUROC в одиночку |", "|---|---|---|---|"]
     for _, r in o["imp_clean"].iterrows():
         L.append(f"| `{r.feature}` | {r.coef_std:+.3f} | {r.mean_abs_shap:.3f} | {single[r.feature]:.3f} |")
-    L += ["", "## Полный набор: только SHAP", "",
+    imp = o["imp_clean"].set_index("feature")
+    flip = [c for c in imp.index if np.sign(imp.coef_std[c]) != np.sign(single[c] - 0.5) and abs(single[c] - 0.5) > 0.02]
+    rank = {c: i + 1 for i, c in enumerate(imp.index)}
+    L += ["", "*Добавлено после расчёта (описательно).* Знак коэффициента противоречит направлению одиночного AUROC "
+          "(|AUROC − 0.5| > 0.02) у: " + ", ".join(
+              f"`{c}` (коэф. {imp.coef_std[c]:+.3f}, AUROC {single[c]:.3f}, VIF {_vif_fmt(o['v_clean'][c])})"
+              for c in flip) + ". Такие коэффициенты — поправки при остальных признаках, а не самостоятельный "
+          f"эффект. `{ANCHOR}` в очищенной модели — {rank[ANCHOR]}-й из {len(imp)} по среднему |SHAP| "
+          f"({imp.mean_abs_shap[ANCHOR]:.3f}; в E5 был первым, 0.315), его VIF {_vif_fmt(o['v_clean'][ANCHOR])}: "
+          "энтропию почти полностью восстанавливают оставшиеся частоты биграмм и триграмм, из которых она "
+          "вычисляется. Попарное правило |r| > 0.8 такую многомерную коллинеарность не устраняет.", ""]
+    L += ["## Полный набор: только SHAP", "",
           "Коэффициенты полного набора не публикуются: при коллинеарности они не интерпретируемы.", "",
           "| признак | среднее \\|SHAP\\| |", "|---|---|"]
     for _, r in o["imp_full"].iterrows():
