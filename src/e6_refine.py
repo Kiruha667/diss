@@ -36,6 +36,27 @@ Block 1 rules (fixed before any E6 result was seen):
   from the models. Applied to every structural feature, old (E5) and new.
 * Single-feature AUROC: whole sub-population, no CV (descriptive), 95% CI from 1000 bootstrap resamples of tasks;
   > 0.5 = higher in unreliable claims; strength = |AUROC - 0.5|.
+
+Block 2 rules (fixed before any block-2 result was seen):
+* Full E6 set = E5 M_len + E5 structural features without the two replaced loop features, without the features that
+  fail the 5% firing rule and without n_steps_after_last_edit (identical to seg_len_steps; the latter is kept, it is
+  part of M_len) + all block-1 features that work.
+* Correlation: Pearson |r| on the trajectories of the sub-population. VIF_j = 1 / (1 - R^2_j), R^2_j from the
+  least-squares regression of standardized feature j on all other features of the set (inf when R^2 = 1).
+* Cleaning (greedy, "one per group"): features are visited in order of strength |single AUROC - 0.5| (descending,
+  ties by name); a feature is kept unless its |r| with an already kept feature exceeds 0.8 — then it is dropped and
+  that kept feature (the most correlated one) is its group representative. Exact compositions still complete after
+  that (share_edit + share_verify + share_other = 1; the 9 bg_* frequencies sum to 1) lose their weakest component.
+* AMENDMENT to E6_PROMPT.md (requested by the author before block 2 was run): phase_bigram_entropy is the anchor
+  feature — the feature that links the work to the supervisor's methodology. It is visited FIRST, so it is never
+  dropped and represents whatever group it falls into, regardless of single AUROC. The unamended rule (no anchor) is
+  reported as a sensitivity analysis, with the AUROC cost of the amendment.
+* The main selection uses single AUROC on all rows, as the prompt prescribes; because this uses labels, the same
+  amended rule is also re-run inside every training fold (nested) and the resulting out-of-fold AUROC is reported.
+* Models: StandardScaler + LR(L2, C=1), task folds of outputs/folds.csv, fold-averaged AUROC / PR-AUC, pooled Brier,
+  paired task bootstrap (1000, within folds). Decision: the cleaned set becomes the main one if its AUROC is lower
+  than the full E6 set's by no more than 0.01. Coefficients are published for the cleaned set only; for the full set
+  only mean |SHAP| (exact linear SHAP on the LR fitted to all rows).
 """
 from __future__ import annotations
 
@@ -420,7 +441,271 @@ def run_block1(n_boot: int = 1000) -> dict:
     return {"n": len(df), "new": t_new, "old": t_old, "rc": rc}
 
 
+# ------------------------------------------------------------------------------------------ block 2: collinearity
+
+ANCHOR = "phase_bigram_entropy"
+R_MAX = 0.8
+DUPLICATE = ("n_steps_after_last_edit", "seg_len_steps")  # (dropped, kept)
+COMPOSITIONS = [["share_edit", "share_verify", "share_other"], BIGRAMS]
+SELECTION_OUT = OUTPUTS / "e6_selection.json"
+
+
+def load_features() -> pd.DataFrame:
+    return pd.read_csv(FEATS_OUT, dtype={"run_id": str, "task_id": str})
+
+
+def full_set(df: pd.DataFrame) -> tuple[list[str], list[str]]:
+    """(full E6 feature set, structural features dropped by the 5% firing rule)."""
+    old = [c for c in e5.STRUCT if c not in REPLACED and c != DUPLICATE[0]]
+    cand = old + [c for c in new_features(df) if c not in old]
+    dead = [c for c in cand if fires(df, c).mean() < FIRE_MIN]
+    return e5.LEN + [c for c in cand if c not in dead], dead
+
+
+def strengths(d: pd.DataFrame, cols: list[str]) -> dict[str, float]:
+    y = d.label.to_numpy()
+    return {c: abs(auroc(y, d[c].to_numpy(float)) - 0.5) for c in cols}
+
+
+def select(d: pd.DataFrame, cols: list[str], anchor: str | None = ANCHOR) -> tuple[list[str], dict[str, str]]:
+    """Greedy one-per-group cleaning (block-2 rules). Returns (kept, {dropped: representative | 'composition'})."""
+    s = strengths(d, cols)
+    R = d[cols].corr().abs()
+    rest = sorted((c for c in cols if c != anchor), key=lambda c: (-s[c], c))
+    order = ([anchor] if anchor in cols else []) + rest
+    kept, dropped = [], {}
+    for c in order:
+        hit = [k for k in kept if R.loc[c, k] > R_MAX]
+        if hit:
+            dropped[c] = max(hit, key=lambda k: R.loc[c, k])
+        else:
+            kept.append(c)
+    for comp in COMPOSITIONS:
+        if all(c in kept for c in comp):
+            weakest = min((c for c in comp if c != anchor), key=lambda c: (s[c], c))
+            kept.remove(weakest)
+            dropped[weakest] = "composition"
+    return [c for c in cols if c in kept], dropped
+
+
+def vif(d: pd.DataFrame, cols: list[str]) -> pd.Series:
+    X = d[cols].to_numpy(float)
+    Z = (X - X.mean(0)) / X.std(0)
+    out = {}
+    for j, c in enumerate(cols):
+        A = np.column_stack([np.ones(len(Z)), np.delete(Z, j, axis=1)])
+        beta, *_ = np.linalg.lstsq(A, Z[:, j], rcond=None)
+        r2 = 1 - (Z[:, j] - A @ beta).var() / Z[:, j].var()
+        out[c] = math.inf if 1 - r2 < 1e-10 else 1 / (1 - r2)
+    return pd.Series(out)
+
+
+def nested_clean_oof(d: pd.DataFrame, cols: list[str], anchor: str | None = ANCHOR) -> tuple[np.ndarray, dict]:
+    """Out-of-fold predictions with the cleaning re-run on the training folds only; kept sets per fold."""
+    from src.stats import fit_predict
+
+    pred = np.full(len(d), np.nan)
+    kept_by_fold = {}
+    for k in sorted(d.fold.unique()):
+        te = (d.fold == k).to_numpy()
+        tr = d[~te]
+        kept, _ = select(tr, cols, anchor)
+        kept_by_fold[int(k)] = kept
+        pred[te] = fit_predict(tr, d[te], kept)
+    return pred, kept_by_fold
+
+
+def evaluate(d: pd.DataFrame, preds: dict[str, np.ndarray], n_boot: int, ref: str,
+             pairs: list[tuple[str, str]] = ()) -> tuple[pd.DataFrame, dict]:
+    """Fold-averaged AUROC / PR-AUC, pooled Brier, paired task-bootstrap CIs; deltas vs `ref` and extra pairs."""
+    from src.stats import fold_avg, pr_auc
+
+    y, fold, tasks = d.label.to_numpy(), d.fold.to_numpy(), d.task_id.to_numpy()
+    boots = e5._fold_auroc_boot(y, preds, tasks, fold, n_boot)
+    point = {m: fold_avg(auroc, y, p, fold) for m, p in preds.items()}
+    rows = []
+    for m, p in preds.items():
+        lo, hi = np.nanpercentile(boots[m], [2.5, 97.5])
+        dd = boots[m] - boots[ref]
+        rows.append({"model_name": m, "n": len(d), "auroc": point[m], "auroc_ci_low": lo, "auroc_ci_high": hi,
+                     "pr_auc": fold_avg(pr_auc, y, p, fold), "brier": float(np.mean((p - y) ** 2)),
+                     "delta_vs_ref": point[m] - point[ref], "delta_ci_low": np.nanpercentile(dd, 2.5),
+                     "delta_ci_high": np.nanpercentile(dd, 97.5)})
+    extra = {}
+    for a, b in pairs:
+        dd = boots[a] - boots[b]
+        extra[(a, b)] = (point[a] - point[b], np.nanpercentile(dd, 2.5), np.nanpercentile(dd, 97.5))
+    return pd.DataFrame(rows), extra
+
+
+def plot_corr(R: pd.DataFrame, path: Path) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(11, 10))
+    im = ax.imshow(R.to_numpy(), cmap="RdBu_r", vmin=-1, vmax=1)
+    ax.set_xticks(range(len(R)), R.columns, rotation=90, fontsize=6)
+    ax.set_yticks(range(len(R)), R.index, fontsize=6)
+    fig.colorbar(im, ax=ax, shrink=0.7, label="r Пирсона")
+    ax.set_title("E6: корреляции признаков полного набора", fontsize=10)
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=130)
+    plt.close(fig)
+
+
+def run_block2(n_boot: int = 1000) -> dict:
+    from src.stats import oof
+
+    df = load_features()
+    dup_diff = float((df[DUPLICATE[0]] - df[DUPLICATE[1]]).abs().max())
+    cols, dead = full_set(df)
+    R = df[cols].corr()
+    R.to_csv(OUTPUTS / "e6_corr.csv")
+    plot_corr(R, REPORTS / "figures" / "e6_corr.png")
+    kept, dropped = select(df, cols, ANCHOR)
+    kept_pure, dropped_pure = select(df, cols, None)
+    v_full, v_clean = vif(df, cols), vif(df, kept)
+    pd.DataFrame({"vif_full": v_full, "vif_clean": v_clean}).rename_axis("feature").to_csv(OUTPUTS / "e6_vif.csv")
+
+    e5_cols = e5.STRUCT + [c for c in e5.LEN if c not in e5.STRUCT]
+    preds = {"M_E5": oof(df, e5_cols), "M_E6_full": oof(df, cols), "M_E6_clean": oof(df, kept)}
+    if kept_pure != kept:
+        preds["M_E6_clean_pure"] = oof(df, kept_pure)
+    preds["M_E6_clean_nested"], kept_by_fold = nested_clean_oof(df, cols, ANCHOR)
+    pairs = [("M_E6_full", "M_E5"), ("M_E6_clean", "M_E5")]
+    if "M_E6_clean_pure" in preds:
+        pairs.append(("M_E6_clean_pure", "M_E6_clean"))
+    summ, extra = evaluate(df, preds, n_boot, ref="M_E6_full", pairs=pairs)
+    nfeat = {"M_E5": len(e5_cols), "M_E6_full": len(cols), "M_E6_clean": len(kept),
+             "M_E6_clean_pure": len(kept_pure),
+             "M_E6_clean_nested": float(np.mean([len(v) for v in kept_by_fold.values()]))}
+    summ.insert(1, "n_features", summ.model_name.map(nfeat))
+    summ.insert(0, "block", 2)
+    summ.to_csv(OUTPUTS / "e6_summary.csv", index=False)
+    a = summ.set_index("model_name").auroc
+    main = "M_E6_clean" if a["M_E6_full"] - a["M_E6_clean"] <= 0.01 else "M_E6_full"
+    SELECTION_OUT.write_text(json.dumps({"full": cols, "clean": kept, "clean_pure": kept_pure, "dead": dead,
+                                         "dropped": dropped, "dropped_pure": dropped_pure, "main": main,
+                                         "kept_by_fold": kept_by_fold}, indent=1), encoding="utf-8")
+    imp_clean = e5.importance(df, kept)
+    imp_full = e5.importance(df, cols)
+    s_all = strengths(df, cols)
+    out = {"df": df, "cols": cols, "dead": dead, "dup_diff": dup_diff, "R": R, "kept": kept, "dropped": dropped,
+           "kept_pure": kept_pure, "dropped_pure": dropped_pure, "v_full": v_full, "v_clean": v_clean,
+           "summary": summ, "extra": extra, "main": main, "kept_by_fold": kept_by_fold, "imp_clean": imp_clean,
+           "imp_full": imp_full, "single": {c: auroc(df.label.to_numpy(), df[c].to_numpy(float)) for c in cols},
+           "strength": s_all}
+    write_block2(out, REPORTS / "E6_collinearity.md", n_boot)
+    return out
+
+
+def _vif_fmt(v: float) -> str:
+    return "∞" if math.isinf(v) else (f"{v:.0f}" if v >= 100 else f"{v:.1f}")
+
+
+def write_block2(o: dict, path: Path, n_boot: int) -> None:
+    df, cols, R, kept, s = o["df"], o["cols"], o["R"], o["kept"], o["summary"].set_index("model_name")
+    single = o["single"]
+    L = ["# E6 — блок 2: устранение коллинеарности", "",
+         f"Подпопуляция E5 (n = {len(df)}, недостоверных {int(df.label.sum())}). Правила зафиксированы до расчёта "
+         "(docstring `src/e6_refine.py`, раздел «Block 2 rules»).", "",
+         "## Поправка к спецификации (до расчёта блока 2)", "",
+         f"Правило п. 3 E6_PROMPT.md («из группы с |r| > {R_MAX} оставить признак с наибольшим одиночным AUROC») "
+         f"дополнено: **`{ANCHOR}` — якорный признак**. Через энтропию биграмм фаз работа связана с методикой научного "
+         "руководителя, поэтому признак не удаляется: в любой группе, куда он попадает, остаётся именно он, "
+         "независимо от одиночного AUROC. Поправка внесена по требованию автора до получения результатов блока 2. "
+         "Исходное правило без якоря посчитано как анализ чувствительности (ниже — его выбор и цена поправки "
+         "в AUROC).", "",
+         "## Исходный набор", "",
+         f"- Дубль: `{DUPLICATE[0]}` и `{DUPLICATE[1]}` совпадают (максимальное расхождение {o['dup_diff']:.0f}); "
+         f"оставлен `{DUPLICATE[1]}` (входит в `M_len`).",
+         "- Не входят (блок 1): заменённые `" + "`, `".join(REPLACED) + "`; не срабатывающие (< 5%): " +
+         (", ".join(f"`{c}`" for c in o["dead"]) or "нет") + ".",
+         f"- Полный набор E6: {len(cols)} признаков (длина E5, структурные E5, новые признаки блока 1).", "",
+         "## Матрица корреляций", "",
+         "![корреляции](figures/e6_corr.png)", "",
+         f"Полная матрица — `outputs/e6_corr.csv`. Пары с |r| > {R_MAX}:", "",
+         "| признак 1 | признак 2 | r | AUROC 1 | AUROC 2 |", "|---|---|---|---|---|"]
+    for i, a in enumerate(cols):
+        for b in cols[i + 1:]:
+            if abs(R.loc[a, b]) > R_MAX:
+                L.append(f"| `{a}` | `{b}` | {R.loc[a, b]:+.2f} | {single[a]:.3f} | {single[b]:.3f} |")
+    L += ["", "## Решения очистки", "",
+          "Порядок обхода: якорь, затем по убыванию |AUROC − 0.5|; признак удаляется, если |r| > 0.8 с уже "
+          "оставленным (представитель группы — самый коррелированный из оставленных); у полностью оставшихся точных "
+          "композиций (доли фаз в сумме 1, частоты 9 биграмм в сумме 1) удаляется самая слабая компонента.", "",
+          "| удалён | AUROC | представитель группы | r | AUROC представителя | причина |", "|---|---|---|---|---|---|"]
+    for c, rep in o["dropped"].items():
+        if rep == "composition":
+            L.append(f"| `{c}` | {single[c]:.3f} | — | — | — | точная композиция: самая слабая компонента |")
+        else:
+            why = "якорь (поправка)" if rep == ANCHOR and o["strength"][c] > o["strength"][ANCHOR] else \
+                "представитель сильнее по |AUROC − 0.5|"
+            L.append(f"| `{c}` | {single[c]:.3f} | `{rep}` | {R.loc[c, rep]:+.2f} | {single[rep]:.3f} | {why} |")
+    L += ["", f"Очищенный набор: {len(kept)} признаков — " + ", ".join(f"`{c}`" for c in kept) + ".", ""]
+    if o["kept_pure"] != kept:
+        only_a = [c for c in kept if c not in o["kept_pure"]]
+        only_p = [c for c in o["kept_pure"] if c not in kept]
+        L += [f"Исходное правило без якоря оставило бы {len(o['kept_pure'])} признаков; отличие: с поправкой "
+              "оставлены " + (", ".join(f"`{c}`" for c in only_a) or "—") + ", без поправки — вместо них "
+              + (", ".join(f"`{c}`" for c in only_p) or "—") + ". Удаления без якоря: " +
+              "; ".join(f"`{c}` → `{r}`" for c, r in o["dropped_pure"].items()) + ".", ""]
+    else:
+        L += ["Исходное правило без якоря дало бы тот же набор: поправка на результат не повлияла.", ""]
+    stab = Counter(c for v in o["kept_by_fold"].values() for c in v)
+    diff = sorted(c for c in set(stab) | set(kept) if stab.get(c, 0) != (5 if c in kept else 0))
+    L += ["Устойчивость: та же процедура внутри каждого из 5 обучающих фолдов " +
+          ("даёт тот же набор во всех фолдах." if not diff else "расходится с основным набором по признакам: " +
+           ", ".join(f"`{c}` (в {stab.get(c, 0)} из 5)" for c in diff) + "."), ""]
+    # VIF
+    L += ["## VIF", "", "| признак | VIF полный набор | VIF очищенный |", "|---|---|---|"]
+    for c in sorted(cols, key=lambda c: -o["v_full"][c] if not math.isinf(o["v_full"][c]) else -1e18):
+        L.append(f"| `{c}` | {_vif_fmt(o['v_full'][c])} | " +
+                 (_vif_fmt(o["v_clean"][c]) if c in kept else "удалён") + " |")
+    hi = [c for c in kept if o["v_clean"][c] > 10]
+    L += ["", "VIF > 10 в очищенном наборе: " + (", ".join(f"`{c}` ({_vif_fmt(o['v_clean'][c])})" for c in hi)
+                                               if hi else "нет") + ".", ""]
+    # models
+    names = {"M_E5": "E5 `M_struct+len` (пересчёт)", "M_E6_full": "E6 полный", "M_E6_clean": "E6 очищенный (с якорем)",
+             "M_E6_clean_pure": "E6 очищенный, без якоря (чувствительность)",
+             "M_E6_clean_nested": "E6 очищенный, отбор внутри обучающих фолдов"}
+    L += ["## Сравнение моделей", "",
+          f"Логистическая регрессия (L2, C=1, стандартизация), 5 фолдов по task_id; AUROC/PR-AUC усреднены по фолдам; "
+          f"95% ДИ — парный бутстрэп задач внутри фолдов, {n_boot} повторов. Δ — к полному набору E6.", "",
+          "| модель | признаков | AUROC [95% ДИ] | PR-AUC | Бриер | Δ к E6 полному [95% ДИ] |", "|---|---|---|---|---|---|"]
+    for m, r in s.iterrows():
+        nf = f"{r.n_features:.1f}" if m == "M_E6_clean_nested" else f"{int(r.n_features)}"
+        L.append(f"| {names[m]} | {nf} | {_fmt(r.auroc)} [{_fmt(r.auroc_ci_low)}; {_fmt(r.auroc_ci_high)}] | "
+                 f"{_fmt(r.pr_auc)} | {_fmt(r.brier)} | {r.delta_vs_ref:+.3f} [{r.delta_ci_low:+.3f}; "
+                 f"{r.delta_ci_high:+.3f}] |")
+    L.append("")
+    for (a, b), (dl, lo, hi_) in o["extra"].items():
+        L.append(f"- Δ({names[a]} − {names[b]}) = {dl:+.3f} [{lo:+.3f}; {hi_:+.3f}].")
+    loss = s.loc["M_E6_full", "auroc"] - s.loc["M_E6_clean", "auroc"]
+    L += ["", f"**Решение:** очищенный набор теряет {loss:+.3f} AUROC относительно полного (порог 0.01) → основной "
+          "набор — " + ("**очищенный**" if o["main"] == "M_E6_clean" else "**полный** (очистка стоит дороже порога)") +
+          ".", ""]
+    # coefficients / SHAP
+    L += ["## Коэффициенты очищенного набора", "",
+          "Логистическая регрессия на стандартизованных признаках, обучение на всех строках; > 0 — выше риск "
+          "недостоверного заявления; среднее |SHAP| — точные значения Шепли для линейной модели.", "",
+          "| признак | коэффициент | среднее \\|SHAP\\| | AUROC в одиночку |", "|---|---|---|---|"]
+    for _, r in o["imp_clean"].iterrows():
+        L.append(f"| `{r.feature}` | {r.coef_std:+.3f} | {r.mean_abs_shap:.3f} | {single[r.feature]:.3f} |")
+    L += ["", "## Полный набор: только SHAP", "",
+          "Коэффициенты полного набора не публикуются: при коллинеарности они не интерпретируемы.", "",
+          "| признак | среднее \\|SHAP\\| |", "|---|---|"]
+    for _, r in o["imp_full"].iterrows():
+        L.append(f"| `{r.feature}` | {r.mean_abs_shap:.3f} |")
+    path.write_text("\n".join(L) + "\n", encoding="utf-8")
+
+
 def run_e6(block: str = "1", n_boot: int = 1000) -> dict:
     if block == "1":
         return run_block1(n_boot)
+    if block == "2":
+        return run_block2(n_boot)
     raise NotImplementedError(f"E6 block {block}: run blocks in order (E6_PROMPT.md)")

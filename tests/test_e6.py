@@ -1,9 +1,10 @@
 """Unit tests for E6 block 1 (src/e6_refine.py)."""
 import math
 
+import numpy as np
 import pandas as pd
 
-from src.e6_refine import block1_record, command_files, fires, loop_features, norm_command
+from src.e6_refine import block1_record, command_files, fires, loop_features, norm_command, select, vif
 from tests.test_e5 import _rec
 
 
@@ -32,6 +33,25 @@ def test_loop_features():
 def test_fires():
     df = pd.DataFrame({"distinct_ratio": [1.0, 0.5], "max_run_length": [1, 3], "repeat_ratio_norm": [0.0, 0.2]})
     assert [list(fires(df, c)) for c in df] == [[False, True]] * 3
+
+
+def test_select_anchor_and_composition():
+    rng = np.random.default_rng(0)
+    n = 600
+    y = rng.integers(0, 2, n)
+    a = y + rng.normal(0, 1, n)
+    sh = rng.dirichlet([1, 1, 1], n)
+    df = pd.DataFrame({"label": y, "a": a, "phase_bigram_entropy": a + rng.normal(0, 0.2, n),
+                       "c": rng.normal(size=n), "share_edit": sh[:, 0], "share_verify": sh[:, 1],
+                       "share_other": sh[:, 2]})
+    cols = ["a", "phase_bigram_entropy", "c", "share_edit", "share_verify", "share_other"]
+    kept, dropped = select(df, cols)
+    assert "phase_bigram_entropy" in kept and dropped["a"] == "phase_bigram_entropy"
+    assert sum(v == "composition" for v in dropped.values()) == 1 and len(kept) == 4
+    kept_pure, dropped_pure = select(df, cols, None)
+    assert "a" in kept_pure and dropped_pure["phase_bigram_entropy"] == "a"
+    v = vif(df, cols)
+    assert math.isinf(v["share_edit"]) and v["c"] < 1.1
 
 
 def test_block1_record():
