@@ -32,8 +32,8 @@ Block 1 rules (fixed before any E6 result was seen):
     reverify_after_last_edit  some verification event after the last edit event is not the trajectory's first
                            verification event (a repeated check; without edits: >= 2 verification events).
 * "Working" rule: a feature fires when it differs from its trivial value (0; 1 for max_run_length, max_phase_run,
-  distinct_ratio); firing in < 5% of the trajectories -> not working, excluded from the models. Applied to every
-  structural feature, old (E5) and new.
+  distinct_ratio, i.e. run > 1 and distinct ratio < 1); firing in < 5% of the trajectories -> not working, excluded
+  from the models. Applied to every structural feature, old (E5) and new.
 * Single-feature AUROC: whole sub-population, no CV (descriptive), 95% CI from 1000 bootstrap resamples of tasks;
   > 0.5 = higher in unreliable claims; strength = |AUROC - 0.5|.
 """
@@ -72,7 +72,6 @@ BIGRAMS = [f"bg_{a}_{b}" for a, b in product(PHASES, PHASES)]
 SEQ_FIXED = ["phase_trigram_entropy", "max_phase_run", "reverify_after_last_edit"]
 DIAG = ["diag_rc_step_err_share", "diag_text_err_share", "diag_text_err_verify_share"]
 REPLACED = ["repeat_ratio", "distinct_cmd_ratio"]  # E5 loop features rewritten in block 1
-TRIVIAL_ONE = {"max_run_length", "max_phase_run", "distinct_ratio"}
 
 # ------------------------------------------------------------------------------------------ block 1: commands
 
@@ -239,14 +238,19 @@ def top_trigrams(tris: pd.Series, k: int = N_TOP_TRIGRAMS) -> list[tuple[str, st
 
 
 def fires(df: pd.DataFrame, col: str) -> pd.Series:
+    """Value differs from the trivial one: run lengths > 1, distinct ratios < 1 (they are <= 1), others != 0."""
     v = df[col].astype(float)
-    return v > 1 if col in TRIVIAL_ONE else v != 0
+    if col in ("max_run_length", "max_phase_run"):
+        return v > 1
+    if col in ("distinct_ratio", "distinct_cmd_ratio"):
+        return v < 1
+    return v != 0
 
 
 def single_auroc(df: pd.DataFrame, cols: list[str], n_boot: int, seed: int = SEED) -> pd.DataFrame:
     """AUROC of each feature alone (no CV) with a 95% task-bootstrap CI, firing share overall and by class."""
     y = df.label.to_numpy()
-    groups = [g.to_numpy() for g in df.groupby("task_id").indices.values()]
+    groups = list(df.reset_index(drop=True).groupby("task_id").indices.values())
     rng = np.random.default_rng(seed)
     boot_idx = [np.concatenate([groups[i] for i in rng.integers(0, len(groups), len(groups))]) for _ in range(n_boot)]
     out = []
@@ -255,7 +259,8 @@ def single_auroc(df: pd.DataFrame, cols: list[str], n_boot: int, seed: int = SEE
         f = fires(df, c)
         bs = np.array([auroc(y[ix], x[ix]) for ix in boot_idx])
         lo, hi = np.nanpercentile(bs, [2.5, 97.5])
-        out.append({"feature": c, "fire_share": f.mean(), "fire_reliable": f[df.label == 0].mean(),
+        out.append({"feature": c, "nonzero_share": float((x != 0).mean()), "fire_share": f.mean(),
+                    "fire_reliable": f[df.label == 0].mean(),
                     "fire_unreliable": f[df.label == 1].mean(), "mean_reliable": x[y == 0].mean(),
                     "mean_unreliable": x[y == 1].mean(), "auroc": auroc(y, x), "auroc_ci_low": lo,
                     "auroc_ci_high": hi, "working": bool(f.mean() >= FIRE_MIN)})
@@ -326,16 +331,20 @@ def write_block1(df: pd.DataFrame, t_new: pd.DataFrame, t_old: pd.DataFrame, rc:
          f"{int(y.sum())}, достоверных {int((1 - y).sum())}, доля недостоверных {y.mean():.3f}). AUROC признака "
          f"в одиночку — по всей подпопуляции без CV (описательно), > 0.5 — признак выше у недостоверных заявлений; "
          f"95% ДИ — бутстрэп по задачам, {n_boot} повторов, seed 42. «Срабатывает» — значение отличается от "
-         "тривиального (0; для `max_run_length`, `max_phase_run`, `distinct_ratio` — 1); признак, срабатывающий "
-         f"менее чем в {FIRE_MIN:.0%} траекторий, считается неработающим и исключается из моделей. Правила "
-         "зафиксированы до результатов (docstring `src/e6_refine.py`).", ""]
+         "тривиального (≠ 0; для серий `max_run_length`, `max_phase_run` — > 1; для долей уникальных "
+         "`distinct_ratio`, `distinct_cmd_ratio`, которые ≤ 1, — < 1); признак, срабатывающий "
+         f"менее чем в {FIRE_MIN:.0%} траекторий, считается неработающим и исключается из моделей. Столбец «≠ 0» — "
+         "буквальная доля ненулевых значений. Правила зафиксированы до результатов (коммит d0343fb, docstring "
+         "`src/e6_refine.py`); единственная правка после первого прогона — ошибка реализации: для `distinct_ratio` "
+         "срабатывание проверялось как > 1 (всегда ложно), исправлено на «отличается от 1», как в правиле.", ""]
 
     def table(t: pd.DataFrame, descr: bool) -> list[str]:
-        out = ["| признак | срабатывает: всего / дост. / недост. | среднее: дост. / недост. | AUROC [95% ДИ] | статус |",
-               "|---|---|---|---|---|"]
+        out = ["| признак | ≠ 0 | срабатывает: всего / дост. / недост. | среднее: дост. / недост. | AUROC [95% ДИ] "
+               "| статус |", "|---|---|---|---|---|---|"]
         for _, r in t.iterrows():
             name = f"`{r.feature}`" + (f" — {DESCR[r.feature]}" if descr and r.feature in DESCR else "")
-            out.append(f"| {name} | {r.fire_share:.1%} / {r.fire_reliable:.1%} / {r.fire_unreliable:.1%} | "
+            out.append(f"| {name} | {r.nonzero_share:.1%} | {r.fire_share:.1%} / {r.fire_reliable:.1%} / "
+                       f"{r.fire_unreliable:.1%} | "
                        f"{r.mean_reliable:.3f} / {r.mean_unreliable:.3f} | {_fmt(r.auroc)} [{_fmt(r.auroc_ci_low)}; "
                        f"{_fmt(r.auroc_ci_high)}] | {'работает' if r.working else '**исключён** (< 5%)'} |")
         return out

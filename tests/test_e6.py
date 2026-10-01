@@ -1,7 +1,9 @@
 """Unit tests for E6 block 1 (src/e6_refine.py)."""
 import math
 
-from src.e6_refine import block1_record, command_files, loop_features, norm_command
+import pandas as pd
+
+from src.e6_refine import block1_record, command_files, fires, loop_features, norm_command
 from tests.test_e5 import _rec
 
 
@@ -25,6 +27,11 @@ def test_loop_features():
     assert f["repeat_ratio_norm"] == 1 / 4 and f["max_run_length"] == 2
     assert f["repeat_in_window_3"] == 2 / 5 and f["repeat_in_window_10"] == 2 / 5
     assert f["distinct_ratio"] == 3 / 6 and f["revisit_ratio"] == 3 / 6
+
+
+def test_fires():
+    df = pd.DataFrame({"distinct_ratio": [1.0, 0.5], "max_run_length": [1, 3], "repeat_ratio_norm": [0.0, 0.2]})
+    assert [list(fires(df, c)) for c in df] == [[False, True]] * 3
 
 
 def test_block1_record():
