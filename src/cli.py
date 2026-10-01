@@ -199,6 +199,13 @@ def cmd_e5(a):
     print(res if a.stage == "audit" else res["gate"])
 
 
+def cmd_e6(a):
+    from src.e6_refine import run_e6
+
+    seed_everything()
+    run_e6(block=a.block, n_boot=a.n_boot)
+
+
 def cmd_smoke(a):
     from src.adapters import mahmoud_vectors as mv
 
@@ -265,6 +272,11 @@ def main(argv=None):
     s.add_argument("--stage", choices=["audit", "all"], default="all", help="audit = Stage 1 gate only")
     s.add_argument("--n-boot", type=int, default=1000)
     s.set_defaults(fn=cmd_e5)
+
+    s = sub.add_parser("e6", help="E6: model refinement and external validation (E6_PROMPT.md)")
+    s.add_argument("--block", choices=["1", "2", "3", "4"], default="1", help="blocks run in order")
+    s.add_argument("--n-boot", type=int, default=1000)
+    s.set_defaults(fn=cmd_e6)
 
     s = sub.add_parser("smoke-mahmoud")
     s.add_argument("--skip-download", action="store_true")
