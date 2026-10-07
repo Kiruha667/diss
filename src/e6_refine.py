@@ -772,6 +772,24 @@ def write_block2(o: dict, path: Path, n_boot: int) -> None:
     loss = {v: s.loc["M_E6_full", "auroc"] - s.loc[f"M_E6_{v}", "auroc"] for v in "AB"}
     L += ["", f"**Решение** (правило: потеря AUROC относительно полного набора ≤ 0.01; сначала проверяется B, затем A): "
           f"B теряет {loss['B']:+.3f}, A — {loss['A']:+.3f} → основной набор — **{main_name}**.", ""]
+    ex = o["extra"]
+    ib = var["B"]["imp"].set_index("feature")
+    rb = {c: i + 1 for i, c in enumerate(ib.index)}
+    L += ["## Итог блока 2", "",
+          f"- Предсказательная сила не выросла: полный набор E6 против E5 Δ = {ex[('M_E6_full', 'M_E5')][0]:+.3f} "
+          f"[{ex[('M_E6_full', 'M_E5')][1]:+.3f}; {ex[('M_E6_full', 'M_E5')][2]:+.3f}], набор B против E5 "
+          f"Δ = {ex[('M_E6_B', 'M_E5')][0]:+.3f} [{ex[('M_E6_B', 'M_E5')][1]:+.3f}; {ex[('M_E6_B', 'M_E5')][2]:+.3f}]. "
+          "Новые признаки блока 1 почти целиком дублируют информацию E5.",
+          f"- Выросла интерпретируемость: {len(var['B']['kept'])} признаков без дублей, максимальный VIF "
+          f"{_vif_fmt(var['B']['vif'].max())} (в A — {_vif_fmt(var['A']['vif'].max())}, в полном наборе — ∞); "
+          f"`{ANCHOR}` — {rb[ANCHOR]}-й по |SHAP| с коэффициентом {ib.coef_std[ANCHOR]:+.3f} (знак совпадает с "
+          "одиночным эффектом: чем однообразнее чередование фаз, тем выше риск).",
+          f"- Остаточные ограничения: VIF якоря {_vif_fmt(var['B']['vif'][ANCHOR])} — по остальным признакам набора B "
+          f"энтропия восстанавливается с R² = {1 - 1 / var['B']['vif'][ANCHOR]:.2f}, в основном через доли фаз "
+          "(`share_edit`, `share_verify`) и признаки верификации (проверено регрессией: без признаков длины R² не "
+          "меняется). Поэтому величину коэффициента энтропии нельзя читать как изолированный эффект; у нескольких "
+          "признаков верификации знак коэффициента противоположен одиночному эффекту (см. выше).",
+          "- Отбор признаков по меткам не дал оптимизма: отбор внутри обучающих фолдов даёт тот же AUROC.", ""]
     # coefficients / SHAP
     main_v = o["main"] if o["main"] in var else None
     L += ["## Коэффициенты", "",
@@ -789,9 +807,252 @@ def write_block2(o: dict, path: Path, n_boot: int) -> None:
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
 
 
+# ------------------------------------------------------------------------------------------ block 3: utility
+
+BUDGETS = (0.05, 0.10, 0.20)
+UTILITY_MODELS = {"M_len": "E5 `M_len` (только длина)", "M_E5": "E5 `M_struct+len`", "M_E6_main": "E6 основная"}
+
+
+def topk_counts(y: np.ndarray, s: np.ndarray, fold: np.ndarray, k: float) -> tuple[int, int]:
+    """(found, checked): the top ceil(k * n_fold) scores of every fold are checked (stable order), summed."""
+    found = checked = 0
+    for f in np.unique(fold):
+        m = np.flatnonzero(fold == f)
+        b = int(math.ceil(k * len(m)))
+        top = m[np.argsort(-s[m], kind="mergesort")[:b]]
+        found += int(y[top].sum())
+        checked += b
+    return found, checked
+
+
+def _boot_rows(d: pd.DataFrame, n_boot: int, seed: int = SEED) -> list[np.ndarray]:
+    """Row indices of `n_boot` task-bootstrap resamples drawn within folds."""
+    per_fold = []
+    for _, g in d.groupby("fold"):
+        per_fold.append(list(g.groupby("task_id").indices.values()))
+    base = [g.index.to_numpy() for _, g in d.groupby("fold")]
+    rng = np.random.default_rng(seed)
+    out = []
+    for _ in range(n_boot):
+        parts = []
+        for rows, tasks in zip(base, per_fold):
+            pick = rng.integers(0, len(tasks), len(tasks))
+            parts += [rows[tasks[i]] for i in pick]
+        out.append(np.concatenate(parts))
+    return out
+
+
+def utility_table(d: pd.DataFrame, preds: dict[str, np.ndarray], n_boot: int,
+                  ref: str = "M_E6_main") -> pd.DataFrame:
+    """precision / recall / lift at each budget with CIs; plus the paired difference of precision@k to `ref`
+    (same bootstrap resamples for every model)."""
+    y, fold = d.label.to_numpy(), d.fold.to_numpy()
+    base = y.mean()
+    boots = _boot_rows(d.reset_index(drop=True), n_boot)
+    rows, bp_all = [], {}
+    for m, s in preds.items():
+        for k in BUDGETS:
+            found, checked = topk_counts(y, s, fold, k)
+            bp, br, bl = [], [], []
+            bp_all[(m, k)] = bp
+            for ix in boots:
+                f_, c_ = topk_counts(y[ix], s[ix], fold[ix], k)
+                bp.append(f_ / c_)
+                br.append(f_ / y[ix].sum())
+                bl.append(f_ / c_ / y[ix].mean())
+            q = lambda v: np.percentile(v, [2.5, 97.5])  # noqa: E731
+            rows.append({"model_name": m, "budget": k, "checked": checked, "found": found,
+                         "wasted": checked - found, "random_found": checked * base,
+                         "precision": found / checked, "precision_ci_low": q(bp)[0], "precision_ci_high": q(bp)[1],
+                         "recall": found / y.sum(), "recall_ci_low": q(br)[0], "recall_ci_high": q(br)[1],
+                         "lift": found / checked / base, "lift_ci_low": q(bl)[0], "lift_ci_high": q(bl)[1]})
+    t = pd.DataFrame(rows)
+    ref_prec = t[t.model_name == ref].set_index("budget").precision
+    t["d_precision_vs_main"] = [r.precision - ref_prec[r.budget] for r in t.itertuples()]
+    t["d_precision_ci_low"] = [np.percentile(np.array(bp_all[(r.model_name, r.budget)]) -
+                                             np.array(bp_all[(ref, r.budget)]), 2.5) for r in t.itertuples()]
+    t["d_precision_ci_high"] = [np.percentile(np.array(bp_all[(r.model_name, r.budget)]) -
+                                              np.array(bp_all[(ref, r.budget)]), 97.5) for r in t.itertuples()]
+    return t
+
+
+def isotonic_oof(d: pd.DataFrame, cols: list[str]) -> tuple[np.ndarray, np.ndarray]:
+    """(raw, calibrated) out-of-fold probabilities; isotonic map fitted on inner out-of-fold scores of the
+    training folds only."""
+    from sklearn.isotonic import IsotonicRegression
+
+    from src.stats import fit_predict
+
+    y, fold = d.label.to_numpy(), d.fold.to_numpy()
+    raw, cal = np.full(len(d), np.nan), np.full(len(d), np.nan)
+    for k in np.unique(fold):
+        te = fold == k
+        tr = ~te
+        inner = np.full(len(d), np.nan)
+        for j in np.unique(fold[tr]):
+            te_j = fold == j
+            inner[te_j] = fit_predict(d[tr & ~te_j], d[te_j], cols)
+        iso = IsotonicRegression(out_of_bounds="clip", y_min=0.0, y_max=1.0).fit(inner[tr], y[tr])
+        raw[te] = fit_predict(d[tr], d[te], cols)
+        cal[te] = iso.predict(raw[te])
+    return raw, cal
+
+
+def reliability_bins(y: np.ndarray, p: np.ndarray, bins: int = 10) -> pd.DataFrame:
+    """Equal-count bins by predicted probability (ties broken by row order)."""
+    order = np.argsort(p, kind="mergesort")
+    return pd.DataFrame([{"n": len(ix), "mean_pred": p[ix].mean(), "observed": y[ix].mean()}
+                         for ix in np.array_split(order, bins)])
+
+
+def ece(tab: pd.DataFrame) -> float:
+    return float((tab.n * (tab.mean_pred - tab.observed).abs()).sum() / tab.n.sum())
+
+
+def plot_reliability2(tabs: dict[str, pd.DataFrame], path: Path) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(4.8, 4.8))
+    ax.plot([0, 1], [0, 1], color="grey", lw=0.8, ls="--")
+    for (name, t), mk in zip(tabs.items(), ("o-", "s-")):
+        ax.plot(t.mean_pred, t.observed, mk, label=name, ms=4)
+    lim = max(0.05, max(float(max(t.mean_pred.max(), t.observed.max())) for t in tabs.values()) + 0.05)
+    ax.set_xlim(0, lim)
+    ax.set_ylim(0, lim)
+    ax.set_xlabel("предсказанная P(заявление недостоверно)")
+    ax.set_ylabel("наблюдаемая доля недостоверных")
+    ax.set_title("Кривая надёжности основной модели E6 (out-of-fold)", fontsize=9)
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=130)
+    plt.close(fig)
+
+
+def run_block3(n_boot: int = 1000) -> dict:
+    from src.stats import fold_avg, oof
+
+    df = load_features()
+    sel = json.loads(SELECTION_OUT.read_text(encoding="utf-8"))
+    main_cols = sel["main_cols"]
+    e5_cols = e5.STRUCT + [c for c in e5.LEN if c not in e5.STRUCT]
+    y, fold = df.label.to_numpy(), df.fold.to_numpy()
+    preds = {"M_len": oof(df, e5.LEN), "M_E5": oof(df, e5_cols)}
+    raw, cal = isotonic_oof(df, main_cols)
+    preds["M_E6_main"] = raw
+    util = utility_table(df, preds, n_boot)
+    util.to_csv(OUTPUTS / "e6_utility.csv", index=False)
+
+    tabs = {"до калибровки": reliability_bins(y, raw), "изотоническая": reliability_bins(y, cal)}
+    plot_reliability2(tabs, REPORTS / "figures" / "e6_reliability.png")
+    brier = {"raw": float(np.mean((raw - y) ** 2)), "cal": float(np.mean((cal - y) ** 2)),
+             "const": float(np.mean((y.mean() - y) ** 2))}
+    groups = list(df.groupby("task_id").indices.values())
+    rng = np.random.default_rng(SEED)
+    d_b = []
+    for _ in range(n_boot):
+        ix = np.concatenate([groups[i] for i in rng.integers(0, len(groups), len(groups))])
+        d_b.append(np.mean((cal[ix] - y[ix]) ** 2) - np.mean((raw[ix] - y[ix]) ** 2))
+    calib = {"brier": brier, "d_brier_ci": np.percentile(d_b, [2.5, 97.5]).tolist(),
+             "auroc_raw": fold_avg(auroc, y, raw, fold), "auroc_cal": fold_avg(auroc, y, cal, fold),
+             "ece_raw": ece(tabs["до калибровки"]), "ece_cal": ece(tabs["изотоническая"]), "tabs": tabs}
+    summ = pd.read_csv(OUTPUTS / "e6_summary.csv")
+    summ = summ[summ.block != 3]
+    add = pd.DataFrame([{"block": 3, "model_name": f"M_E6_main_{v}", "n_features": len(main_cols), "n": len(df),
+                         "auroc": calib[f"auroc_{v}"], "brier": brier[v], "ece": calib[f"ece_{v}"]}
+                        for v in ("raw", "cal")])
+    pd.concat([summ, add], ignore_index=True).to_csv(OUTPUTS / "e6_summary.csv", index=False)
+    out = {"df": df, "util": util, "calib": calib, "main": sel["main"], "main_cols": main_cols}
+    write_block3(out, REPORTS / "E6_utility.md", n_boot)
+    return out
+
+
+def write_block3(o: dict, path: Path, n_boot: int) -> None:
+    df, u, c = o["df"], o["util"], o["calib"]
+    base = df.label.mean()
+    n_unrel = int(df.label.sum())
+    L = ["# E6 — блок 3: практическая полезность", "",
+         f"Подпопуляция E5: n = {len(df)} заявлений об успехе, из них недостоверных {n_unrel} (доля {base:.3f}). "
+         f"Основная модель E6 — набор {o['main']} блока 2 ({len(o['main_cols'])} признаков), логистическая "
+         "регрессия, оценки out-of-fold (5 фолдов по task_id). Бюджет проверок k — доля прогонов, которые проверяет "
+         "человек: внутри каждого тестового фолда берутся ceil(k·n) самых подозрительных, счётчики суммируются по "
+         f"фолдам. 95% ДИ — бутстрэп задач внутри фолдов, {n_boot} повторов, seed 42. Правила зафиксированы до "
+         "расчёта (docstring `src/e6_refine.py`, «Block 3 rules»).", "",
+         "## Бюджет проверок → найдено → впустую (основная модель)", ""]
+    m = u[u.model_name == "M_E6_main"]
+    L += ["| бюджет | проверено | найдено недостоверных | впустую | при случайной проверке нашли бы | precision@k | "
+          "recall@k | lift@k |", "|---|---|---|---|---|---|---|---|"]
+    for _, r in m.iterrows():
+        L.append(f"| {r.budget:.0%} | {r.checked} | {r.found} | {r.wasted} | {r.random_found:.0f} | "
+                 f"{r.precision:.3f} [{r.precision_ci_low:.3f}; {r.precision_ci_high:.3f}] | "
+                 f"{r.recall:.3f} [{r.recall_ci_low:.3f}; {r.recall_ci_high:.3f}] | "
+                 f"{r.lift:.2f} [{r.lift_ci_low:.2f}; {r.lift_ci_high:.2f}] |")
+    L += ["", f"lift@k = precision@k / {base:.3f}; при случайном выборе lift = 1, recall@k = k.", "",
+          "## Сравнение с моделями E5", "",
+          "| модель | бюджет | найдено | precision@k [95% ДИ] | recall@k | lift@k [95% ДИ] | Δ precision к E6 "
+          "основной [95% ДИ] |", "|---|---|---|---|---|---|---|"]
+    for _, r in u.iterrows():
+        dlt = "—" if r.model_name == "M_E6_main" else \
+            f"{r.d_precision_vs_main:+.3f} [{r.d_precision_ci_low:+.3f}; {r.d_precision_ci_high:+.3f}]"
+        L.append(f"| {UTILITY_MODELS[r.model_name]} | {r.budget:.0%} | {r.found} из {r.checked} | {r.precision:.3f} "
+                 f"[{r.precision_ci_low:.3f}; {r.precision_ci_high:.3f}] | {r.recall:.3f} | {r.lift:.2f} "
+                 f"[{r.lift_ci_low:.2f}; {r.lift_ci_high:.2f}] | {dlt} |")
+    L += ["", "Δ precision — парный бутстрэп (одни и те же выборки задач для всех моделей); < 0 — модель хуже основной.",
+          ""]
+    b = c["brier"]
+    tr, tc = c["tabs"]["до калибровки"], c["tabs"]["изотоническая"]
+    L += ["", "## Калибровка", "",
+          "Изотоническая регрессия обучается только на обучающих фолдах: на внутренних out-of-fold оценках четырёх "
+          "обучающих фолдов, затем применяется к предсказаниям тестового фолда.", "",
+          f"- Бриер: до калибровки {b['raw']:.4f}, после {b['cal']:.4f} (константа с долей недостоверных — "
+          f"{b['const']:.4f}); Δ(после − до) 95% ДИ [{c['d_brier_ci'][0]:+.4f}; {c['d_brier_ci'][1]:+.4f}] "
+          "(бутстрэп задач).",
+          f"- ECE (10 равных по численности бинов): до {c['ece_raw']:.3f}, после {c['ece_cal']:.3f}.",
+          f"- AUROC (усреднение по фолдам): до {c['auroc_raw']:.3f}, после {c['auroc_cal']:.3f} (изотоническое "
+          "отображение монотонно, но склеивает близкие оценки в ступени).", "",
+          "![кривая надёжности](figures/e6_reliability.png)", "",
+          "| бин | n | до: предсказано | до: наблюдается | после: предсказано | после: наблюдается |",
+          "|---|---|---|---|---|---|"]
+    for i in range(len(tr)):
+        L.append(f"| {i + 1} | {int(tr.n[i])} | {tr.mean_pred[i]:.3f} | {tr.observed[i]:.3f} | {tc.mean_pred[i]:.3f} "
+                 f"| {tc.observed[i]:.3f} |")
+    L += ["", "Бины — по предсказанной вероятности соответствующей модели (до и после калибровки состав бинов может "
+          "различаться). Для сравнения, в E5 на верхнем бине модель `M_struct+len` предсказывала 0.735 при "
+          "наблюдаемых 0.684.", ""]
+    r10 = m.set_index("budget").loc[0.10]
+    dl = u[u.model_name == "M_len"].set_index("budget")
+    de = u[u.model_name == "M_E5"].set_index("budget")
+    sig = lambda r: r.d_precision_ci_high < 0 or r.d_precision_ci_low > 0  # noqa: E731
+    L += ["## Выводы", "",
+          f"- При бюджете 10% модель находит {r10.found} из {n_unrel} недостоверных заявлений (recall {r10.recall:.2f}) "
+          f"при точности {r10.precision:.2f}: в {r10.lift:.1f} раза больше, чем случайная проверка того же объёма "
+          f"({r10.random_found:.0f}); {r10.wasted} проверок из {r10.checked} тратятся на достоверные заявления.",
+          "- Относительно модели одной длины precision выше на " + ", ".join(
+              f"{-dl.loc[k, 'd_precision_vs_main']:.3f} при {k:.0%}" for k in BUDGETS) + " — " +
+          ("ДИ разности не включают 0 при всех бюджетах." if all(sig(dl.loc[k]) for k in BUDGETS) else
+           "ДИ разности включают 0 не при всех бюджетах."),
+          "- Относительно E5 `M_struct+len` разница precision (E6 − E5) " + ", ".join(
+              f"{-de.loc[k, 'd_precision_vs_main']:+.3f} при {k:.0%}" for k in BUDGETS) + " — " +
+          ("в пределах шума (ДИ включают 0): доработка признаков в блоках 1–2 практической полезности не прибавила."
+           if not any(sig(de.loc[k]) for k in BUDGETS) else "есть значимые различия (см. таблицу)."),
+          f"- Изотоническая калибровка {'не улучшила' if b['cal'] >= b['raw'] else 'улучшила'} модель: Бриер "
+          f"{b['raw']:.4f} → {b['cal']:.4f} (ДИ разности [{c['d_brier_ci'][0]:+.4f}; {c['d_brier_ci'][1]:+.4f}]), "
+          f"ECE {c['ece_raw']:.3f} → {c['ece_cal']:.3f}. "
+          f"Переоценка на верхнем бине (предсказано {tr.mean_pred.iloc[-1]:.3f}, наблюдается "
+          f"{tr.observed.iloc[-1]:.3f}) после калибровки меньше ({tc.mean_pred.iloc[-1]:.3f} против "
+          f"{tc.observed.iloc[-1]:.3f}), но в средних бинах ступенчатое отображение добавляет шум. Логистическая "
+          "регрессия уже откалибрована близко к диагонали; калибровка ничего существенного не даёт.", ""]
+    path.write_text("\n".join(L) + "\n", encoding="utf-8")
+
+
 def run_e6(block: str = "1", n_boot: int = 1000) -> dict:
     if block == "1":
         return run_block1(n_boot)
     if block == "2":
         return run_block2(n_boot)
+    if block == "3":
+        return run_block3(n_boot)
     raise NotImplementedError(f"E6 block {block}: run blocks in order (E6_PROMPT.md)")

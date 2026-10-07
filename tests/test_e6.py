@@ -4,7 +4,8 @@ import math
 import numpy as np
 import pandas as pd
 
-from src.e6_refine import block1_record, command_files, fires, loop_features, norm_command, select, vif
+from src.e6_refine import (block1_record, command_files, fires, loop_features, norm_command, select, topk_counts,
+                           vif)
 from tests.test_e5 import _rec
 
 
@@ -52,6 +53,14 @@ def test_select_anchor_and_composition():
     assert "a" in kept_pure and dropped_pure["phase_bigram_entropy"] == "a"
     v = vif(df, cols)
     assert math.isinf(v["share_edit"]) and v["c"] < 1.1
+
+
+def test_topk_counts():
+    y = np.array([1, 0, 1, 0, 0, 1, 0, 0, 0, 0])
+    s = np.array([.9, .8, .1, .2, .3, .7, .6, .5, .4, .0])
+    fold = np.array([0] * 5 + [1] * 5)
+    assert topk_counts(y, s, fold, 0.2) == (2, 2)    # top-1 per fold: rows 0 and 5
+    assert topk_counts(y, s, fold, 0.4) == (2, 4)    # rows 0, 1 and 5, 6
 
 
 def test_block1_record():
