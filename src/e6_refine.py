@@ -75,6 +75,39 @@ Block 3 rules (fixed before any block-3 result was seen):
   folds (leave-one-training-fold-out), IsotonicRegression(out_of_bounds='clip') fitted on them, applied to the outer
   test predictions of the LR fitted on all 4 training folds. Brier on pooled out-of-fold probabilities before/after,
   reliability curves with 10 equal-count bins; fold-averaged AUROC after calibration reported (isotonic ties).
+
+Block 4 rules (fixed before any block-4 result was seen; only the data FORMAT was inspected before):
+* Source: Exgentic/agent-llm-traces-v2 @ 4b8ad4a, adapter src/adapters/exgentic.py (reconstruction, task groups,
+  exclusions documented there). Domains: AppWorld; tau2-bench (airline + retail + telecom pooled, per-domain
+  numbers descriptive). Label 1 = the environment says the task failed.
+* Claims: the G0 rules unchanged (claim/admit patterns, final message = last assistant step with >= 30 characters of
+  natural language within 3 steps back, natural language = adapter `nl` cleaned by g0.clean_nl). Applicability:
+  share of has_claim among failed trajectories, compared with SWE-bench 36.9%. A domain where it is < 5% uses the
+  pre-registered adaptation config/claim_patterns_domain.txt (added to the G0 set), reported separately.
+* Phases (same three as SWE: edit > verify > other per step). Tool categories:
+    other — non-environment tools (message, transfer_to_human_agents, finish, AskUserQuestion, TodoWrite, Task,
+            TaskOutput, Bash, Glob, Grep, Read, ListMcpResourcesTool, calculate, think), AppWorld task completion
+            (supervisor complete/fail task) and authentication (login, logout, signup, password / verification
+            codes), unknown names without an app prefix;
+    read  — action starting with show_ / search_ / get_ / list_ / find_ / check_ / can_ / is_, file_exists,
+            directory_exists, run_speed_test;
+    edit  — every other environment call (state-changing: create / add / update / delete / send / approve / book /
+            cancel / modify / return / exchange / enable / refuel / resume / ...).
+  verify = a read call made after an edit of the same app (AppWorld: the app prefix; tau2: the domain is one app),
+  i.e. re-reading changed state; a read before any edit of that app is 'other'.
+  Edit target (file analogue): AppWorld — the app; tau2 — the edited entity id (order / reservation / user /
+  customer / line id), else the tool name. Objects mentioned by a step (revisit_ratio): string / number argument
+  values of 3-100 characters whose key has no token / password / content / message / body. Loop signature: tool
+  name + sorted JSON arguments through norm_command. Errors (nonzero_rc_share / verify_fail_share analogue): the
+  adapter's tool-output error flag.
+* The same generic feature function computes the main-set features from step events; it must reproduce the
+  SWE-bench values from SWE step events (checked on the SWE population before use).
+* Modes: (1) transfer without retraining — LR (main set of block 2) fitted on all 2877 SWE claims, applied to the
+  domain's claims; (2) in-domain — LR fitted from scratch, 5-fold GroupKFold by task group (seed 42), fold-averaged
+  AUROC; transfer AUROC is reported on the same folds for comparability. Baseline: M_len in both modes. 95% CIs:
+  1000 task-group bootstrap resamples within folds. A mode is reported only with >= 20 claims of each class
+  (in-domain: >= 50 of each class).
+* Importance: mean |SHAP| of the in-domain LR fitted on all rows; "among the leading" = top 5 of the set.
 """
 from __future__ import annotations
 
