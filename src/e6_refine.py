@@ -1088,4 +1088,8 @@ def run_e6(block: str = "1", n_boot: int = 1000) -> dict:
         return run_block2(n_boot)
     if block == "3":
         return run_block3(n_boot)
+    if block == "4":
+        from src.e6_external import run_block4
+
+        return run_block4(n_boot)
     raise NotImplementedError(f"E6 block {block}: run blocks in order (E6_PROMPT.md)")

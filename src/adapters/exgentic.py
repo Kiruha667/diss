@@ -29,6 +29,11 @@ task is not visible to the agent (a simulated customer plays it), so the group i
 phone_number, email, first+last name+zip, reservation_id, order_id). This group is coarser than the task (several
 tasks of one customer fall together), so GroupKFold stays leak-free wherever the agent identified the customer;
 sessions without any identifier form their own group (a possible leak, reported).
+Correction made after the first block-4 run showed 2171 of 4647 tau2 sessions without a group (all smolagents_code
+sessions, whose arguments live in code, and sessions that ended at the first turn): identifiers are also taken from
+keyword literals in smolagents code and, by regular expressions (user ids, e-mails, phone numbers, #W order ids),
+from the customer's messages and tool outputs (never from the policy prompt). The first grouping (dict arguments
+only) is kept as `task_id_args` and reported as a sensitivity.
 Exclusions (logged by class): status == "error" (harness / infrastructure error); harness
 tool_calling_with_shortlisting (its trace interleaves the scaffold's tool-shortlisting chats with the agent's);
 no assistant step.
@@ -206,17 +211,40 @@ def appworld_instruction(first_text: str, sys_text: str) -> str:
     return ""
 
 
-def customer_ids(bench: str, steps: list[dict]) -> list[str]:
-    """tau2: identifiers of the customer / their objects used in tool-call arguments (linked across sessions)."""
+_KWARG_RE = re.compile(r"(\w+)\s*=\s*(?:'([^']*)'|\"([^\"]*)\")")
+# customer identifiers in the customer's messages / tool outputs (tau2 formats: user ids like anya_garcia_5901,
+# e-mails, phone numbers 555-123-2002, retail order ids #W1234567)
+_TEXT_ID_RES = (("user_id", re.compile(r"\b[a-z]+_[a-z]+_\d{3,5}\b")),
+                ("email", re.compile(r"\b[\w.+-]+@[\w-]+\.[a-z]{2,}\b")),
+                ("phone_number", re.compile(r"\b\d{3}-\d{3}-\d{4}\b")),
+                ("order_id", re.compile(r"#w\d{7}\b")))
+
+
+def _call_kwargs(c: dict) -> dict:
+    a = c["args"] if isinstance(c.get("args"), dict) else {}
+    raw = a.get("_code") or a.get("_raw")
+    if isinstance(raw, str):  # smolagents code: keyword string literals
+        return {m.group(1): m.group(2) if m.group(2) is not None else m.group(3) for m in _KWARG_RE.finditer(raw)}
+    return a
+
+
+def customer_ids(bench: str, steps: list[dict], texts: bool = True) -> list[str]:
+    """tau2: identifiers of the customer / their objects (linked across sessions): keyword arguments of tool calls
+    (incl. smolagents code) and, with texts=True, identifiers in the customer's messages and tool outputs.
+    texts=False with plain dict arguments only = the first (pre-registered) grouping, kept as a sensitivity."""
     out = []
     for s in steps:
         for c in s.get("tool_calls") or []:
-            a = c["args"] if isinstance(c["args"], dict) else {}
+            a = _call_kwargs(c) if texts else (c["args"] if isinstance(c.get("args"), dict) else {})
             for k in _ID_KEYS + ("reservation_id", "order_id"):
                 if isinstance(a.get(k), str) and a[k].strip():
                     out.append(f"{bench}/{k}={a[k].strip().lower()}")
             if {"first_name", "last_name", "zip"} <= set(a):
                 out.append(f"{bench}/name_zip={a['first_name']}_{a['last_name']}_{a['zip']}".lower())
+        if texts and s["role"] in ("user", "tool"):
+            low = (s.get("text") or "").lower()
+            for k, rx in _TEXT_ID_RES:
+                out += [f"{bench}/{k}={v}" for v in rx.findall(low)]
     return list(dict.fromkeys(out))
 
 
@@ -320,7 +348,7 @@ def build(raw_dir: Path | None = None, out_dir: Path | None = None) -> pd.DataFr
     out_dir = Path(out_dir or INTERIM / SOURCE)
     out_dir.mkdir(parents=True, exist_ok=True)
     known = known_tools(r for r in iter_rows(raw_dir) if r["harness"] not in EXCLUDED_HARNESSES)
-    excl, ids_of = [], {}
+    excl, ids_of, ids_args_of = [], {}, {}
     tmp = out_dir / "trajectories.tmp.jsonl.gz"
     with gzip.open(tmp, "wt", encoding="utf-8") as fh:
         for r in iter_rows(raw_dir):
@@ -336,15 +364,18 @@ def build(raw_dir: Path | None = None, out_dir: Path | None = None) -> pd.DataFr
                 continue
             if rec["benchmark"] != "appworld":
                 ids_of[rec["run_id"]] = customer_ids(rec["benchmark"], rec["steps"])
+                ids_args_of[rec["run_id"]] = customer_ids(rec["benchmark"], rec["steps"], texts=False)
             fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
-    groups = link_groups(ids_of)
+    groups, groups_args = link_groups(ids_of), link_groups(ids_args_of)
     n = 0
     with gzip.open(tmp, "rt", encoding="utf-8") as fi, \
             gzip.open(out_dir / "trajectories.jsonl.gz", "wt", encoding="utf-8") as fo:
         for line in fi:
             rec = json.loads(line)
+            rec["task_id_args"] = rec["task_id"]
             if rec["benchmark"] != "appworld":
                 rec["task_id"] = f"{rec['benchmark']}/{groups[rec['run_id']]}"
+                rec["task_id_args"] = f"{rec['benchmark']}/{groups_args[rec['run_id']]}"
             fo.write(json.dumps(rec, ensure_ascii=False) + "\n")
             n += 1
     tmp.unlink()
