@@ -1,0 +1,27 @@
+[
+ {
+  "type": "pair_resolved",
+  "run_id": "20260217_mini-v2.0.0_kimi-k2-5-high/django__django-11333",
+  "task_id": "django__django-11333"
+ },
+ {
+  "type": "pair_unresolved",
+  "run_id": "20250822_mini-v1.9.1_glm-4.5/django__django-11333",
+  "task_id": "django__django-11333"
+ },
+ {
+  "type": "false_claim",
+  "run_id": "20251124_mini-v1.17.0_minimax-m2/psf__requests-1766",
+  "task_id": "psf__requests-1766"
+ },
+ {
+  "type": "verified_success",
+  "run_id": "20251209_mini-v1.17.2_devstral-2512/django__django-11066",
+  "task_id": "django__django-11066"
+ },
+ {
+  "type": "not_submitted",
+  "run_id": "20260226_mini-v2.0.0_gemini-3-pro-high/django__django-14011",
+  "task_id": "django__django-14011"
+ }
+]

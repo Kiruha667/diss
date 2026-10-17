@@ -1,5 +1,11 @@
 # raw data, interim artifacts and embedding caches are never committed (AGENTS.md 2.3)
-data/
+data/*
+# demo data (DEMO_COLAB.md): runs.parquet, examples.json and the card are committed; steps.parquet and
+# demo_lib.zip are published as GitHub Release assets only
+!data/demo/
+data/demo/steps.parquet
+data/demo/steps.parquet.part
+data/demo/demo_lib.zip
 .venv/
 __pycache__/
 *.pyc
