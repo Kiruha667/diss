@@ -70,14 +70,27 @@ def sha256(path):
     return h.hexdigest()
 
 
+def download(url, path, attempts=3):
+    # streamed download with a timeout and retries (transient network errors)
+    for i in range(attempts):
+        try:
+            with urllib.request.urlopen(url, timeout=120) as r, open(path, "wb") as fh:
+                while chunk := r.read(1 << 20):
+                    fh.write(chunk)
+            return
+        except urllib.error.HTTPError as e:
+            raise RuntimeError(f"cannot download {{url}} (HTTP {{e.code}}): the release must be public") from None
+        except OSError as e:
+            if i == attempts - 1:
+                raise
+            print(f"retry {{i + 1}} for {{url}}: {{e}}")
+            time.sleep(3)
+
+
 for name, expected in EXPECTED_SHA256.items():
     path = DATA / name
     if not path.exists() or sha256(path) != expected:
-        try:
-            urllib.request.urlretrieve(f"{{BASE_URL}}/{{name}}", path)
-        except urllib.error.HTTPError as e:
-            raise RuntimeError(f"cannot download {{name}} from {{BASE_URL}} (HTTP {{e.code}}): "
-                               "the release must be public") from None
+        download(f"{{BASE_URL}}/{{name}}", path)
     got = sha256(path)
     assert got == expected, f"SHA256 mismatch for {{name}}: {{got}}"
     print(f"{{name:14s}} {{path.stat().st_size / 1e6:7.1f}} MB   SHA256 OK")
@@ -474,10 +487,10 @@ print(f"done in {time.time() - T0:.0f} s (after pip install)")
 
 def to_ipynb(cells) -> dict:
     out = []
-    for kind, src in cells:
+    for i, (kind, src) in enumerate(cells):
         lines = src.split("\n")
         source = [ln + "\n" for ln in lines[:-1]] + [lines[-1]]
-        cell = {"cell_type": kind, "metadata": {}, "source": source}
+        cell = {"cell_type": kind, "id": f"cell-{i:02d}", "metadata": {}, "source": source}
         if kind == "code":
             cell.update({"execution_count": None, "outputs": []})
         out.append(cell)

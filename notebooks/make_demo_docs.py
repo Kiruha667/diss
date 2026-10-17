@@ -1,5 +1,6 @@
 """Write data/demo/DATASET_CARD.md and DEMO_REPORT.md from the built demo data and the executed notebook.
-Run from the repository root:  python notebooks/make_demo_docs.py <demo_results.json> <execution seconds>
+Run from the repository root:
+    python notebooks/make_demo_docs.py <results, GitHub run> <seconds> <results, local-server run> <seconds>
 Every number comes from data/demo/checks.json, the parquet files or the notebook's demo_results.json.
 """
 from __future__ import annotations
@@ -68,7 +69,7 @@ def schema_table(path: Path, descr: dict) -> list[str]:
     return L
 
 
-def main(results_path: str, seconds: str) -> None:
+def main(results_path: str, seconds: str, local_results: str, local_seconds: str) -> None:
     chk = json.loads((DEMO / "checks.json").read_text(encoding="utf-8"))
     res = json.loads(Path(results_path).read_text(encoding="utf-8"))
     runs = pd.read_parquet(DEMO / "runs.parquet")
@@ -208,12 +209,18 @@ def main(results_path: str, seconds: str) -> None:
             "| пример | модель | submitted | риск | resolved |", "|---|---|---|---|---|"]
     for s in res["scored"]:
         rep.append(f"| {s['example']} | {s['model']} | {s['submitted']} | {s['risk']:.3f} | {s['resolved']} |")
+    loc = json.loads(Path(local_results).read_text(encoding="utf-8"))
     rep += ["", "## 6. Время выполнения", "",
-            f"Полное выполнение ноутбука (`jupyter nbconvert --execute`, чистое виртуальное окружение, скачивание по "
-            f"HTTP с локального сервера; компьютер автора — i5-3230M, 2 ядра / 4 потока): **{float(seconds):.0f} с**; "
-            f"из них расчёты после установки и загрузки — {res['elapsed_s']:.0f} с. Повторный запуск дал те же числа "
-            "(два прогона, `demo_results.json` совпали); повторная сборка данных дала побайтно тот же "
-            "`steps.parquet`.", "",
+            "`jupyter nbconvert --execute` в чистом виртуальном окружении (Python 3.12), компьютер автора — i5-3230M, "
+            "2 ядра / 4 потока:", "",
+            f"- со скачиванием файлов из релиза GitHub (как в Colab): **{float(seconds):.0f} с**, из них загрузка и "
+            f"расчёты после установки — {res['elapsed_s']:.0f} с; почти всё время — скачивание 66.8 МБ по медленному "
+            "домашнему каналу (отдельный замер: 1.6 МБ скачивались от 3.5 до 71 с);",
+            f"- с локального HTTP-сервера: **{float(local_seconds):.0f} с**, из них загрузка и расчёты — "
+            f"{loc['elapsed_s']:.0f} с.", "",
+            "Повторный запуск даёт те же числа: `demo_results.json` всех четырёх завершившихся прогонов (три с локального "
+            "сервера, один с GitHub) совпали; повторная сборка данных дала "
+            "побайтно тот же `steps.parquet`.", "",
             "## 7. Что не сделано или упрощено", "",
             f"- **`final_message`** восстановлено из разобранных траекторий функциями G0 (`clean_nl`, `pick_final`): "
             f"сверка с результатом G0 на всех {chk['n_runs']} прогонах — расхождений в заявлении "
@@ -225,4 +232,4 @@ def main(results_path: str, seconds: str) -> None:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(*sys.argv[1:5])
