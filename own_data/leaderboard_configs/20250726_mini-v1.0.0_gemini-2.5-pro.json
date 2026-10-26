@@ -1,0 +1,7 @@
+{
+ "run": "20250726_mini-v1.0.0_gemini-2.5-pro",
+ "n_trajectories": 23,
+ "fields_varying_between_tasks": [],
+ "config_sha256_redacted": null,
+ "config": {}
+}

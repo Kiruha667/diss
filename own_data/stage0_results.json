@@ -1,0 +1,664 @@
+{
+ "runs": [
+  {
+   "run": "20250726_mini-v1.0.0_gemini-2.5-pro",
+   "n_trajectories": 23,
+   "with_model_stats": 23,
+   "mini_version_in_trajectories": {
+    "None": 23
+   },
+   "metadata_version": "1.0.0",
+   "exit_status": {
+    "Submitted": 23
+   },
+   "cost_median": 0.22546156250000002,
+   "cost_p90": 0.7617701875000004,
+   "api_calls_median": 15.0,
+   "api_calls_p90": 59.60000000000001,
+   "meta_resolved_pct": 53.6,
+   "meta_total_cost": 144.18604781250002,
+   "meta_instance_cost_mean": 0.28837209562500005,
+   "meta_instance_calls_mean": 20.478,
+   "model_name": null,
+   "model_type": null,
+   "model_kwargs": null,
+   "temperature": null,
+   "step_limit": null,
+   "cost_limit": null,
+   "agent_type": null,
+   "action_regex": null,
+   "env_timeout": null,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": null
+  },
+  {
+   "run": "20250822_mini-v1.9.1_glm-4.5",
+   "n_trajectories": 28,
+   "with_model_stats": 28,
+   "mini_version_in_trajectories": {
+    "1.9.1": 28
+   },
+   "metadata_version": "1.9.1",
+   "exit_status": {
+    "Submitted": 28
+   },
+   "cost_median": 0.1746471,
+   "cost_p90": 0.46310622,
+   "api_calls_median": 33.5,
+   "api_calls_p90": 55.400000000000006,
+   "meta_resolved_pct": 54.2,
+   "meta_total_cost": 148.5951744,
+   "meta_instance_cost_mean": 0.2971903488,
+   "meta_instance_calls_mean": 40.224,
+   "model_name": "glm-4.5",
+   "model_type": "minisweagent.models.litellm_model.LitellmModel",
+   "model_kwargs": {
+    "drop_params": true,
+    "temperature": 0.0,
+    "api_key": "<REDACTED>",
+    "api_base": "https://open.bigmodel.cn/api/paas/v4/",
+    "custom_llm_provider": "openai"
+   },
+   "temperature": 0.0,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.extra.swebench.ProgressTrackingAgent",
+   "action_regex": null,
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "3a5868a40ad6ee4208aef560898e7506448d14e2da058ecb76c1fa675605b4dc"
+  },
+  {
+   "run": "20250929_mini-v1.13.3_sonnet-4-5-20250929",
+   "n_trajectories": 17,
+   "with_model_stats": 17,
+   "mini_version_in_trajectories": {
+    "1.13.3": 17
+   },
+   "metadata_version": "1.13.3",
+   "exit_status": {
+    "Submitted": 17
+   },
+   "cost_median": 0.4478263500000001,
+   "cost_p90": 0.9504845700000002,
+   "api_calls_median": 47.0,
+   "api_calls_p90": 81.80000000000001,
+   "meta_resolved_pct": 70.6,
+   "meta_total_cost": 279.16737045,
+   "meta_instance_cost_mean": 0.5583347409,
+   "meta_instance_calls_mean": 50.988,
+   "model_name": "anthropic/claude-sonnet-4-5",
+   "model_type": "minisweagent.models.anthropic.AnthropicModel",
+   "model_kwargs": {
+    "drop_params": true,
+    "temperature": 0.0
+   },
+   "temperature": 0.0,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.extra.swebench.ProgressTrackingAgent",
+   "action_regex": null,
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "903b20e34c71176337f79717e28c7ed72a07e2c66e533c64cac5692ec653fe29"
+  },
+  {
+   "run": "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118",
+   "n_trajectories": 20,
+   "with_model_stats": 20,
+   "mini_version_in_trajectories": {
+    "1.15.0": 20
+   },
+   "metadata_version": "1.15.0",
+   "exit_status": {
+    "Submitted": 20
+   },
+   "cost_median": 0.40319970000000005,
+   "cost_p90": 0.6331361000000001,
+   "api_calls_median": 39.5,
+   "api_calls_p90": 49.60000000000002,
+   "meta_resolved_pct": 74.2,
+   "meta_total_cost": 229.978759475,
+   "meta_instance_cost_mean": 0.45995751895000003,
+   "meta_instance_calls_mean": 40.326,
+   "model_name": "google/gemini-3-pro-preview",
+   "model_type": "minisweagent.models.openrouter_model.OpenRouterModel",
+   "model_kwargs": {
+    "temperature": 0.0
+   },
+   "temperature": 0.0,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.extra.swebench.ProgressTrackingAgent",
+   "action_regex": null,
+   "env_timeout": 60,
+   "config_varies_between_tasks": [
+    "model.model_name",
+    "model_type"
+   ],
+   "config_sha256_redacted": "afa84641a98d35cd275c2f5f3725860a24d36423cc265e247be4f6f45ce5c0fc"
+  },
+  {
+   "run": "20251124_mini-v1.17.0_minimax-m2",
+   "n_trajectories": 19,
+   "with_model_stats": 19,
+   "mini_version_in_trajectories": {
+    "1.16.0": 19
+   },
+   "metadata_version": "1.17.0",
+   "exit_status": {
+    "Submitted": 19
+   },
+   "cost_median": 0.19515848000000002,
+   "cost_p90": 0.9783288310000002,
+   "api_calls_median": 55.0,
+   "api_calls_p90": 148.39999999999998,
+   "meta_resolved_pct": 61.0,
+   "meta_total_cost": 214.128088645,
+   "meta_instance_cost_mean": 0.42825617729,
+   "meta_instance_calls_mean": 74.138,
+   "model_name": "minimax/minimax-m2",
+   "model_type": "minisweagent.models.openrouter_model.OpenRouterModel",
+   "model_kwargs": {
+    "temperature": 0.0
+   },
+   "temperature": 0.0,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.extra.swebench.ProgressTrackingAgent",
+   "action_regex": "<bash_code>(.*?)</bash_code>",
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "294575dbe9e04878114471c49135944a9c23c635a447ab359e22d9e8034880a5"
+  },
+  {
+   "run": "20251201_mini-v1.17.1_glm-4.6",
+   "n_trajectories": 19,
+   "with_model_stats": 19,
+   "mini_version_in_trajectories": {
+    "1.17.1": 19
+   },
+   "metadata_version": "1.17.1",
+   "exit_status": {
+    "Submitted": 18,
+    "LimitsExceeded": 1
+   },
+   "cost_median": 0.08088119999999999,
+   "cost_p90": 0.19720999999999997,
+   "api_calls_median": 48.0,
+   "api_calls_p90": 104.79999999999987,
+   "meta_resolved_pct": 55.4,
+   "meta_total_cost": 48.3050376,
+   "meta_instance_cost_mean": 0.09661007519999999,
+   "meta_instance_calls_mean": 49.348,
+   "model_name": "glm-4.6",
+   "model_type": "minisweagent.models.litellm_model.LitellmModel",
+   "model_kwargs": {
+    "api_base": "https://api.z.ai/api/paas/v4",
+    "temperature": 1.0,
+    "api_key": "<REDACTED>"
+   },
+   "temperature": 1.0,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.extra.swebench.ProgressTrackingAgent",
+   "action_regex": "```bash\\s*\\n(.*?)\\n```",
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "37884c5a9ea98cde04cee2f8f83cc892ae05d14419e47f956773020cefcd66a9"
+  },
+  {
+   "run": "20251209_mini-v1.17.2_devstral-2512",
+   "n_trajectories": 20,
+   "with_model_stats": 20,
+   "mini_version_in_trajectories": {
+    "1.17.1": 20
+   },
+   "metadata_version": "1.17.2",
+   "exit_status": {
+    "Submitted": 20
+   },
+   "cost_median": 0.5393804,
+   "cost_p90": 1.2042378800000004,
+   "api_calls_median": 81.0,
+   "api_calls_p90": 122.4,
+   "meta_resolved_pct": 53.8,
+   "meta_total_cost": null,
+   "meta_instance_cost_mean": null,
+   "meta_instance_calls_mean": 75.086,
+   "model_name": "mistral/devstral-2512",
+   "model_type": "minisweagent.models.litellm_model.LitellmModel",
+   "model_kwargs": {
+    "temperature": 0.0
+   },
+   "temperature": 0.0,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.extra.swebench.ProgressTrackingAgent",
+   "action_regex": "```bash\\s*\\n(.*?)\\n```",
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "652d46ed6b0021c0c09bff7ada9b89f17f6a1b74f7d6efb44582c7b9a753d3ee"
+  },
+  {
+   "run": "20251209_mini-v1.17.2_devstral-small-2512",
+   "n_trajectories": 27,
+   "with_model_stats": 27,
+   "mini_version_in_trajectories": {
+    "1.17.1": 27
+   },
+   "metadata_version": "1.17.2",
+   "exit_status": {
+    "Submitted": 26,
+    "LimitsExceeded": 1
+   },
+   "cost_median": 0.12115719999999999,
+   "cost_p90": 0.2642817,
+   "api_calls_median": 71.0,
+   "api_calls_p90": 103.0,
+   "meta_resolved_pct": 56.4,
+   "meta_total_cost": null,
+   "meta_instance_cost_mean": null,
+   "meta_instance_calls_mean": 86.866,
+   "model_name": "mistral/labs-devstral-small-2512",
+   "model_type": "minisweagent.models.litellm_model.LitellmModel",
+   "model_kwargs": {
+    "temperature": 0.0
+   },
+   "temperature": 0.0,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.extra.swebench.ProgressTrackingAgent",
+   "action_regex": "```bash\\s*\\n(.*?)\\n```",
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "0f57c3bb301b0491084e8761c5d425e716f1a627040e5aa926bd70375b2b4462"
+  },
+  {
+   "run": "20260217_mini-v2.0.0_claude-4-5-haiku-high",
+   "n_trajectories": 25,
+   "with_model_stats": 25,
+   "mini_version_in_trajectories": {
+    "2.1.0": 25
+   },
+   "metadata_version": "2.0.0",
+   "exit_status": {
+    "Submitted": 25
+   },
+   "cost_median": 0.26005569999999995,
+   "cost_p90": 0.4851254400000001,
+   "api_calls_median": 65.0,
+   "api_calls_p90": 92.6,
+   "meta_resolved_pct": 66.6,
+   "meta_total_cost": 165.46221805000002,
+   "meta_instance_cost_mean": 0.33092443610000005,
+   "meta_instance_calls_mean": 66.154,
+   "model_name": "anthropic/claude-haiku-4-5-20251001",
+   "model_type": "minisweagent.models.litellm_model.LitellmModel",
+   "model_kwargs": {
+    "drop_params": true,
+    "temperature": null,
+    "parallel_tool_calls": true,
+    "reasoning_effort": "high",
+    "extra_headers": {
+     "anthropic-beta": "interleaved-thinking-2025-05-14"
+    }
+   },
+   "temperature": null,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.benchmarks.swebench.ProgressTrackingAgent",
+   "action_regex": null,
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "996e5ca2f8c52ce133d072534de6014dc4101e99933fa75bf31c024d20de7a7f"
+  },
+  {
+   "run": "20260217_mini-v2.0.0_claude-4-5-sonnet-high",
+   "n_trajectories": 22,
+   "with_model_stats": 22,
+   "mini_version_in_trajectories": {
+    "2.1.0": 22
+   },
+   "metadata_version": "2.0.0",
+   "exit_status": {
+    "Submitted": 22
+   },
+   "cost_median": 0.5257375500000001,
+   "cost_p90": 1.02332589,
+   "api_calls_median": 42.5,
+   "api_calls_p90": 73.9,
+   "meta_resolved_pct": 71.4,
+   "meta_total_cost": 328.9482492,
+   "meta_instance_cost_mean": 0.6578964984000001,
+   "meta_instance_calls_mean": 48.3,
+   "model_name": "anthropic/claude-sonnet-4-5-20250929",
+   "model_type": "minisweagent.models.litellm_model.LitellmModel",
+   "model_kwargs": {
+    "drop_params": true,
+    "temperature": null,
+    "parallel_tool_calls": true,
+    "reasoning_effort": "high",
+    "extra_headers": {
+     "anthropic-beta": "interleaved-thinking-2025-05-14"
+    }
+   },
+   "temperature": null,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.benchmarks.swebench.ProgressTrackingAgent",
+   "action_regex": null,
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "408eb4a4eaade71f7e41862f88c9cadc23026581ec065c1cc34fbff2fa4aa863"
+  },
+  {
+   "run": "20260217_mini-v2.0.0_deepseek-3-2-high",
+   "n_trajectories": 19,
+   "with_model_stats": 19,
+   "mini_version_in_trajectories": {
+    "2.1.0": 19
+   },
+   "metadata_version": "2.0.0",
+   "exit_status": {
+    "Submitted": 19
+   },
+   "cost_median": 0.41883615999999996,
+   "cost_p90": 0.6093791220000001,
+   "api_calls_median": 92.0,
+   "api_calls_p90": 114.6,
+   "meta_resolved_pct": 70.0,
+   "meta_total_cost": 223.92324825,
+   "meta_instance_cost_mean": 0.4478464965,
+   "meta_instance_calls_mean": 88.506,
+   "model_name": "deepseek/deepseek-v3.2",
+   "model_type": "minisweagent.models.openrouter_model.OpenRouterModel",
+   "model_kwargs": {
+    "drop_params": true,
+    "temperature": null,
+    "parallel_tool_calls": true,
+    "reasoning": {
+     "effort": "high"
+    }
+   },
+   "temperature": null,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.benchmarks.swebench.ProgressTrackingAgent",
+   "action_regex": null,
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "80e68a1ca7375479305efdcf04bd9bd33b88d32d340d94233e431bdd0e29188a"
+  },
+  {
+   "run": "20260217_mini-v2.0.0_gemini-3-flash-high",
+   "n_trajectories": 25,
+   "with_model_stats": 25,
+   "mini_version_in_trajectories": {
+    "2.1.0": 25
+   },
+   "metadata_version": "2.0.0",
+   "exit_status": {
+    "Submitted": 25
+   },
+   "cost_median": 0.34088675000000007,
+   "cost_p90": 0.5571366300000001,
+   "api_calls_median": 55.0,
+   "api_calls_p90": 85.6,
+   "meta_resolved_pct": 75.8,
+   "meta_total_cost": 177.98206539999998,
+   "meta_instance_cost_mean": 0.35596413079999994,
+   "meta_instance_calls_mean": 56.126,
+   "model_name": "gemini/gemini-3-flash-preview",
+   "model_type": "minisweagent.models.litellm_model.LitellmModel",
+   "model_kwargs": {
+    "drop_params": true,
+    "temperature": null,
+    "parallel_tool_calls": true,
+    "reasoning_effort": "high"
+   },
+   "temperature": null,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.benchmarks.swebench.ProgressTrackingAgent",
+   "action_regex": null,
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "18b7e1088c659dc6f1968a01c2d9fbdd1ba1086db6c10bc644f53546253777f0"
+  },
+  {
+   "run": "20260217_mini-v2.0.0_glm-5-high",
+   "n_trajectories": 22,
+   "with_model_stats": 22,
+   "mini_version_in_trajectories": {
+    "2.1.0": 22
+   },
+   "metadata_version": "2.0.0",
+   "exit_status": {
+    "LimitsExceeded": 1,
+    "Submitted": 21
+   },
+   "cost_median": 0.528618295,
+   "cost_p90": 1.679250240000001,
+   "api_calls_median": 92.5,
+   "api_calls_p90": 157.8,
+   "meta_resolved_pct": 72.8,
+   "meta_total_cost": 267.19456811,
+   "meta_instance_cost_mean": 0.53438913622,
+   "meta_instance_calls_mean": 76.176,
+   "model_name": "z-ai/glm-5",
+   "model_type": "minisweagent.models.openrouter_model.OpenRouterModel",
+   "model_kwargs": {
+    "drop_params": true,
+    "temperature": null,
+    "parallel_tool_calls": true,
+    "reasoning": {
+     "effort": "high"
+    }
+   },
+   "temperature": null,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.benchmarks.swebench.ProgressTrackingAgent",
+   "action_regex": null,
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "7da22385cc71adeae9daac2d7f752bf6266c23a85e6e08bf68276c3a7e73569d"
+  },
+  {
+   "run": "20260217_mini-v2.0.0_kimi-k2-5-high",
+   "n_trajectories": 17,
+   "with_model_stats": 17,
+   "mini_version_in_trajectories": {
+    "2.1.0": 17
+   },
+   "metadata_version": "2.0.0",
+   "exit_status": {
+    "Submitted": 17
+   },
+   "cost_median": 0.11362308799999998,
+   "cost_p90": 0.3542483236,
+   "api_calls_median": 63.0,
+   "api_calls_p90": 90.8,
+   "meta_resolved_pct": 70.8,
+   "meta_total_cost": 73.276870372,
+   "meta_instance_cost_mean": 0.14655374074400002,
+   "meta_instance_calls_mean": 51.178,
+   "model_name": "moonshotai/kimi-k2.5",
+   "model_type": "minisweagent.models.openrouter_model.OpenRouterModel",
+   "model_kwargs": {
+    "drop_params": true,
+    "temperature": null,
+    "parallel_tool_calls": true,
+    "reasoning": {
+     "effort": "high"
+    }
+   },
+   "temperature": null,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.benchmarks.swebench.ProgressTrackingAgent",
+   "action_regex": null,
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "6a4bb89e830446f54b6897fb4baaf5464d932f3938eec20dcd4f535d995205c5"
+  },
+  {
+   "run": "20260217_mini-v2.0.0_minimax-2-5-high",
+   "n_trajectories": 28,
+   "with_model_stats": 28,
+   "mini_version_in_trajectories": {
+    "2.1.0": 28
+   },
+   "metadata_version": "2.0.0",
+   "exit_status": {
+    "Submitted": 28
+   },
+   "cost_median": 0.060931339,
+   "cost_p90": 0.16094888340000008,
+   "api_calls_median": 59.5,
+   "api_calls_p90": 117.9,
+   "meta_resolved_pct": 75.8,
+   "meta_total_cost": 36.644993922,
+   "meta_instance_cost_mean": 0.073289987844,
+   "meta_instance_calls_mean": 60.45,
+   "model_name": "minimax/minimax-m2.5",
+   "model_type": "minisweagent.models.openrouter_model.OpenRouterModel",
+   "model_kwargs": {
+    "drop_params": true,
+    "temperature": null,
+    "parallel_tool_calls": true,
+    "reasoning": {
+     "effort": "high"
+    }
+   },
+   "temperature": null,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.benchmarks.swebench.ProgressTrackingAgent",
+   "action_regex": null,
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "f3bce95ee80e8dec6e9e5ecdd4c15d1aff0a7c0f079f5bb6f36a0c8b2fa88296"
+  },
+  {
+   "run": "20260226_mini-v2.0.0_gemini-3-pro-high",
+   "n_trajectories": 24,
+   "with_model_stats": 24,
+   "mini_version_in_trajectories": {
+    "2.1.0": 24
+   },
+   "metadata_version": "2.0.0",
+   "exit_status": {
+    "Submitted": 22,
+    "LimitsExceeded": 1,
+    "ServiceUnavailableError": 1
+   },
+   "cost_median": 0.9617525,
+   "cost_p90": 2.14774858,
+   "api_calls_median": 48.5,
+   "api_calls_p90": 82.4,
+   "meta_resolved_pct": 69.6,
+   "meta_total_cost": 480.0099282,
+   "meta_instance_cost_mean": 0.9600198564,
+   "meta_instance_calls_mean": 51.282,
+   "model_name": "gemini/gemini-3-pro-preview",
+   "model_type": "minisweagent.models.litellm_model.LitellmModel",
+   "model_kwargs": {
+    "drop_params": true,
+    "temperature": null,
+    "parallel_tool_calls": true,
+    "reasoning_effort": "high"
+   },
+   "temperature": null,
+   "step_limit": 250,
+   "cost_limit": 3.0,
+   "agent_type": "minisweagent.run.benchmarks.swebench.ProgressTrackingAgent",
+   "action_regex": null,
+   "env_timeout": 60,
+   "config_varies_between_tasks": [],
+   "config_sha256_redacted": "3f1e04a8bf5fb6cb7f5b8e001304fd650a488f0dc7af800cb6f86fc3c0eed1fd"
+  }
+ ],
+ "template_groups": {
+  "6d9695b0f6f0": [
+   "20250726_mini-v1.0.0_gemini-2.5-pro"
+  ],
+  "a9543b0a6b6e": [
+   "20250822_mini-v1.9.1_glm-4.5"
+  ],
+  "9b22ae720c0b": [
+   "20250929_mini-v1.13.3_sonnet-4-5-20250929",
+   "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118",
+   "20251201_mini-v1.17.1_glm-4.6",
+   "20251209_mini-v1.17.2_devstral-2512",
+   "20251209_mini-v1.17.2_devstral-small-2512"
+  ],
+  "d18150d4810a": [
+   "20251124_mini-v1.17.0_minimax-m2"
+  ],
+  "9b593e2383e2": [
+   "20260217_mini-v2.0.0_claude-4-5-haiku-high",
+   "20260217_mini-v2.0.0_claude-4-5-sonnet-high",
+   "20260217_mini-v2.0.0_deepseek-3-2-high",
+   "20260217_mini-v2.0.0_gemini-3-flash-high",
+   "20260217_mini-v2.0.0_glm-5-high",
+   "20260217_mini-v2.0.0_kimi-k2-5-high",
+   "20260217_mini-v2.0.0_minimax-2-5-high",
+   "20260226_mini-v2.0.0_gemini-3-pro-high"
+  ]
+ },
+ "pool_counts": {
+  "pool_0.4_0.6_submitted": 36,
+  "pool_0.25_0.75_submitted": 117,
+  "pool_0.4_0.6_all_runs": 35,
+  "pool_0.25_0.75_all_runs": 123,
+  "tasks_total": 500,
+  "tasks_with_16_submitted": 386
+ },
+ "pilot_eligible": 21,
+ "candidate_reference": [
+  {
+   "model": "glm-4.6",
+   "agent_version": "1.17.1",
+   "runs": 498,
+   "resolved_share_all": 0.5562248995983936,
+   "submitted_share": 0.9939759036144579,
+   "median_steps_all": 41.0,
+   "resolved_share_submitted": 0.5595959595959596,
+   "median_steps_submitted": 41.0,
+   "pilot_resolved": 2,
+   "pilot_runs": 5,
+   "pilot_resolved_share": 0.4,
+   "pilot_median_steps": 26.0
+  },
+  {
+   "model": "devstral-small-2512",
+   "agent_version": "1.17.2",
+   "runs": 500,
+   "resolved_share_all": 0.564,
+   "submitted_share": 0.91,
+   "median_steps_all": 67.0,
+   "resolved_share_submitted": 0.6197802197802198,
+   "median_steps_submitted": 62.0,
+   "pilot_resolved": 3,
+   "pilot_runs": 5,
+   "pilot_resolved_share": 0.6,
+   "pilot_median_steps": 66.0
+  },
+  {
+   "model": "minimax-m2",
+   "agent_version": "1.17.0",
+   "runs": 499,
+   "resolved_share_all": 0.6112224448897795,
+   "submitted_share": 0.9739478957915831,
+   "median_steps_all": 63.0,
+   "resolved_share_submitted": 0.6275720164609053,
+   "median_steps_submitted": 62.0,
+   "pilot_resolved": 2,
+   "pilot_runs": 5,
+   "pilot_resolved_share": 0.4,
+   "pilot_median_steps": 61.0
+  }
+ ]
+}

@@ -1,0 +1,66 @@
+{
+ "rule": "5 tasks of tasks_pool.json with corpus median length <= 60 steps, different repositories; order = numpy default_rng(42).permutation(sorted eligible task ids), first task of each new repository",
+ "n_eligible": 21,
+ "tasks": [
+  {
+   "task_id": "pytest-dev__pytest-7324",
+   "repo": "pytest-dev/pytest",
+   "n_submitted": 16,
+   "n_resolved": 9,
+   "share_resolved": 0.5625,
+   "share_resolved_all_runs": 0.5625,
+   "median_steps": 43.0,
+   "glm-4.6": 0,
+   "devstral-small-2512": 0,
+   "minimax-m2": 1
+  },
+  {
+   "task_id": "psf__requests-1766",
+   "repo": "psf/requests",
+   "n_submitted": 16,
+   "n_resolved": 8,
+   "share_resolved": 0.5,
+   "share_resolved_all_runs": 0.5,
+   "median_steps": 28.0,
+   "glm-4.6": 0,
+   "devstral-small-2512": 0,
+   "minimax-m2": 0
+  },
+  {
+   "task_id": "pylint-dev__pylint-6386",
+   "repo": "pylint-dev/pylint",
+   "n_submitted": 16,
+   "n_resolved": 8,
+   "share_resolved": 0.5,
+   "share_resolved_all_runs": 0.5,
+   "median_steps": 59.0,
+   "glm-4.6": 1,
+   "devstral-small-2512": 1,
+   "minimax-m2": 0
+  },
+  {
+   "task_id": "sympy__sympy-23950",
+   "repo": "sympy/sympy",
+   "n_submitted": 16,
+   "n_resolved": 8,
+   "share_resolved": 0.5,
+   "share_resolved_all_runs": 0.5,
+   "median_steps": 56.0,
+   "glm-4.6": 1,
+   "devstral-small-2512": 1,
+   "minimax-m2": 1
+  },
+  {
+   "task_id": "django__django-14376",
+   "repo": "django/django",
+   "n_submitted": 15,
+   "n_resolved": 7,
+   "share_resolved": 0.4666666666666667,
+   "share_resolved_all_runs": 0.4666666666666667,
+   "median_steps": 31.0,
+   "glm-4.6": 0,
+   "devstral-small-2512": 1,
+   "minimax-m2": 0
+  }
+ ]
+}
