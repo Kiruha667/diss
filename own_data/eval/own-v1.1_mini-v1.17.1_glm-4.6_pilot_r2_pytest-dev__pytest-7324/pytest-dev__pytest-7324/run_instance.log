@@ -1,0 +1,117 @@
+2026-10-27 17:16:52,380 - INFO - Creating container for pytest-dev__pytest-7324...
+2026-10-27 17:16:55,191 - INFO - Container for pytest-dev__pytest-7324 created: 4912bf778fcb91bd6db704a96e84396ae0be0580b279cd8e787857caab583e79
+2026-10-27 17:16:56,945 - INFO - Container for pytest-dev__pytest-7324 started: 4912bf778fcb91bd6db704a96e84396ae0be0580b279cd8e787857caab583e79
+2026-10-27 17:16:56,945 - INFO - Intermediate patch for pytest-dev__pytest-7324 written to logs/run_evaluation/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pytest-dev__pytest-7324/glm-4.6/pytest-dev__pytest-7324/patch.diff, now applying to container...
+2026-10-27 17:16:57,158 - INFO - >>>>> Applied Patch:
+Checking patch src/_pytest/mark/expression.py...
+Checking patch test_reproduce.py...
+Applied patch src/_pytest/mark/expression.py cleanly.
+Applied patch test_reproduce.py cleanly.
+
+2026-10-27 17:16:57,301 - INFO - Git diff before:
+diff --git a/src/_pytest/mark/expression.py b/src/_pytest/mark/expression.py
+index 04c73411a..791db5835 100644
+--- a/src/_pytest/mark/expression.py
++++ b/src/_pytest/mark/expression.py
+@@ -33,6 +33,25 @@ if TYPE_CHECKING:
+     from typing import NoReturn
+ 
+ 
++def mangle(name: str) -> str:
++    """Mangle names which are not allowed as ast.Name in Python 3.8+.
++
++    The names True, False, None cannot be used as ast.Name identifiers
++    in Python 3.8+ as they are now compiled as ast.Constant.
++    We mangle them to allow them to be used in the expression language.
++    """
++    if name in ("True", "False", "None"):
++        return f"__pytest_{name}"
++    return name
++
++
++def unmangle(name: str) -> str:
++    """Unmangle names which were mangled by mangle()."""
++    if name in ("__pytest_True", "__pytest_False", "__pytest_None"):
++        return name[len("__pytest_"):]
++    return name
++
++
+ __all__ = [
+     "Expression",
+     "ParseError",
+@@ -161,7 +180,7 @@ def not_expr(s: Scanner) -> ast.expr:
+         return ret
+     ident = s.accept(TokenType.IDENT)
+     if ident:
+-        return ast.Name(ident.value, ast.Load())
++        return ast.Name(mangle(ident.value), ast.Load())
+     s.reject((TokenType.NOT, TokenType.LPAREN, TokenType.IDENT))
+ 
+ 
+@@ -172,7 +191,7 @@ class MatcherAdapter(Mapping[str, bool]):
+         self.matcher = matcher
+ 
+     def __getitem__(self, key: str) -> bool:
+-        return self.matcher(key)
++        return self.matcher(unmangle(key))
+ 
+     def __iter__(self) -> Iterator[str]:
+         raise NotImplementedError()
+2026-10-27 17:16:57,301 - INFO - Eval script for pytest-dev__pytest-7324 written to logs/run_evaluation/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pytest-dev__pytest-7324/glm-4.6/pytest-dev__pytest-7324/eval.sh; copying to container...
+2026-10-27 17:17:12,777 - INFO - Test runtime: 15.39 seconds
+2026-10-27 17:17:12,777 - INFO - Test output for pytest-dev__pytest-7324 written to logs/run_evaluation/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pytest-dev__pytest-7324/glm-4.6/pytest-dev__pytest-7324/test_output.txt
+2026-10-27 17:17:12,869 - INFO - Git diff after:
+diff --git a/src/_pytest/mark/expression.py b/src/_pytest/mark/expression.py
+index 04c73411a..791db5835 100644
+--- a/src/_pytest/mark/expression.py
++++ b/src/_pytest/mark/expression.py
+@@ -33,6 +33,25 @@ if TYPE_CHECKING:
+     from typing import NoReturn
+ 
+ 
++def mangle(name: str) -> str:
++    """Mangle names which are not allowed as ast.Name in Python 3.8+.
++
++    The names True, False, None cannot be used as ast.Name identifiers
++    in Python 3.8+ as they are now compiled as ast.Constant.
++    We mangle them to allow them to be used in the expression language.
++    """
++    if name in ("True", "False", "None"):
++        return f"__pytest_{name}"
++    return name
++
++
++def unmangle(name: str) -> str:
++    """Unmangle names which were mangled by mangle()."""
++    if name in ("__pytest_True", "__pytest_False", "__pytest_None"):
++        return name[len("__pytest_"):]
++    return name
++
++
+ __all__ = [
+     "Expression",
+     "ParseError",
+@@ -161,7 +180,7 @@ def not_expr(s: Scanner) -> ast.expr:
+         return ret
+     ident = s.accept(TokenType.IDENT)
+     if ident:
+-        return ast.Name(ident.value, ast.Load())
++        return ast.Name(mangle(ident.value), ast.Load())
+     s.reject((TokenType.NOT, TokenType.LPAREN, TokenType.IDENT))
+ 
+ 
+@@ -172,7 +191,7 @@ class MatcherAdapter(Mapping[str, bool]):
+         self.matcher = matcher
+ 
+     def __getitem__(self, key: str) -> bool:
+-        return self.matcher(key)
++        return self.matcher(unmangle(key))
+ 
+     def __iter__(self) -> Iterator[str]:
+         raise NotImplementedError()
+2026-10-27 17:17:12,870 - INFO - Grading answer for pytest-dev__pytest-7324...
+2026-10-27 17:17:12,871 - INFO - report: {'pytest-dev__pytest-7324': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['testing/test_mark_expression.py::test_valid_idents[True]', 'testing/test_mark_expression.py::test_valid_idents[False]', 'testing/test_mark_expression.py::test_valid_idents[None]'], 'failure': []}, 'PASS_TO_PASS': {'success': ['testing/test_mark_expression.py::test_empty_is_false', 'testing/test_mark_expression.py::test_basic[true-True0]', 'testing/test_mark_expression.py::test_basic[true-True1]', 'testing/test_mark_expression.py::test_basic[false-False]', 'testing/test_mark_expression.py::test_basic[not', 'testing/test_mark_expression.py::test_basic[true', 'testing/test_mark_expression.py::test_basic[false', 'testing/test_mark_expression.py::test_basic[(not', 'testing/test_mark_expression.py::test_syntax_oddeties[', 'testing/test_mark_expression.py::test_syntax_oddeties[(', 'testing/test_mark_expression.py::test_syntax_oddeties[not', 'testing/test_mark_expression.py::test_syntax_errors[(-2-expected', 'testing/test_mark_expression.py::test_syntax_errors[', 'testing/test_mark_expression.py::test_syntax_errors[)-1-expected', 'testing/test_mark_expression.py::test_syntax_errors[)', 'testing/test_mark_expression.py::test_syntax_errors[not-4-expected', 'testing/test_mark_expression.py::test_syntax_errors[not', 'testing/test_mark_expression.py::test_syntax_errors[(not)-5-expected', 'testing/test_mark_expression.py::test_syntax_errors[and-1-expected', 'testing/test_mark_expression.py::test_syntax_errors[ident', 'testing/test_mark_expression.py::test_valid_idents[.]', 'testing/test_mark_expression.py::test_valid_idents[...]', 'testing/test_mark_expression.py::test_valid_idents[:::]', 'testing/test_mark_expression.py::test_valid_idents[a:::c]', 'testing/test_mark_expression.py::test_valid_idents[a+-b]', 'testing/test_mark_expression.py::test_valid_idents[\\u05d0\\u05d1\\u05d2\\u05d3]', 'testing/test_mark_expression.py::test_valid_idents[aa\\u05d0\\u05d1\\u05d2\\u05d3cc]', 'testing/test_mark_expression.py::test_valid_idents[a[bcd]]', 'testing/test_mark_expression.py::test_valid_idents[1234]', 'testing/test_mark_expression.py::test_valid_idents[1234abcd]', 'testing/test_mark_expression.py::test_valid_idents[1234and]', 'testing/test_mark_expression.py::test_valid_idents[notandor]', 'testing/test_mark_expression.py::test_valid_idents[not_and_or]', 'testing/test_mark_expression.py::test_valid_idents[not[and]or]', 'testing/test_mark_expression.py::test_valid_idents[1234+5678]', 'testing/test_mark_expression.py::test_valid_idents[123.232]', 'testing/test_mark_expression.py::test_valid_idents[if]', 'testing/test_mark_expression.py::test_valid_idents[else]', 'testing/test_mark_expression.py::test_valid_idents[while]', 'testing/test_mark_expression.py::test_invalid_idents[/]', 'testing/test_mark_expression.py::test_invalid_idents[\\\\]', 'testing/test_mark_expression.py::test_invalid_idents[^]', 'testing/test_mark_expression.py::test_invalid_idents[*]', 'testing/test_mark_expression.py::test_invalid_idents[=]', 'testing/test_mark_expression.py::test_invalid_idents[&]', 'testing/test_mark_expression.py::test_invalid_idents[%]', 'testing/test_mark_expression.py::test_invalid_idents[$]', 'testing/test_mark_expression.py::test_invalid_idents[#]', 'testing/test_mark_expression.py::test_invalid_idents[@]', 'testing/test_mark_expression.py::test_invalid_idents[!]', 'testing/test_mark_expression.py::test_invalid_idents[~]', 'testing/test_mark_expression.py::test_invalid_idents[{]', 'testing/test_mark_expression.py::test_invalid_idents[}]', 'testing/test_mark_expression.py::test_invalid_idents["]', "testing/test_mark_expression.py::test_invalid_idents[']", 'testing/test_mark_expression.py::test_invalid_idents[|]', 'testing/test_mark_expression.py::test_invalid_idents[;]', 'testing/test_mark_expression.py::test_invalid_idents[\\u2190]'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for pytest-dev__pytest-7324: resolved: True
+2026-10-27 17:17:12,871 - INFO - Attempting to stop container sweb.eval.pytest-dev__pytest-7324.own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pytest-dev__pytest-7324...
+2026-10-27 17:17:29,186 - INFO - Attempting to remove container sweb.eval.pytest-dev__pytest-7324.own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pytest-dev__pytest-7324...
+2026-10-27 17:17:29,667 - INFO - Container sweb.eval.pytest-dev__pytest-7324.own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pytest-dev__pytest-7324 removed.

@@ -10,3 +10,8 @@ own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_psf__requests-1766/psf__requests-1766,psf
 own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pylint-dev__pylint-6386/pylint-dev__pylint-6386,pylint-dev__pylint-6386,0.3566514901774878,0,1,91,0.23992804
 own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pytest-dev__pytest-7324/pytest-dev__pytest-7324,pytest-dev__pytest-7324,0.24759488549469083,1,1,34,0.08979987999999998
 own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_sympy__sympy-23950/sympy__sympy-23950,sympy__sympy-23950,0.24901569498528825,1,1,42,0.07189276
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_django__django-14376/django__django-14376,django__django-14376,0.1541330510648142,1,1,28,0.04112868
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_psf__requests-1766/psf__requests-1766,psf__requests-1766,0.33056944936742366,1,1,13,0.01422632
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pylint-dev__pylint-6386/pylint-dev__pylint-6386,pylint-dev__pylint-6386,0.24734537808172685,0,1,33,0.0514542
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pytest-dev__pytest-7324/pytest-dev__pytest-7324,pytest-dev__pytest-7324,0.16239415935939044,1,1,34,0.11017644
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_sympy__sympy-23950/sympy__sympy-23950,sympy__sympy-23950,0.11943033389129065,1,1,38,0.04868416000000001

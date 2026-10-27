@@ -1,0 +1,75 @@
+diff --git a/src/_pytest/mark/expression.py b/src/_pytest/mark/expression.py
+index 04c73411a..791db5835 100644
+--- a/src/_pytest/mark/expression.py
++++ b/src/_pytest/mark/expression.py
+@@ -33,6 +33,25 @@ if TYPE_CHECKING:
+     from typing import NoReturn
+ 
+ 
++def mangle(name: str) -> str:
++    """Mangle names which are not allowed as ast.Name in Python 3.8+.
++
++    The names True, False, None cannot be used as ast.Name identifiers
++    in Python 3.8+ as they are now compiled as ast.Constant.
++    We mangle them to allow them to be used in the expression language.
++    """
++    if name in ("True", "False", "None"):
++        return f"__pytest_{name}"
++    return name
++
++
++def unmangle(name: str) -> str:
++    """Unmangle names which were mangled by mangle()."""
++    if name in ("__pytest_True", "__pytest_False", "__pytest_None"):
++        return name[len("__pytest_"):]
++    return name
++
++
+ __all__ = [
+     "Expression",
+     "ParseError",
+@@ -161,7 +180,7 @@ def not_expr(s: Scanner) -> ast.expr:
+         return ret
+     ident = s.accept(TokenType.IDENT)
+     if ident:
+-        return ast.Name(ident.value, ast.Load())
++        return ast.Name(mangle(ident.value), ast.Load())
+     s.reject((TokenType.NOT, TokenType.LPAREN, TokenType.IDENT))
+ 
+ 
+@@ -172,7 +191,7 @@ class MatcherAdapter(Mapping[str, bool]):
+         self.matcher = matcher
+ 
+     def __getitem__(self, key: str) -> bool:
+-        return self.matcher(key)
++        return self.matcher(unmangle(key))
+ 
+     def __iter__(self) -> Iterator[str]:
+         raise NotImplementedError()
+diff --git a/test_reproduce.py b/test_reproduce.py
+new file mode 100644
+index 000000000..214c506f5
+--- /dev/null
++++ b/test_reproduce.py
+@@ -0,0 +1,21 @@
++from _pytest.mark.expression import Expression
++
++# This should cause an assertion error in Python 3.8+ debug builds
++# because False is being compiled as ast.Name instead of ast.NameConstant
++try:
++    expr = Expression.compile("False")
++    print("Expression compiled (may crash on debug builds)")
++except Exception as e:
++    print(f"Error: {e}")
++
++try:
++    expr = Expression.compile("True")
++    print("Expression compiled (may crash on debug builds)")
++except Exception as e:
++    print(f"Error: {e}")
++
++try:
++    expr = Expression.compile("None")
++    print("Expression compiled (may crash on debug builds)")
++except Exception as e:
++    print(f"Error: {e}")

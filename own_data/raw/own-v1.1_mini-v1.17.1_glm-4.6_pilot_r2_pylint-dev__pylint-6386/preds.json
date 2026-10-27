@@ -1,0 +1,7 @@
+{
+  "pylint-dev__pylint-6386": {
+    "model_name_or_path": "glm-4.6",
+    "instance_id": "pylint-dev__pylint-6386",
+    "model_patch": "diff --git a/pylint/config/callback_actions.py b/pylint/config/callback_actions.py\nindex 76199539..7479d787 100644\n--- a/pylint/config/callback_actions.py\n+++ b/pylint/config/callback_actions.py\n@@ -45,6 +45,32 @@ class _DoNothingAction(_CallbackAction):\n     without erroring when they are then processed again by argparse.\n     \"\"\"\n \n+    def __init__(\n+        self,\n+        option_strings: Sequence[str],\n+        dest: str,\n+        nargs: None = None,\n+        const: None = None,\n+        default: None = None,\n+        type: None = None,\n+        choices: None = None,\n+        required: bool = False,\n+        help: str = \"\",\n+        metavar: str = \"\",\n+    ) -> None:\n+        super().__init__(\n+            option_strings,\n+            dest,\n+            0,\n+            const,\n+            default,\n+            type,\n+            choices,\n+            required,\n+            help,\n+            metavar,\n+        )\n+\n     def __call__(\n         self,\n         parser: argparse.ArgumentParser,\n"
+  }
+}

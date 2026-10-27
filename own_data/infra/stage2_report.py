@@ -57,6 +57,10 @@ def main() -> None:
     p["risk"] = p.run_id.map(risk)
     n = len(p)
     tech_ok = int(p.exit_status.isin(OK_EXIT).sum())
+    # interrupted attempts (machine reboot etc.) are kept in own_data/raw_failed and count as technical failures
+    failed_attempts = sorted(d.name for d in (OWN / "raw_failed").glob("*_pilot_*")) if (OWN / "raw_failed").exists() else []
+    attempts = n + len(failed_attempts)
+    failures = attempts - tech_ok
     parsed = int(p.parsed.sum())
     labelled = int(p.label.notna().sum())
     med_cost = float(p.cost.median()) if n else float("nan")
@@ -68,7 +72,9 @@ def main() -> None:
     mixed = int(by_task.sum())
     lo, hi = REF["resolved_share_corridor"]
     llo, lhi = REF["median_steps_corridor"]
-    crit = [("Прогоны без технических сбоев", "≥ 14 из 15", f"{tech_ok} из {n}", tech_ok >= 14 and n == PLANNED),
+    crit = [("Прогоны без технических сбоев", "≥ 14 из 15 (не больше 1 сбоя)",
+             f"{tech_ok} из {attempts} попыток; сбоев {failures} (прерванных попыток {len(failed_attempts)})",
+             failures <= 1 and n == PLANNED),
             ("Траектории, разобранные адаптером без ошибок", "15 из 15", f"{parsed} из {n}", parsed == PLANNED),
             ("Метка получена", "15 из 15", f"{labelled} из {n}", labelled == PLANNED),
             ("Медианная стоимость прогона", "≤ $0.20", f"${med_cost:.4f}", med_cost <= 0.20),
@@ -83,7 +89,12 @@ def main() -> None:
          "", "## Критерии (PROTOCOL.md, раздел 3)", "", "| критерий | порог | значение | итог |", "|---|---|---|---|"]
     for name, thr, val, ok in crit:
         L.append(f"| {name} | {thr} | {val} | {'**выполнен**' if ok else '**не выполнен**'} |")
-    L += ["", f"Итог: выполнено {sum(c[3] for c in crit)} из {len(crit)} критериев.", "",
+    L += ["", f"Итог: выполнено {sum(c[3] for c in crit)} из {len(crit)} критериев."]
+    if failed_attempts:
+        L += ["", "Прерванные попытки (технические сбои, остатки в `raw_failed/`; прогон повторён под тем же run_id): "
+              + ", ".join(f"`{a}`" for a in failed_attempts) + ". Их расход по локальным данным неизвестен (траектория "
+              "не сохранилась) и в суммы ниже не входит."]
+    L += ["",
           "## Исходы по задачам", "",
           "Ячейка — resolved (1 / 0), число шагов, стоимость; статус выхода, если не `Submitted`. «Корпус» — единственный "
           "прогон glm-4.6 на этой задаче в корпусе лидерборда.", "",
