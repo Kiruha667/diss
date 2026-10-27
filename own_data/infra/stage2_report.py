@@ -120,8 +120,8 @@ def main() -> None:
           "`M_struct+len`, обучена на корпусе без задачи прогона). При 15 прогонах — только описательно.", "",
           "| прогон | задача | resolved | риск |", "|---|---|---|---|"]
     for _, r in p.sort_values(["task_id", "repeat"]).iterrows():
-        L.append(f"| r{r.repeat} | `{r.task_id}` | {'—' if pd.isna(r.resolved) else int(r.resolved)} | "
-                 f"{'—' if pd.isna(r.risk) else f'{r.risk:.3f}'} |")
+        L.append(f"| r{int(r['repeat'])} | `{r['task_id']}` | {'—' if pd.isna(r['resolved']) else int(r['resolved'])} | "
+                 f"{'—' if pd.isna(r['risk']) else format(r['risk'], '.3f')} |")
     ok = p[p.risk.notna() & p.resolved.notna()]
     if len(ok) and ok.resolved.nunique() == 2:
         m1, m0 = ok[ok.resolved == 0].risk.mean(), ok[ok.resolved == 1].risk.mean()
@@ -134,6 +134,26 @@ def main() -> None:
         L += ["", f"- Средний риск: нерешённые {m1:.3f}, решённые {m0:.3f}.",
               f"- Пары «нерешённый — решённый» внутри одной задачи: {pairs}; нерешённый получил больший риск в "
               f"{conc:g} из них" + (f" ({conc / pairs:.2f})." if pairs else ".")]
+    # descriptive: the corpus glm-4.6 run vs the pilot, per task (offline, data/demo/runs.parquet)
+    corpus = pd.read_parquet(ROOT / "data" / "demo" / "runs.parquet")
+    cg = corpus[(corpus.model == "glm-4.6") & corpus.task_id.isin(p.task_id.unique())].set_index("task_id")
+    L += ["", "## Корпус и пилот по задачам (описательно)", "",
+          "Корпус — единственный прогон glm-4.6 на задаче (mini-swe-agent 1.17.1, декабрь 2025); пилот — 3 повтора.",
+          "", "| задача | корпус: resolved, шагов, статус | пилот: решено, шаги (медиана) |", "|---|---|---|"]
+    for t in pilot_tasks:
+        tid = t["task_id"]
+        g = p[p.task_id == tid]
+        c = cg.loc[tid] if tid in cg.index else None
+        cs = f"{int(c.resolved)}, {int(c.n_steps)}, {c.exit_status}" if c is not None else "—"
+        L.append(f"| `{tid}` | {cs} | {int(g.resolved.sum())} из {len(g)}, {g.n_steps.median():.0f} |")
+    c_share = float(cg.resolved.mean()) if len(cg) else float("nan")
+    L += ["", f"- На этих 5 задачах glm-4.6 в корпусе решила {int(cg.resolved.sum())} из {len(cg)} ({c_share:.1f}); "
+          f"в пилоте — {int(sub.resolved.sum())} из {len(sub)} ({share:.2f}). Опора критерия (0.314) взята по 36 задачам "
+          "пула (TODO-6), но и относительно этих 5 задач (коридор ±0.2 от {:.1f}) доля пилота выше.".format(c_share),
+          "- Расхождение сосредоточено в задачах, где корпусный прогон не решил, а пилот решил во всех трёх повторах. "
+          "Возможные причины (не проверены): обновление модели у провайдера под тем же именем; отличие инструмента "
+          "оценки (swebench 4.1.0 здесь против инструмента лидерборда); случайность единственного корпусного прогона "
+          "на задачу. Медиана длины при этом в коридоре (34 шага)."]
     smoke = 0.0127373 + 0.01983208
     L += ["", "## Расход", "", f"- Пилот: ${total:.4f} (медиана прогона ${med_cost:.4f}, максимум ${p.cost.max():.4f}).",
           f"- До пилота: smoke 1.0 $0.0127 и проба $0.0198. Всего с ключа: ${total + smoke:.4f}.", ""]

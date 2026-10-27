@@ -37,219 +37,39 @@ glm-4.6 (z.ai, thinking disabled), mini-swe-agent 1.17.1, конфиг `config/g
 
 | прогон | задача | resolved | риск |
 |---|---|---|---|
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_django_...
-task_id                                       django__django-14376
-repeat                                                           0
-exit_status                                              Submitted
-cost                                                      0.049177
-parsed                                                        True
-label                                                            1
-parse_reason                                                  None
-n_steps                                                         34
-submitted                                                        1
-resolved                                                         0
-claim_success                                                    0
-risk                                                      0.186987
-Name: 0, dtype: object> | `django__django-14376` | 0 | 0.187 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_django_...
-task_id                                       django__django-14376
-repeat                                                           1
-exit_status                                              Submitted
-cost                                                      0.045726
-parsed                                                        True
-label                                                            0
-parse_reason                                                  None
-n_steps                                                         32
-submitted                                                        1
-resolved                                                         1
-claim_success                                                    1
-risk                                                      0.194617
-Name: 5, dtype: object> | `django__django-14376` | 1 | 0.195 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_django_...
-task_id                                       django__django-14376
-repeat                                                           2
-exit_status                                              Submitted
-cost                                                      0.041129
-parsed                                                        True
-label                                                            0
-parse_reason                                                  None
-n_steps                                                         28
-submitted                                                        1
-resolved                                                         1
-claim_success                                                    0
-risk                                                      0.154133
-Name: 10, dtype: object> | `django__django-14376` | 1 | 0.154 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_psf__re...
-task_id                                         psf__requests-1766
-repeat                                                           0
-exit_status                                              Submitted
-cost                                                      0.017391
-parsed                                                        True
-label                                                            0
-parse_reason                                                  None
-n_steps                                                         11
-submitted                                                        1
-resolved                                                         1
-claim_success                                                    1
-risk                                                      0.300159
-Name: 1, dtype: object> | `psf__requests-1766` | 1 | 0.300 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_psf__re...
-task_id                                         psf__requests-1766
-repeat                                                           1
-exit_status                                              Submitted
-cost                                                      0.008945
-parsed                                                        True
-label                                                            0
-parse_reason                                                  None
-n_steps                                                          8
-submitted                                                        1
-resolved                                                         1
-claim_success                                                    1
-risk                                                      0.183906
-Name: 6, dtype: object> | `psf__requests-1766` | 1 | 0.184 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_psf__re...
-task_id                                         psf__requests-1766
-repeat                                                           2
-exit_status                                              Submitted
-cost                                                      0.014226
-parsed                                                        True
-label                                                            0
-parse_reason                                                  None
-n_steps                                                         13
-submitted                                                        1
-resolved                                                         1
-claim_success                                                    1
-risk                                                      0.330569
-Name: 11, dtype: object> | `psf__requests-1766` | 1 | 0.331 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_pylint-...
-task_id                                    pylint-dev__pylint-6386
-repeat                                                           0
-exit_status                                              Submitted
-cost                                                       0.16445
-parsed                                                        True
-label                                                            0
-parse_reason                                                  None
-n_steps                                                         70
-submitted                                                        1
-resolved                                                         1
-claim_success                                                    1
-risk                                                      0.216384
-Name: 2, dtype: object> | `pylint-dev__pylint-6386` | 1 | 0.216 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pylint-...
-task_id                                    pylint-dev__pylint-6386
-repeat                                                           1
-exit_status                                              Submitted
-cost                                                      0.239928
-parsed                                                        True
-label                                                            1
-parse_reason                                                  None
-n_steps                                                         91
-submitted                                                        1
-resolved                                                         0
-claim_success                                                    1
-risk                                                      0.356651
-Name: 7, dtype: object> | `pylint-dev__pylint-6386` | 0 | 0.357 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pylint-...
-task_id                                    pylint-dev__pylint-6386
-repeat                                                           2
-exit_status                                              Submitted
-cost                                                      0.051454
-parsed                                                        True
-label                                                            1
-parse_reason                                                  None
-n_steps                                                         33
-submitted                                                        1
-resolved                                                         0
-claim_success                                                    1
-risk                                                      0.247345
-Name: 12, dtype: object> | `pylint-dev__pylint-6386` | 0 | 0.247 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_pytest-...
-task_id                                    pytest-dev__pytest-7324
-repeat                                                           0
-exit_status                                              Submitted
-cost                                                      0.063146
-parsed                                                        True
-label                                                            0
-parse_reason                                                  None
-n_steps                                                         34
-submitted                                                        1
-resolved                                                         1
-claim_success                                                    1
-risk                                                      0.138203
-Name: 3, dtype: object> | `pytest-dev__pytest-7324` | 1 | 0.138 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pytest-...
-task_id                                    pytest-dev__pytest-7324
-repeat                                                           1
-exit_status                                              Submitted
-cost                                                        0.0898
-parsed                                                        True
-label                                                            0
-parse_reason                                                  None
-n_steps                                                         34
-submitted                                                        1
-resolved                                                         1
-claim_success                                                    1
-risk                                                      0.247595
-Name: 8, dtype: object> | `pytest-dev__pytest-7324` | 1 | 0.248 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pytest-...
-task_id                                    pytest-dev__pytest-7324
-repeat                                                           2
-exit_status                                              Submitted
-cost                                                      0.110176
-parsed                                                        True
-label                                                            0
-parse_reason                                                  None
-n_steps                                                         34
-submitted                                                        1
-resolved                                                         1
-claim_success                                                    1
-risk                                                      0.162394
-Name: 13, dtype: object> | `pytest-dev__pytest-7324` | 1 | 0.162 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_sympy__...
-task_id                                         sympy__sympy-23950
-repeat                                                           0
-exit_status                                              Submitted
-cost                                                      0.036387
-parsed                                                        True
-label                                                            0
-parse_reason                                                  None
-n_steps                                                         28
-submitted                                                        1
-resolved                                                         1
-claim_success                                                    1
-risk                                                      0.170974
-Name: 4, dtype: object> | `sympy__sympy-23950` | 1 | 0.171 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_sympy__...
-task_id                                         sympy__sympy-23950
-repeat                                                           1
-exit_status                                              Submitted
-cost                                                      0.071893
-parsed                                                        True
-label                                                            0
-parse_reason                                                  None
-n_steps                                                         42
-submitted                                                        1
-resolved                                                         1
-claim_success                                                    0
-risk                                                      0.249016
-Name: 9, dtype: object> | `sympy__sympy-23950` | 1 | 0.249 |
-| r<bound method Series.repeat of run_id           own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_sympy__...
-task_id                                         sympy__sympy-23950
-repeat                                                           2
-exit_status                                              Submitted
-cost                                                      0.048684
-parsed                                                        True
-label                                                            0
-parse_reason                                                  None
-n_steps                                                         38
-submitted                                                        1
-resolved                                                         1
-claim_success                                                    0
-risk                                                       0.11943
-Name: 14, dtype: object> | `sympy__sympy-23950` | 1 | 0.119 |
+| r0 | `django__django-14376` | 0 | 0.187 |
+| r1 | `django__django-14376` | 1 | 0.195 |
+| r2 | `django__django-14376` | 1 | 0.154 |
+| r0 | `psf__requests-1766` | 1 | 0.300 |
+| r1 | `psf__requests-1766` | 1 | 0.184 |
+| r2 | `psf__requests-1766` | 1 | 0.331 |
+| r0 | `pylint-dev__pylint-6386` | 1 | 0.216 |
+| r1 | `pylint-dev__pylint-6386` | 0 | 0.357 |
+| r2 | `pylint-dev__pylint-6386` | 0 | 0.247 |
+| r0 | `pytest-dev__pytest-7324` | 1 | 0.138 |
+| r1 | `pytest-dev__pytest-7324` | 1 | 0.248 |
+| r2 | `pytest-dev__pytest-7324` | 1 | 0.162 |
+| r0 | `sympy__sympy-23950` | 1 | 0.171 |
+| r1 | `sympy__sympy-23950` | 1 | 0.249 |
+| r2 | `sympy__sympy-23950` | 1 | 0.119 |
 
 - Средний риск: нерешённые 0.264, решённые 0.206.
 - Пары «нерешённый — решённый» внутри одной задачи: 4; нерешённый получил больший риск в 3 из них (0.75).
+
+## Корпус и пилот по задачам (описательно)
+
+Корпус — единственный прогон glm-4.6 на задаче (mini-swe-agent 1.17.1, декабрь 2025); пилот — 3 повтора.
+
+| задача | корпус: resolved, шагов, статус | пилот: решено, шаги (медиана) |
+|---|---|---|
+| `pytest-dev__pytest-7324` | 0, 18, Submitted | 3 из 3, 34 |
+| `psf__requests-1766` | 0, 26, Submitted | 3 из 3, 11 |
+| `pylint-dev__pylint-6386` | 1, 29, Submitted | 1 из 3, 70 |
+| `sympy__sympy-23950` | 1, 47, Submitted | 3 из 3, 38 |
+| `django__django-14376` | 0, 22, Submitted | 2 из 3, 32 |
+
+- На этих 5 задачах glm-4.6 в корпусе решила 2 из 5 (0.4); в пилоте — 12 из 15 (0.80). Опора критерия (0.314) взята по 36 задачам пула (TODO-6), но и относительно этих 5 задач (коридор ±0.2 от 0.4) доля пилота выше.
+- Расхождение сосредоточено в задачах, где корпусный прогон не решил, а пилот решил во всех трёх повторах. Возможные причины (не проверены): обновление модели у провайдера под тем же именем; отличие инструмента оценки (swebench 4.1.0 здесь против инструмента лидерборда); случайность единственного корпусного прогона на задачу. Медиана длины при этом в коридоре (34 шага).
 
 ## Расход
 
