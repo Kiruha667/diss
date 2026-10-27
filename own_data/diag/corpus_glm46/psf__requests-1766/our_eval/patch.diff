@@ -1,0 +1,320 @@
+diff --git a/requests/auth.py b/requests/auth.py
+index a3de123d..67cdd479 100644
+--- a/requests/auth.py
++++ b/requests/auth.py
+@@ -144,7 +144,7 @@ class HTTPDigestAuth(AuthBase):
+         if entdig:
+             base += ', digest="%s"' % entdig
+         if qop:
+-            base += ', qop=auth, nc=%s, cnonce="%s"' % (ncvalue, cnonce)
++            base += ", qop=\"auth\", nc=%s, cnonce=\"%s\"" % (ncvalue, cnonce)
+ 
+         return 'Digest %s' % (base)
+ 
+diff --git a/requests/auth.py.bak b/requests/auth.py.bak
+new file mode 100644
+index 00000000..4b9eca81
+--- /dev/null
++++ b/requests/auth.py.bak
+@@ -0,0 +1,194 @@
++# -*- coding: utf-8 -*-
++
++"""
++requests.auth
++~~~~~~~~~~~~~
++
++This module contains the authentication handlers for Requests.
++"""
++
++import os
++import re
++import time
++import hashlib
++import logging
++
++from base64 import b64encode
++
++from .compat import urlparse, str
++from .utils import parse_dict_header
++
++log = logging.getLogger(__name__)
++
++CONTENT_TYPE_FORM_URLENCODED = 'application/x-www-form-urlencoded'
++CONTENT_TYPE_MULTI_PART = 'multipart/form-data'
++
++
++def _basic_auth_str(username, password):
++    """Returns a Basic Auth string."""
++
++    return 'Basic ' + b64encode(('%s:%s' % (username, password)).encode('latin1')).strip().decode('latin1')
++
++
++class AuthBase(object):
++    """Base class that all auth implementations derive from"""
++
++    def __call__(self, r):
++        raise NotImplementedError('Auth hooks must be callable.')
++
++
++class HTTPBasicAuth(AuthBase):
++    """Attaches HTTP Basic Authentication to the given Request object."""
++    def __init__(self, username, password):
++        self.username = username
++        self.password = password
++
++    def __call__(self, r):
++        r.headers['Authorization'] = _basic_auth_str(self.username, self.password)
++        return r
++
++
++class HTTPProxyAuth(HTTPBasicAuth):
++    """Attaches HTTP Proxy Authentication to a given Request object."""
++    def __call__(self, r):
++        r.headers['Proxy-Authorization'] = _basic_auth_str(self.username, self.password)
++        return r
++
++
++class HTTPDigestAuth(AuthBase):
++    """Attaches HTTP Digest Authentication to the given Request object."""
++    def __init__(self, username, password):
++        self.username = username
++        self.password = password
++        self.last_nonce = ''
++        self.nonce_count = 0
++        self.chal = {}
++        self.pos = None
++
++    def build_digest_header(self, method, url):
++
++        realm = self.chal['realm']
++        nonce = self.chal['nonce']
++        qop = self.chal.get('qop')
++        algorithm = self.chal.get('algorithm')
++        opaque = self.chal.get('opaque')
++
++        if algorithm is None:
++            _algorithm = 'MD5'
++        else:
++            _algorithm = algorithm.upper()
++        # lambdas assume digest modules are imported at the top level
++        if _algorithm == 'MD5' or _algorithm == 'MD5-SESS':
++            def md5_utf8(x):
++                if isinstance(x, str):
++                    x = x.encode('utf-8')
++                return hashlib.md5(x).hexdigest()
++            hash_utf8 = md5_utf8
++        elif _algorithm == 'SHA':
++            def sha_utf8(x):
++                if isinstance(x, str):
++                    x = x.encode('utf-8')
++                return hashlib.sha1(x).hexdigest()
++            hash_utf8 = sha_utf8
++
++        KD = lambda s, d: hash_utf8("%s:%s" % (s, d))
++
++        if hash_utf8 is None:
++            return None
++
++        # XXX not implemented yet
++        entdig = None
++        p_parsed = urlparse(url)
++        path = p_parsed.path
++        if p_parsed.query:
++            path += '?' + p_parsed.query
++
++        A1 = '%s:%s:%s' % (self.username, realm, self.password)
++        A2 = '%s:%s' % (method, path)
++        
++        HA1 = hash_utf8(A1)
++        HA2 = hash_utf8(A2)
++
++        if nonce == self.last_nonce:
++            self.nonce_count += 1
++        else:
++            self.nonce_count = 1
++        ncvalue = '%08x' % self.nonce_count
++        s = str(self.nonce_count).encode('utf-8')
++        s += nonce.encode('utf-8')
++        s += time.ctime().encode('utf-8')
++        s += os.urandom(8)
++
++        cnonce = (hashlib.sha1(s).hexdigest()[:16])
++        noncebit = "%s:%s:%s:%s:%s" % (nonce, ncvalue, cnonce, qop, HA2)
++        if _algorithm == 'MD5-SESS':
++            HA1 = hash_utf8('%s:%s:%s' % (HA1, nonce, cnonce))
++
++        if qop is None:
++            respdig = KD(HA1, "%s:%s" % (nonce, HA2))
++        elif qop == 'auth' or 'auth' in qop.split(','):
++            respdig = KD(HA1, noncebit)
++        else:
++            # XXX handle auth-int.
++            return None
++
++        self.last_nonce = nonce
++
++        # XXX should the partial digests be encoded too?
++        base = 'username="%s", realm="%s", nonce="%s", uri="%s", ' \
++               'response="%s"' % (self.username, realm, nonce, path, respdig)
++        if opaque:
++            base += ', opaque="%s"' % opaque
++        if algorithm:
++            base += ', algorithm="%s"' % algorithm
++        if entdig:
++            base += ', digest="%s"' % entdig
++        if qop:
++            base += ", qop="%s", nc=%s, cnonce="%s"" % (qop, ncvalue, cnonce)
++
++        return 'Digest %s' % (base)
++
++    def handle_401(self, r, **kwargs):
++        """Takes the given response and tries digest-auth, if needed."""
++
++        if self.pos is not None:
++            # Rewind the file position indicator of the body to where
++            # it was to resend the request.
++            r.request.body.seek(self.pos)
++        num_401_calls = getattr(self, 'num_401_calls', 1)
++        s_auth = r.headers.get('www-authenticate', '')
++
++        if 'digest' in s_auth.lower() and num_401_calls < 2:
++
++            setattr(self, 'num_401_calls', num_401_calls + 1)
++            pat = re.compile(r'digest ', flags=re.IGNORECASE)
++            self.chal = parse_dict_header(pat.sub('', s_auth, count=1))
++
++            # Consume content and release the original connection
++            # to allow our new request to reuse the same one.
++            r.content
++            r.raw.release_conn()
++            prep = r.request.copy()
++            prep.prepare_cookies(r.cookies)
++
++            prep.headers['Authorization'] = self.build_digest_header(
++                prep.method, prep.url)
++            _r = r.connection.send(prep, **kwargs)
++            _r.history.append(r)
++            _r.request = prep
++
++            return _r
++
++        setattr(self, 'num_401_calls', 1)
++        return r
++
++    def __call__(self, r):
++        # If we have a saved nonce, skip the 401
++        if self.last_nonce:
++            r.headers['Authorization'] = self.build_digest_header(r.method, r.url)
++        try:
++            self.pos = r.body.tell()
++        except AttributeError:
++            pass
++        r.register_hook('response', self.handle_401)
++        return r
+diff --git a/test_digest_auth.py b/test_digest_auth.py
+new file mode 100644
+index 00000000..4bd6117b
+--- /dev/null
++++ b/test_digest_auth.py
+@@ -0,0 +1,56 @@
++#!/usr/bin/env python
++# -*- coding: utf-8 -*-
++
++import sys
++sys.path.insert(0, '.')
++
++from requests.auth import HTTPDigestAuth
++
++# Create a mock challenge that the server might send
++auth = HTTPDigestAuth('user', 'password')
++
++# Simulate the challenge response from a server
++class MockResponse:
++    def __init__(self):
++        self.headers = {
++            'www-authenticate': 'Digest realm="testrealm@host.com", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", qop="auth,auth-int"'
++        }
++        self.request = MockRequest()
++        self.connection = None
++        self.history = []
++        self.cookies = {}
++
++class MockRequest:
++    def __init__(self):
++        self.method = 'GET'
++        self.url = 'http://example.com/'
++        self.body = None
++        self.headers = {}
++        
++    def copy(self):
++        req = MockRequest()
++        req.method = self.method
++        req.url = self.url
++        req.body = self.body
++        req.headers = self.headers.copy()
++        return req
++        
++    def prepare_cookies(self, cookies):
++        pass
++
++# Test the digest authentication
++response = MockResponse()
++auth.chal = {'realm': 'testrealm@host.com', 'nonce': 'dcd98b7102dd2f0e8b11d0f600bfb0c093', 'qop': 'auth,auth-int'}
++
++# Build the digest header
++header = auth.build_digest_header('GET', 'http://example.com/')
++print("Digest Authorization Header:")
++print(header)
++
++# Check if qop is properly quoted
++if 'qop="auth"' in header:
++    print("\n✓ SUCCESS: qop value is properly quoted!")
++else:
++    print("\n✗ FAILURE: qop value is not properly quoted")
++    print("Expected: qop=\"auth\"")
++    print("Found in header:", [part for part in header.split(',') if 'qop=' in part])
+diff --git a/test_digest_auth_edge_cases.py b/test_digest_auth_edge_cases.py
+new file mode 100644
+index 00000000..8479dbde
+--- /dev/null
++++ b/test_digest_auth_edge_cases.py
+@@ -0,0 +1,39 @@
++#!/usr/bin/env python
++# -*- coding: utf-8 -*-
++
++import sys
++sys.path.insert(0, '.')
++
++from requests.auth import HTTPDigestAuth
++
++def test_case(name, qop_value):
++    print(f"\n=== Test Case: {name} ===")
++    auth = HTTPDigestAuth('user', 'password')
++    
++    if qop_value is not None:
++        auth.chal = {'realm': 'test', 'nonce': 'testnonce', 'qop': qop_value}
++    else:
++        auth.chal = {'realm': 'test', 'nonce': 'testnonce'}
++    
++    header = auth.build_digest_header('GET', 'http://example.com/')
++    print("Header:", header)
++    
++    if header and 'qop=' in header:
++        if 'qop="auth"' in header:
++            print("✓ qop is properly quoted")
++        else:
++            print("✗ qop is not properly quoted")
++    else:
++        print("- No qop in header (as expected for this case)")
++
++# Test with auth-int in server response (should still use auth)
++test_case("qop='auth,auth-int'", "auth,auth-int")
++
++# Test with only auth
++test_case("qop='auth'", "auth")
++
++# Test with no qop
++test_case("No qop", None)
++
++# Test with auth-int only (should return None as auth-int not implemented)
++test_case("qop='auth-int' (not implemented)", "auth-int")

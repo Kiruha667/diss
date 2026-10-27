@@ -1,0 +1,35 @@
+<frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
+2026-10-27 18:20:27,795 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-10-27 18:20:27,856 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Verified/c104f840cc67f8b6eec6f759ebc8b2693d585d4a/README.md "HTTP/1.1 200 OK"
+2026-10-27 18:20:28,041 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified/resolve/c104f840cc67f8b6eec6f759ebc8b2693d585d4a/SWE-bench_Verified.py "HTTP/1.1 404 Not Found"
+2026-10-27 18:20:28,558 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Verified/princeton-nlp/SWE-bench_Verified.py "HTTP/1.1 404 Not Found"
+2026-10-27 18:20:28,755 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Verified/revision/c104f840cc67f8b6eec6f759ebc8b2693d585d4a "HTTP/1.1 200 OK"
+2026-10-27 18:20:28,943 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified/resolve/c104f840cc67f8b6eec6f759ebc8b2693d585d4a/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-10-27 18:20:29,479 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Verified "HTTP/1.1 200 OK"
+2026-10-27 18:20:29,668 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Verified/tree/c104f840cc67f8b6eec6f759ebc8b2693d585d4a/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-10-27 18:20:29,854 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Verified/tree/c104f840cc67f8b6eec6f759ebc8b2693d585d4a?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-10-27 18:20:30,043 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified/resolve/c104f840cc67f8b6eec6f759ebc8b2693d585d4a/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-10-27 18:20:30,427 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-10-27 18:20:30,489 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Verified/c104f840cc67f8b6eec6f759ebc8b2693d585d4a/README.md "HTTP/1.1 200 OK"
+2026-10-27 18:20:30,673 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified/resolve/c104f840cc67f8b6eec6f759ebc8b2693d585d4a/SWE-bench_Verified.py "HTTP/1.1 404 Not Found"
+2026-10-27 18:20:30,844 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Verified/princeton-nlp/SWE-bench_Verified.py "HTTP/1.1 404 Not Found"
+2026-10-27 18:20:31,032 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified/resolve/c104f840cc67f8b6eec6f759ebc8b2693d585d4a/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-10-27 18:20:31,236 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Verified "HTTP/1.1 200 OK"
+2026-10-27 18:20:31,428 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified/resolve/c104f840cc67f8b6eec6f759ebc8b2693d585d4a/dataset_infos.json "HTTP/1.1 404 Not Found"
+Found 5 existing instance images. Will reuse them.
+Running 5 instances...
+Evaluation:   0%|          | 0/5 [00:00<?, ?it/s, error=0, ✓=0, ✖=0]Evaluation:   0%|          | 0/5 [00:35<?, ?it/s, ✓=0, ✖=1, error=0]Evaluation:  20%|██        | 1/5 [00:35<02:20, 35.07s/it, ✓=0, ✖=1, error=0]Evaluation:  20%|██        | 1/5 [01:38<02:20, 35.07s/it, ✓=1, ✖=1, error=0]Evaluation:  40%|████      | 2/5 [01:38<02:36, 52.03s/it, ✓=1, ✖=1, error=0]Evaluation:  40%|████      | 2/5 [02:10<02:36, 52.03s/it, ✓=2, ✖=1, error=0]Evaluation:  60%|██████    | 3/5 [02:10<01:25, 42.53s/it, ✓=2, ✖=1, error=0]Evaluation:  60%|██████    | 3/5 [02:51<01:25, 42.53s/it, ✓=2, ✖=2, error=0]Evaluation:  80%|████████  | 4/5 [02:51<00:42, 42.05s/it, ✓=2, ✖=2, error=0]Evaluation:  80%|████████  | 4/5 [03:22<00:42, 42.05s/it, ✓=3, ✖=2, error=0]Evaluation: 100%|██████████| 5/5 [03:22<00:00, 38.09s/it, ✓=3, ✖=2, error=0]Evaluation: 100%|██████████| 5/5 [03:22<00:00, 40.51s/it, ✓=3, ✖=2, error=0]
+All instances run.
+Cleaning cached images...
+Removed 0 images.
+Total instances: 500
+Instances submitted: 5
+Instances completed: 5
+Instances incomplete: 495
+Instances resolved: 3
+Instances unresolved: 2
+Instances with empty patches: 0
+Instances with errors: 0
+Unstopped containers: 0
+Unremoved images: 5
+Report written to glm-4.6-corpus.diag_corpus_glm46.json

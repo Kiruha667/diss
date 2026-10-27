@@ -1,0 +1,400 @@
+{
+ "django__django-14376": {
+  "corpus_resolved_leaderboard": false,
+  "corpus_resolved_ours": false,
+  "tests_differing": {},
+  "corpus_patch": {
+   "files": {
+    "django/db/backends/mysql/base.py": "+2/-2"
+   },
+   "functions": [
+    "django/db/backends/mysql/base.py: class DatabaseWrapper(BaseDatabaseWrapper):"
+   ],
+   "added": 2,
+   "removed": 2
+  },
+  "pilot_patches": [
+   {
+    "repeat": 0,
+    "resolved": false,
+    "files": {
+     "django/db/backends/mysql/base.py": "+2/-2",
+     "django/db/backends/mysql/client.py": "+2/-5"
+    },
+    "functions": [
+     "django/db/backends/mysql/base.py: class DatabaseWrapper(BaseDatabaseWrapper):",
+     "django/db/backends/mysql/client.py: class DatabaseClient(BaseDatabaseClient):"
+    ],
+    "added": 4,
+    "removed": 7
+   },
+   {
+    "repeat": 1,
+    "resolved": true,
+    "files": {
+     "django/db/backends/mysql/base.py": "+2/-2",
+     "django/db/backends/mysql/client.py": "+1/-1",
+     "test_mysql_client.py": "+33/-0",
+     "test_mysql_client_v2.py": "+34/-0",
+     "test_mysql_connection_params.py": "+45/-0"
+    },
+    "functions": [
+     "django/db/backends/mysql/base.py: class DatabaseWrapper(BaseDatabaseWrapper):",
+     "django/db/backends/mysql/client.py: class DatabaseClient(BaseDatabaseClient):"
+    ],
+    "added": 115,
+    "removed": 3
+   },
+   {
+    "repeat": 2,
+    "resolved": true,
+    "files": {
+     "django/db/backends/mysql/base.py": "+2/-2",
+     "django/db/backends/mysql/client.py": "+1/-1"
+    },
+    "functions": [
+     "django/db/backends/mysql/base.py: class DatabaseWrapper(BaseDatabaseWrapper):",
+     "django/db/backends/mysql/client.py: class DatabaseClient(BaseDatabaseClient):"
+    ],
+    "added": 3,
+    "removed": 3
+   }
+  ]
+ },
+ "psf__requests-1766": {
+  "corpus_resolved_leaderboard": false,
+  "corpus_resolved_ours": true,
+  "tests_differing": {
+   "test_requests.py::RequestsTestCase::test_HTTP_200_OK_GET_ALTERNATIVE": [
+    "FAIL_TO_PASS:failure",
+    "FAIL_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_HTTP_200_OK_GET_WITH_MIXED_PARAMS": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_HTTP_200_OK_GET_WITH_PARAMS": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_HTTP_200_OK_HEAD": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_HTTP_200_OK_PUT": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_HTTP_302_ALLOW_REDIRECT_GET": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_POSTBIN_GET_POST_FILES_WITH_DATA": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_basicauth_with_netrc": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_cookie_persists_via_api": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_cookie_quote_wrapped": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_cookie_sent_on_redirect": [
+    "FAIL_TO_PASS:failure",
+    "FAIL_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_custom_content_type": [
+    "FAIL_TO_PASS:failure",
+    "FAIL_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_different_encodings_dont_break_post": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_generic_cookiejar_works": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_mixed_case_scheme_acceptable": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_params_are_merged_case_sensitive": [
+    "FAIL_TO_PASS:failure",
+    "FAIL_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_request_cookie_overrides_session_cookie": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_session_pickling": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_set_cookie_on_301": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_unicode_multipart_post": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_uppercase_scheme_redirect": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_urlencoded_get_query_multivalued_param": [
+    "PASS_TO_PASS:failure",
+    "PASS_TO_PASS:success"
+   ],
+   "test_requests.py::RequestsTestCase::test_user_agent_transfers": [
+    "FAIL_TO_PASS:failure",
+    "FAIL_TO_PASS:success"
+   ]
+  },
+  "corpus_patch": {
+   "files": {
+    "requests/auth.py": "+1/-1",
+    "requests/auth.py.bak": "+194/-0",
+    "test_digest_auth.py": "+56/-0",
+    "test_digest_auth_edge_cases.py": "+39/-0"
+   },
+   "functions": [
+    "requests/auth.py: class HTTPDigestAuth(AuthBase):"
+   ],
+   "added": 290,
+   "removed": 1
+  },
+  "pilot_patches": [
+   {
+    "repeat": 0,
+    "resolved": true,
+    "files": {
+     "requests/auth.py": "+1/-1"
+    },
+    "functions": [
+     "requests/auth.py: class HTTPDigestAuth(AuthBase):"
+    ],
+    "added": 1,
+    "removed": 1
+   },
+   {
+    "repeat": 1,
+    "resolved": true,
+    "files": {
+     "requests/auth.py": "+1/-1"
+    },
+    "functions": [
+     "requests/auth.py: class HTTPDigestAuth(AuthBase):"
+    ],
+    "added": 1,
+    "removed": 1
+   },
+   {
+    "repeat": 2,
+    "resolved": true,
+    "files": {
+     "requests/auth.py": "+1/-1"
+    },
+    "functions": [
+     "requests/auth.py: class HTTPDigestAuth(AuthBase):"
+    ],
+    "added": 1,
+    "removed": 1
+   }
+  ]
+ },
+ "pylint-dev__pylint-6386": {
+  "corpus_resolved_leaderboard": true,
+  "corpus_resolved_ours": true,
+  "tests_differing": {},
+  "corpus_patch": {
+   "files": {
+    "pylint/config/utils.py": "+16/-6"
+   },
+   "functions": [
+    "pylint/config/utils.py: PREPROCESSABLE_OPTIONS: dict[",
+    "pylint/config/utils.py: def _preprocess_options(run: Run, args: Sequence[str]) -> list[str]:"
+   ],
+   "added": 16,
+   "removed": 6
+  },
+  "pilot_patches": [
+   {
+    "repeat": 0,
+    "resolved": true,
+    "files": {
+     "pylint/config/callback_actions.py": "+26/-0",
+     "pylint/config/utils.py": "+2/-1",
+     "text": "+4/-0"
+    },
+    "functions": [
+     "pylint/config/callback_actions.py: class _DoNothingAction(_CallbackAction):",
+     "pylint/config/utils.py: PREPROCESSABLE_OPTIONS: dict[",
+     "pylint/config/utils.py: def _preprocess_options(run: Run, args: Sequence[str]) -> list[str]:"
+    ],
+    "added": 32,
+    "removed": 1
+   },
+   {
+    "repeat": 1,
+    "resolved": false,
+    "files": {
+     "pylint/config/callback_actions.py": "+45/-0",
+     "pylint/lint/base_options.py": "+3/-2"
+    },
+    "functions": [
+     "pylint/config/callback_actions.py: class _DoNothingAction(_CallbackAction):",
+     "pylint/lint/base_options.py: def _make_run_options(self: Run) -> Options:",
+     "pylint/lint/base_options.py: from typing import TYPE_CHECKING"
+    ],
+    "added": 48,
+    "removed": 2
+   },
+   {
+    "repeat": 2,
+    "resolved": false,
+    "files": {
+     "pylint/config/callback_actions.py": "+26/-0"
+    },
+    "functions": [
+     "pylint/config/callback_actions.py: class _DoNothingAction(_CallbackAction):"
+    ],
+    "added": 26,
+    "removed": 0
+   }
+  ]
+ },
+ "pytest-dev__pytest-7324": {
+  "corpus_resolved_leaderboard": false,
+  "corpus_resolved_ours": false,
+  "tests_differing": {},
+  "corpus_patch": {
+   "files": {
+    "comprehensive_test.py": "+30/-0",
+    "edge_case_test.py": "+26/-0",
+    "reproducer.py": "+17/-0",
+    "src/_pytest/mark/expression.py": "+2/-0"
+   },
+   "functions": [
+    "src/_pytest/mark/expression.py: def not_expr(s: Scanner) -> ast.expr:"
+   ],
+   "added": 75,
+   "removed": 0
+  },
+  "pilot_patches": [
+   {
+    "repeat": 0,
+    "resolved": true,
+    "files": {
+     "src/_pytest/mark/expression.py": "+8/-0"
+    },
+    "functions": [
+     "src/_pytest/mark/expression.py: class MatcherAdapter(Mapping[str, bool]):",
+     "src/_pytest/mark/expression.py: def not_expr(s: Scanner) -> ast.expr:"
+    ],
+    "added": 8,
+    "removed": 0
+   },
+   {
+    "repeat": 1,
+    "resolved": true,
+    "files": {
+     "src/_pytest/mark/expression.py": "+12/-0"
+    },
+    "functions": [
+     "src/_pytest/mark/expression.py: def not_expr(s: Scanner) -> ast.expr:"
+    ],
+    "added": 12,
+    "removed": 0
+   },
+   {
+    "repeat": 2,
+    "resolved": true,
+    "files": {
+     "src/_pytest/mark/expression.py": "+21/-2",
+     "test_reproduce.py": "+21/-0"
+    },
+    "functions": [
+     "src/_pytest/mark/expression.py: class MatcherAdapter(Mapping[str, bool]):",
+     "src/_pytest/mark/expression.py: def not_expr(s: Scanner) -> ast.expr:",
+     "src/_pytest/mark/expression.py: if TYPE_CHECKING:"
+    ],
+    "added": 42,
+    "removed": 2
+   }
+  ]
+ },
+ "sympy__sympy-23950": {
+  "corpus_resolved_leaderboard": true,
+  "corpus_resolved_ours": true,
+  "tests_differing": {},
+  "corpus_patch": {
+   "files": {
+    "cleanup_contains.py": "+28/-0",
+    "final_comprehensive_test.py": "+62/-0",
+    "fix_contains.py": "+42/-0",
+    "fix_contains_proper.py": "+35/-0",
+    "reproduce_issue.py": "+20/-0",
+    "sympy/sets/contains.py": "+6/-1",
+    "test_contains_behavior.py": "+28/-0",
+    "test_edge_cases.py": "+42/-0",
+    "test_piecewise_fix.py": "+28/-0"
+   },
+   "functions": [
+    "sympy/sets/contains.py: def binary_symbols(self):"
+   ],
+   "added": 291,
+   "removed": 1
+  },
+  "pilot_patches": [
+   {
+    "repeat": 0,
+    "resolved": true,
+    "files": {
+     "final_test.py": "+48/-0",
+     "sympy/sets/contains.py": "+1/-1",
+     "sympy/sets/tests/test_contains.py": "+5/-4",
+     "test_issue.py": "+19/-0",
+     "test_issue_extended.py": "+48/-0"
+    },
+    "functions": [
+     "sympy/sets/contains.py: def binary_symbols(self):",
+     "sympy/sets/tests/test_contains.py: def test_binary_symbols():"
+    ],
+    "added": 121,
+    "removed": 5
+   },
+   {
+    "repeat": 1,
+    "resolved": true,
+    "files": {
+     "sympy/sets/contains.py": "+1/-1"
+    },
+    "functions": [
+     "sympy/sets/contains.py: def binary_symbols(self):"
+    ],
+    "added": 1,
+    "removed": 1
+   },
+   {
+    "repeat": 2,
+    "resolved": true,
+    "files": {
+     "sympy/sets/contains.py": "+12/-1"
+    },
+    "functions": [
+     "sympy/sets/contains.py: def binary_symbols(self):"
+    ],
+    "added": 12,
+    "removed": 1
+   }
+  ]
+ }
+}

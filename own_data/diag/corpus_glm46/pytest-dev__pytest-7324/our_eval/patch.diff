@@ -1,0 +1,104 @@
+diff --git a/comprehensive_test.py b/comprehensive_test.py
+new file mode 100644
+index 000000000..e9544ee21
+--- /dev/null
++++ b/comprehensive_test.py
+@@ -0,0 +1,30 @@
++from _pytest.mark.expression import Expression
++
++def test_matcher(name):
++    """A simple matcher that returns True for any name"""
++    return True
++
++# Test compilation and evaluation for various cases
++test_cases = [
++    "False",
++    "True", 
++    "None",
++    "not False",
++    "not True",
++    "False or True",
++    "False and True",
++    "None or True",
++    "not (False or True)",
++    "False and not True",
++    "not_false",  # Regular identifier (should still work)
++    "some_other_identifier"
++]
++
++print("Testing compilation and evaluation:")
++for case in test_cases:
++    try:
++        expr = Expression.compile(case)
++        result = expr.evaluate(test_matcher)
++        print(f"'{case}': compiled=True, evaluated={result}")
++    except Exception as e:
++        print(f"'{case}': failed with error: {e}")
+diff --git a/edge_case_test.py b/edge_case_test.py
+new file mode 100644
+index 000000000..1fab17615
+--- /dev/null
++++ b/edge_case_test.py
+@@ -0,0 +1,26 @@
++from _pytest.mark.expression import Expression
++
++def test_matcher(name):
++    """A matcher that only matches specific identifiers"""
++    return name in ["test", "valid", "ok"]
++
++# Test edge cases to ensure we didn't break existing functionality
++edge_cases = [
++    "test",
++    "test and valid", 
++    "test or not_valid",
++    "not test",
++    "(test or valid) and ok",
++    "test and (valid or ok)",
++    "",  # Empty expression
++    "   ",  # Whitespace only
++]
++
++print("Testing edge cases:")
++for case in edge_cases:
++    try:
++        expr = Expression.compile(case)
++        result = expr.evaluate(test_matcher)
++        print(f"'{repr(case)}': compiled=True, evaluated={result}")
++    except Exception as e:
++        print(f"'{repr(case)}': failed with error: {e}")
+diff --git a/reproducer.py b/reproducer.py
+new file mode 100644
+index 000000000..e7b239d20
+--- /dev/null
++++ b/reproducer.py
+@@ -0,0 +1,17 @@
++from _pytest.mark.expression import Expression
++
++# This should crash on debug builds
++try:
++    expr = Expression.compile("False")
++    print("Expression compiled successfully")
++    print(f"Code object: {expr.code}")
++except Exception as e:
++    print(f"Error: {e}")
++
++# Let's also test other keywords
++for keyword in ["True", "None", "False", "not_false"]:
++    try:
++        expr = Expression.compile(keyword)
++        print(f"'{keyword}' compiled successfully")
++    except Exception as e:
++        print(f"'{keyword}' failed: {e}")
+diff --git a/src/_pytest/mark/expression.py b/src/_pytest/mark/expression.py
+index 04c73411a..7f5ee0db4 100644
+--- a/src/_pytest/mark/expression.py
++++ b/src/_pytest/mark/expression.py
+@@ -161,6 +161,8 @@ def not_expr(s: Scanner) -> ast.expr:
+         return ret
+     ident = s.accept(TokenType.IDENT)
+     if ident:
++        if ident.value in ("True", "False", "None"):
++            return ast.NameConstant(eval(ident.value))
+         return ast.Name(ident.value, ast.Load())
+     s.reject((TokenType.NOT, TokenType.LPAREN, TokenType.IDENT))
+ 

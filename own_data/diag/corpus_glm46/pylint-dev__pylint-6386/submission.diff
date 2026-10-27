@@ -1,0 +1,44 @@
+diff --git a/pylint/config/utils.py b/pylint/config/utils.py
+index 8c790416f..cf367ba33 100644
+--- a/pylint/config/utils.py
++++ b/pylint/config/utils.py
+@@ -207,6 +207,7 @@ PREPROCESSABLE_OPTIONS: dict[
+     "--output": (True, _set_output),
+     "--load-plugins": (True, _add_plugins),
+     "--verbose": (False, _set_verbose_mode),
++    "-v": (False, _set_verbose_mode),
+     "--enable-all-extensions": (False, _enable_all_extensions),
+ }
+ 
+@@ -218,16 +219,25 @@ def _preprocess_options(run: Run, args: Sequence[str]) -> list[str]:
+     i = 0
+     while i < len(args):
+         argument = args[i]
+-        if not argument.startswith("--"):
++        if not argument.startswith("-"):
+             processed_args.append(argument)
+             i += 1
+             continue
+-
+-        try:
+-            option, value = argument.split("=", 1)
+-        except ValueError:
++        # Handle both long (--option) and short (-o) options
++        if argument.startswith("--"):
++            # Long option: can be --option=value or --option value
++            try:
++                option, value = argument.split("=", 1)
++            except ValueError:
++                option, value = argument, None
++        elif argument.startswith("-") and len(argument) == 2:
++            # Short option: -o (possibly with value in next arg)
+             option, value = argument, None
+-
++        else:
++            # Not an option or short option with combined flags (e.g., -abc)
++            processed_args.append(argument)
++            i += 1
++            continue
+         if option not in PREPROCESSABLE_OPTIONS:
+             processed_args.append(argument)
+             i += 1

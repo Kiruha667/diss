@@ -1,0 +1,144 @@
+{
+ "django__django-14376": {
+  "resolved": false,
+  "patch_successfully_applied": true,
+  "f2p_success": [],
+  "f2p_failure": [
+   "test_options_non_deprecated_keys_preferred (dbshell.test_mysql.MySqlDbshellCommandTestCase)",
+   "test_options_override_settings_proper_values (dbshell.test_mysql.MySqlDbshellCommandTestCase)",
+   "test_parameters (dbshell.test_mysql.MySqlDbshellCommandTestCase)"
+  ],
+  "p2p_failure": [],
+  "p2p_success_n": 6,
+  "job_timed_out": false,
+  "job_exit_code": 0,
+  "job_diff_changed": false,
+  "env_matches": {
+   "network": [],
+   "http_503_external_service": [],
+   "timeout": [],
+   "install": [],
+   "patch": []
+  },
+  "patch_diff_equals_submission": true
+ },
+ "psf__requests-1766": {
+  "resolved": false,
+  "patch_successfully_applied": true,
+  "f2p_success": [
+   "test_requests.py::RequestsTestCase::test_DIGESTAUTH_QUOTES_QOP_VALUE"
+  ],
+  "f2p_failure": [
+   "test_requests.py::RequestsTestCase::test_HTTP_200_OK_GET_ALTERNATIVE",
+   "test_requests.py::RequestsTestCase::test_cookie_sent_on_redirect",
+   "test_requests.py::RequestsTestCase::test_custom_content_type",
+   "test_requests.py::RequestsTestCase::test_params_are_merged_case_sensitive",
+   "test_requests.py::RequestsTestCase::test_user_agent_transfers"
+  ],
+  "p2p_failure": [
+   "test_requests.py::RequestsTestCase::test_HTTP_200_OK_GET_WITH_MIXED_PARAMS",
+   "test_requests.py::RequestsTestCase::test_HTTP_200_OK_GET_WITH_PARAMS",
+   "test_requests.py::RequestsTestCase::test_HTTP_200_OK_HEAD",
+   "test_requests.py::RequestsTestCase::test_HTTP_200_OK_PUT",
+   "test_requests.py::RequestsTestCase::test_HTTP_302_ALLOW_REDIRECT_GET",
+   "test_requests.py::RequestsTestCase::test_POSTBIN_GET_POST_FILES_WITH_DATA",
+   "test_requests.py::RequestsTestCase::test_basicauth_with_netrc",
+   "test_requests.py::RequestsTestCase::test_cookie_persists_via_api",
+   "test_requests.py::RequestsTestCase::test_cookie_quote_wrapped",
+   "test_requests.py::RequestsTestCase::test_different_encodings_dont_break_post",
+   "test_requests.py::RequestsTestCase::test_generic_cookiejar_works",
+   "test_requests.py::RequestsTestCase::test_mixed_case_scheme_acceptable",
+   "test_requests.py::RequestsTestCase::test_request_cookie_overrides_session_cookie",
+   "test_requests.py::RequestsTestCase::test_session_pickling",
+   "test_requests.py::RequestsTestCase::test_set_cookie_on_301",
+   "test_requests.py::RequestsTestCase::test_unicode_multipart_post",
+   "test_requests.py::RequestsTestCase::test_uppercase_scheme_redirect",
+   "test_requests.py::RequestsTestCase::test_urlencoded_get_query_multivalued_param"
+  ],
+  "p2p_success_n": 61,
+  "job_timed_out": false,
+  "job_exit_code": 0,
+  "job_diff_changed": false,
+  "env_matches": {
+   "network": [],
+   "http_503_external_service": [
+    "Service Temporarily Unavailable",
+    "Service Temporarily Unavailable</h1></center>\\\\r\\",
+    "Service Temporarily Unavailable</title></head>\\\\r\\",
+    "assert 503 ...",
+    "assert 503 == 200",
+    "assert 503..."
+   ],
+   "timeout": [],
+   "install": [],
+   "patch": []
+  },
+  "patch_diff_equals_submission": true
+ },
+ "pylint-dev__pylint-6386": {
+  "resolved": true,
+  "patch_successfully_applied": true,
+  "f2p_success": [
+   "tests/config/test_config.py::test_short_verbose"
+  ],
+  "f2p_failure": [],
+  "p2p_failure": [],
+  "p2p_success_n": 7,
+  "job_timed_out": false,
+  "job_exit_code": 0,
+  "job_diff_changed": false,
+  "env_matches": {
+   "network": [],
+   "http_503_external_service": [],
+   "timeout": [],
+   "install": [],
+   "patch": []
+  },
+  "patch_diff_equals_submission": true
+ },
+ "pytest-dev__pytest-7324": {
+  "resolved": false,
+  "patch_successfully_applied": true,
+  "f2p_success": [
+   "testing/test_mark_expression.py::test_valid_idents[True]"
+  ],
+  "f2p_failure": [
+   "testing/test_mark_expression.py::test_valid_idents[False]",
+   "testing/test_mark_expression.py::test_valid_idents[None]"
+  ],
+  "p2p_failure": [],
+  "p2p_success_n": 58,
+  "job_timed_out": false,
+  "job_exit_code": 0,
+  "job_diff_changed": false,
+  "env_matches": {
+   "network": [],
+   "http_503_external_service": [],
+   "timeout": [],
+   "install": [],
+   "patch": []
+  },
+  "patch_diff_equals_submission": true
+ },
+ "sympy__sympy-23950": {
+  "resolved": true,
+  "patch_successfully_applied": true,
+  "f2p_success": [
+   "test_as_set"
+  ],
+  "f2p_failure": [],
+  "p2p_failure": [],
+  "p2p_success_n": 4,
+  "job_timed_out": false,
+  "job_exit_code": 0,
+  "job_diff_changed": false,
+  "env_matches": {
+   "network": [],
+   "http_503_external_service": [],
+   "timeout": [],
+   "install": [],
+   "patch": []
+  },
+  "patch_diff_equals_submission": true
+ }
+}

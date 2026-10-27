@@ -1,0 +1,202 @@
+{
+ "run": "20251201_mini-v1.17.1_glm-4.6",
+ "prefix": "bash-only/20251201_mini-v1.17.1_glm-4.6",
+ "s3_base": "https://swe-bench-submissions.s3.amazonaws.com",
+ "tasks": {
+  "pytest-dev__pytest-7324": {
+   "files": {
+    "trajs/pytest-dev__pytest-7324/pytest-dev__pytest-7324.traj.json": {
+     "bytes_source": 77990,
+     "redactions": 1
+    },
+    "logs/pytest-dev__pytest-7324/job-output.json": {
+     "bytes_source": 28092,
+     "redactions": 0
+    },
+    "logs/pytest-dev__pytest-7324/patch.diff": {
+     "bytes_source": 3150,
+     "redactions": 0
+    },
+    "logs/pytest-dev__pytest-7324/report.json": {
+     "bytes_source": 4038,
+     "redactions": 0
+    },
+    "logs/pytest-dev__pytest-7324/test_output.txt": {
+     "bytes_source": 26825,
+     "redactions": 0
+    }
+   },
+   "listed": [
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/trajs/pytest-dev__pytest-7324/pytest-dev__pytest-7324.traj.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/pytest-dev__pytest-7324/job-output.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/pytest-dev__pytest-7324/patch.diff",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/pytest-dev__pytest-7324/report.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/pytest-dev__pytest-7324/test_output.txt"
+   ],
+   "exit_status": "Submitted",
+   "submission_chars": 3150,
+   "model_stats": {
+    "instance_cost": 0.018712200000000002,
+    "api_calls": 18
+   },
+   "mini_version": "1.17.1",
+   "has_eval_logs": true
+  },
+  "psf__requests-1766": {
+   "files": {
+    "trajs/psf__requests-1766/psf__requests-1766.traj.json": {
+     "bytes_source": 124984,
+     "redactions": 1
+    },
+    "logs/psf__requests-1766/job-output.json": {
+     "bytes_source": 52047,
+     "redactions": 0
+    },
+    "logs/psf__requests-1766/patch.diff": {
+     "bytes_source": 10130,
+     "redactions": 0
+    },
+    "logs/psf__requests-1766/report.json": {
+     "bytes_source": 5995,
+     "redactions": 0
+    },
+    "logs/psf__requests-1766/test_output.txt": {
+     "bytes_source": 50940,
+     "redactions": 0
+    }
+   },
+   "listed": [
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/trajs/psf__requests-1766/psf__requests-1766.traj.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/psf__requests-1766/job-output.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/psf__requests-1766/patch.diff",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/psf__requests-1766/report.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/psf__requests-1766/test_output.txt"
+   ],
+   "exit_status": "Submitted",
+   "submission_chars": 10122,
+   "model_stats": {
+    "instance_cost": 0.04447200000000001,
+    "api_calls": 26
+   },
+   "mini_version": "1.17.1",
+   "has_eval_logs": true
+  },
+  "pylint-dev__pylint-6386": {
+   "files": {
+    "trajs/pylint-dev__pylint-6386/pylint-dev__pylint-6386.traj.json": {
+     "bytes_source": 148983,
+     "redactions": 1
+    },
+    "logs/pylint-dev__pylint-6386/job-output.json": {
+     "bytes_source": 30285,
+     "redactions": 0
+    },
+    "logs/pylint-dev__pylint-6386/patch.diff": {
+     "bytes_source": 1658,
+     "redactions": 0
+    },
+    "logs/pylint-dev__pylint-6386/report.json": {
+     "bytes_source": 761,
+     "redactions": 0
+    },
+    "logs/pylint-dev__pylint-6386/test_output.txt": {
+     "bytes_source": 26698,
+     "redactions": 0
+    }
+   },
+   "listed": [
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/trajs/pylint-dev__pylint-6386/pylint-dev__pylint-6386.traj.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/pylint-dev__pylint-6386/job-output.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/pylint-dev__pylint-6386/patch.diff",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/pylint-dev__pylint-6386/report.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/pylint-dev__pylint-6386/test_output.txt"
+   ],
+   "exit_status": "Submitted",
+   "submission_chars": 1658,
+   "model_stats": {
+    "instance_cost": 0.0742076,
+    "api_calls": 29
+   },
+   "mini_version": "1.17.1",
+   "has_eval_logs": true
+  },
+  "sympy__sympy-23950": {
+   "files": {
+    "trajs/sympy__sympy-23950/sympy__sympy-23950.traj.json": {
+     "bytes_source": 190769,
+     "redactions": 1
+    },
+    "logs/sympy__sympy-23950/job-output.json": {
+     "bytes_source": 16194,
+     "redactions": 0
+    },
+    "logs/sympy__sympy-23950/patch.diff": {
+     "bytes_source": 11626,
+     "redactions": 0
+    },
+    "logs/sympy__sympy-23950/report.json": {
+     "bytes_source": 406,
+     "redactions": 0
+    },
+    "logs/sympy__sympy-23950/test_output.txt": {
+     "bytes_source": 14917,
+     "redactions": 0
+    }
+   },
+   "listed": [
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/trajs/sympy__sympy-23950/sympy__sympy-23950.traj.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/sympy__sympy-23950/job-output.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/sympy__sympy-23950/patch.diff",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/sympy__sympy-23950/report.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/sympy__sympy-23950/test_output.txt"
+   ],
+   "exit_status": "Submitted",
+   "submission_chars": 11606,
+   "model_stats": {
+    "instance_cost": 0.07695939999999998,
+    "api_calls": 47
+   },
+   "mini_version": "1.17.1",
+   "has_eval_logs": true
+  },
+  "django__django-14376": {
+   "files": {
+    "trajs/django__django-14376/django__django-14376.traj.json": {
+     "bytes_source": 101586,
+     "redactions": 1
+    },
+    "logs/django__django-14376/job-output.json": {
+     "bytes_source": 41832,
+     "redactions": 0
+    },
+    "logs/django__django-14376/patch.diff": {
+     "bytes_source": 791,
+     "redactions": 0
+    },
+    "logs/django__django-14376/report.json": {
+     "bytes_source": 1081,
+     "redactions": 0
+    },
+    "logs/django__django-14376/test_output.txt": {
+     "bytes_source": 40079,
+     "redactions": 0
+    }
+   },
+   "listed": [
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/trajs/django__django-14376/django__django-14376.traj.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/django__django-14376/job-output.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/django__django-14376/patch.diff",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/django__django-14376/report.json",
+    "bash-only/20251201_mini-v1.17.1_glm-4.6/logs/django__django-14376/test_output.txt"
+   ],
+   "exit_status": "Submitted",
+   "submission_chars": 791,
+   "model_stats": {
+    "instance_cost": 0.028050600000000002,
+    "api_calls": 22
+   },
+   "mini_version": "1.17.1",
+   "has_eval_logs": true
+  }
+ }
+}
