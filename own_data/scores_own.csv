@@ -1,0 +1,2 @@
+run_id,task_id,risk,resolved,submitted,n_steps,cost_usd
+own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027b/psf__requests-1766,psf__requests-1766,0.29772883206692186,1,1,10,0.01273728

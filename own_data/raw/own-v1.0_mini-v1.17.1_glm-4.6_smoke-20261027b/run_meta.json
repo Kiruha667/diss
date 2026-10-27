@@ -1,0 +1,19 @@
+{
+ "run_id": "own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027b",
+ "protocol_version": "1.0",
+ "started_utc": "2026-10-27T10:04:08Z",
+ "wall_time_s": 134,
+ "runner_exit_code": 0,
+ "versions": {
+  "mini-swe-agent": "1.17.1",
+  "litellm": "1.80.7",
+  "openai": "2.8.1",
+  "datasets": "4.4.1"
+ },
+ "config_sha256": "5b0c5b98e945eaf658b2dead108a26f0c7dadb7a998ecd98a06b88109e262eee",
+ "registry_sha256": "d7acd3d8ee025c03647f5880a37e3e4fe38e54f2c4190bb0032a99918ae0d657",
+ "provider": "z.ai (OpenAI-compatible endpoint, litellm provider openai)",
+ "image_digests": {
+  "psf__requests-1766": "swebench/sweb.eval.x86_64.psf_1776_requests-1766@sha256:0618949b48408350dfae74d27e47ff9df8192fbf03248aa4f10650e0a36f52eb"
+ }
+}

@@ -1,0 +1,83 @@
+/opt/own/venv-agent/lib/python3.11/site-packages/click/core.py:1223: UserWarning: The parameter -c is used more than once. Remove its duplicate as parameters should be unique.
+  parser = self.make_parser(ctx)
+/opt/own/venv-agent/lib/python3.11/site-packages/click/core.py:1216: UserWarning: The parameter -c is used more than once. Remove its duplicate as parameters should be unique.
+  self.parse_args(ctx, args)
+minisweagent: INFO: Results will be saved to                                    
+/opt/own/runs/own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027                      
+Logging to '/opt/own/runs/own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027/minisweagent.log'
+minisweagent: INFO: Loading dataset princeton-nlp/SWE-Bench_Verified, split     
+test...                                                                         
+Generating test split:   0%|          | 0/500 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 500/500 [00:04<00:00, 108.36 examples/s]Generating test split: 100%|██████████| 500/500 [00:04<00:00, 108.35 examples/s]
+minisweagent: INFO: Instance filter: 500 -> 1 instances                         
+minisweagent: INFO: Running on 1 instances...                                   
+minisweagent: INFO: Loading agent config from                                   
+'/mnt/c/Users/1/Desktop/diss/own_data/config/glm-4.6_v1.0.yaml'                 
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+minisweagent.environment: DEBUG: Starting container with command: docker run -d 
+--name minisweagent-fa82f7e7 -w /testbed --rm                                   
+docker.io/swebench/sweb.eval.x86_64.psf_1776_requests-1766:latest sleep 2h      
+minisweagent: ERROR: Error processing instance psf__requests-1766: Command      
+'['docker', 'run', '-d', '--name', 'minisweagent-fa82f7e7', '-w', '/testbed',   
+'--rm', 'docker.io/swebench/sweb.eval.x86_64.psf_1776_requests-1766:latest',    
+'sleep', '2h']' timed out after 120 seconds                                     
+Traceback (most recent call last):                                              
+  File                                                                          
+"/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/run/extra/swebenc
+h.py", line 144, in process_instance                                            
+    env = get_sb_environment(config, instance)                                  
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                  
+  File                                                                          
+"/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/run/extra/swebenc
+h.py", line 88, in get_sb_environment                                           
+    env = get_environment(env_config)                                           
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^                                           
+  File                                                                          
+"/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/environments/__in
+it__.py", line 31, in get_environment                                           
+    return get_environment_class(environment_class)(**config)                   
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                   
+  File                                                                          
+"/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/environments/dock
+er.py", line 50, in __init__                                                    
+    self._start_container()                                                     
+  File                                                                          
+"/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/environments/dock
+er.py", line 72, in _start_container                                            
+    result = subprocess.run(                                                    
+             ^^^^^^^^^^^^^^^                                                    
+  File                                                                          
+"/root/.local/share/uv/python/cpython-3.11.18-linux-x86_64-gnu/lib/python3.11/su
+bprocess.py", line 550, in run                                                  
+    stdout, stderr = process.communicate(input, timeout=timeout)                
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                
+  File                                                                          
+"/root/.local/share/uv/python/cpython-3.11.18-linux-x86_64-gnu/lib/python3.11/su
+bprocess.py", line 1209, in communicate                                         
+    stdout, stderr = self._communicate(input, endtime, timeout)                 
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                 
+  File                                                                          
+"/root/.local/share/uv/python/cpython-3.11.18-linux-x86_64-gnu/lib/python3.11/su
+bprocess.py", line 2116, in _communicate                                        
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)                  
+  File                                                                          
+"/root/.local/share/uv/python/cpython-3.11.18-linux-x86_64-gnu/lib/python3.11/su
+bprocess.py", line 1253, in _check_timeout                                      
+    raise TimeoutExpired(                                                       
+subprocess.TimeoutExpired: Command '['docker', 'run', '-d', '--name',           
+'minisweagent-fa82f7e7', '-w', '/testbed', '--rm',                              
+'docker.io/swebench/sweb.eval.x86_64.psf_1776_requests-1766:latest', 'sleep',   
+'2h']' timed out after 120 seconds                                              
+minisweagent: INFO: Saved trajectory to                                         
+'/opt/own/runs/own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027/psf__requests-1766/p
+sf__requests-1766.traj.json'                                                    
+┏━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Exit Status    ┃ Count ┃ Most recent instances                               ┃
+┡━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ TimeoutExpired │     1 │ psf__requests-1766                                  │
+└────────────────┴───────┴─────────────────────────────────────────────────────┘
+  Overall Progress ($0.00) ━━━━━━━━━━━━━━━━━━━━━━━ 1/1 100% 0:02:44 eta: 0:00:00

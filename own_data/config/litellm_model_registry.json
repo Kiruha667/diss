@@ -1,0 +1,17 @@
+{
+  "glm-4.6": {
+    "cache_creation_input_token_cost": 0,
+    "cache_read_input_token_cost": 1.1e-07,
+    "input_cost_per_token": 6e-07,
+    "litellm_provider": "openai",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 128000,
+    "mode": "chat",
+    "output_cost_per_token": 2.2e-06,
+    "source": "https://docs.z.ai/guides/overview/pricing",
+    "supports_function_calling": true,
+    "supports_prompt_caching": true,
+    "supports_reasoning": true,
+    "supports_tool_choice": true
+  }
+}

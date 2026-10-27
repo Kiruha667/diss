@@ -1,0 +1,15 @@
+{
+  "info": {
+    "exit_status": "TimeoutExpired",
+    "submission": "Command '['docker', 'run', '-d', '--name', 'minisweagent-fa82f7e7', '-w', '/testbed', '--rm', 'docker.io/swebench/sweb.eval.x86_64.psf_1776_requests-1766:latest', 'sleep', '2h']' timed out after 120 seconds",
+    "model_stats": {
+      "instance_cost": 0.0,
+      "api_calls": 0
+    },
+    "mini_version": "1.17.1",
+    "traceback": "Traceback (most recent call last):\n  File \"/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/run/extra/swebench.py\", line 144, in process_instance\n    env = get_sb_environment(config, instance)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/run/extra/swebench.py\", line 88, in get_sb_environment\n    env = get_environment(env_config)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/environments/__init__.py\", line 31, in get_environment\n    return get_environment_class(environment_class)(**config)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/environments/docker.py\", line 50, in __init__\n    self._start_container()\n  File \"/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/environments/docker.py\", line 72, in _start_container\n    result = subprocess.run(\n             ^^^^^^^^^^^^^^^\n  File \"/root/.local/share/uv/python/cpython-3.11.18-linux-x86_64-gnu/lib/python3.11/subprocess.py\", line 550, in run\n    stdout, stderr = process.communicate(input, timeout=timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/.local/share/uv/python/cpython-3.11.18-linux-x86_64-gnu/lib/python3.11/subprocess.py\", line 1209, in communicate\n    stdout, stderr = self._communicate(input, endtime, timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/.local/share/uv/python/cpython-3.11.18-linux-x86_64-gnu/lib/python3.11/subprocess.py\", line 2116, in _communicate\n    self._check_timeout(endtime, orig_timeout, stdout, stderr)\n  File \"/root/.local/share/uv/python/cpython-3.11.18-linux-x86_64-gnu/lib/python3.11/subprocess.py\", line 1253, in _check_timeout\n    raise TimeoutExpired(\nsubprocess.TimeoutExpired: Command '['docker', 'run', '-d', '--name', 'minisweagent-fa82f7e7', '-w', '/testbed', '--rm', 'docker.io/swebench/sweb.eval.x86_64.psf_1776_requests-1766:latest', 'sleep', '2h']' timed out after 120 seconds\n"
+  },
+  "messages": [],
+  "trajectory_format": "mini-swe-agent-1",
+  "instance_id": "psf__requests-1766"
+}
