@@ -81,14 +81,16 @@ def main() -> None:
     infra = list(cfg_src.get("infra_exit_statuses") or [])
     mre = compile_markers(load_leak_markers())
     claim = g0.load_patterns(CONFIG / "claim_patterns.txt")
-    cfg_path = OWN / "config" / "glm-4.6_v1.0.yaml"
-    cfg_yaml = yaml.safe_load(cfg_path.read_text(encoding="utf-8"))
+    cfgs = {p.stem.split("_v")[-1]: yaml.safe_load(p.read_text(encoding="utf-8"))
+            for p in (OWN / "config").glob("glm-4.6_v*.yaml")}
     corpus = pd.read_parquet(ROOT / "data" / "demo" / "runs.parquet")
     corpus = corpus[corpus.submitted == 1]
     runs, steps, scores, problems = [], [], [], []
     for meta_path in sorted((OWN / "raw").glob("*/run_meta.json")):
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
         run_id = meta["run_id"]
+        version = str(meta.get("protocol_version"))
+        cfg_yaml = cfgs[version]
         rep_m = re.search(r"_r(\d+)(?:_|$)", run_id)
         for traj in sorted(meta_path.parent.glob("*/*.traj.json")):
             iid = traj.parent.name
@@ -105,6 +107,9 @@ def main() -> None:
                 problems.append(f"{run_id}/{iid}: not processed ({reason or 'no evaluation report'})")
                 continue
             rec["label"] = label
+            reasoning = rec["meta"].get("reasoning_sources") or []
+            if reasoning and version != "1.0":
+                problems.append(f"{run_id}/{iid}: REASONING ENTERS TEXT FEATURES ({reasoning})")
             run, st, chk = bdd.record_rows(rec, mre, claim)
             run["claim_success"] = int(chk["claim_recomputed"])
             tin, tout = tokens(d)
@@ -114,7 +119,10 @@ def main() -> None:
                         "tokens_in": tin, "tokens_out": tout, "wall_time_s": meta.get("wall_time_s"),
                         "config_sha256": meta.get("config_sha256"),
                         "image_digest": meta.get("image_digests", {}).get(iid),
-                        "protocol_version": meta.get("protocol_version")})
+                        "protocol_version": version, "reasoning_sources": " + ".join(reasoning),
+                        "in_analysis": int(version != "1.0" and "_smoke" not in run_id),
+                        "note": ("smoke-тест протокола 1.0 (рассуждения glm-4.6 включены), не входит в анализ"
+                                 if version == "1.0" else "")})
             # features recomputed by demo_lib from the steps (score_trajectory path) must equal the original ones
             st_df = pd.DataFrame(st)
             f = dfeat.trajectory_features(dfeat.steps_from_frame(st_df))
@@ -134,8 +142,10 @@ def main() -> None:
         sdf["commands"] = sdf["commands"].apply(list)
         sdf.to_parquet(OWN / "steps_own.parquet", index=False)
         pd.DataFrame(scores).to_csv(OWN / "scores_own.csv", index=False)
-    print(json.dumps({"runs": len(runs), "problems": problems,
-                      "scores": scores}, indent=1, default=str))
+    status = {"runs": len(runs), "problems": problems, "scores": scores}
+    (OWN / "process_status.json").write_text(json.dumps(status, indent=1, ensure_ascii=False, default=str),
+                                             encoding="utf-8")
+    print(json.dumps(status, indent=1, default=str))
 
 
 if __name__ == "__main__":

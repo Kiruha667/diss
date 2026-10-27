@@ -1,0 +1,55 @@
+{
+ "tokenizer": "tiktoken cl100k_base (proxy)",
+ "tiktoken": "0.12.0",
+ "sets": {
+  "corpus": {
+   "responses": 1212,
+   "with_usage": 1212,
+   "with_r": 1212,
+   "zero_visible_text": 0,
+   "r_median": 1.0784313725490196,
+   "r_q1": 1.0388349514563107,
+   "r_q3": 1.1111111111111112,
+   "completion_tokens_median": 62.0,
+   "visible_tokens_median": 57.0,
+   "reasoning_tokens_reported": 0,
+   "reasoning_tokens_positive": 0,
+   "responses_with_reasoning_text": 0
+  },
+  "smoke": {
+   "responses": 10,
+   "with_usage": 10,
+   "with_r": 10,
+   "zero_visible_text": 0,
+   "r_median": 1.7821566731141198,
+   "r_q1": 1.5696428571428571,
+   "r_q3": 2.002416459541563,
+   "completion_tokens_median": 111.5,
+   "visible_tokens_median": 53.0,
+   "reasoning_tokens_reported": 10,
+   "reasoning_tokens_positive": 10,
+   "responses_with_reasoning_text": 10
+  },
+  "probe": {
+   "responses": 7,
+   "with_usage": 7,
+   "with_r": 7,
+   "zero_visible_text": 0,
+   "r_median": 1.024390243902439,
+   "r_q1": 1.0157826642414793,
+   "r_q3": 1.029551337359793,
+   "completion_tokens_median": 63.0,
+   "visible_tokens_median": 61.0,
+   "reasoning_tokens_reported": 7,
+   "reasoning_tokens_positive": 0,
+   "responses_with_reasoning_text": 0
+  }
+ },
+ "decision": {
+  "corpus_minus_probe": 0.054041128646580505,
+  "corpus_minus_smoke": 0.7037253005651003,
+  "closer_to_probe": true,
+  "fold_vs_smoke": 1.6525452787058204,
+  "go_to_protocol_1_1": true
+ }
+}

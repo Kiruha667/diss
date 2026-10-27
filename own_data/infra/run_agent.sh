@@ -8,8 +8,11 @@ set -euo pipefail
 RUN_ID="$1"; FILTER="$2"
 : "${ZAI_API_KEY:?ZAI_API_KEY is not set}"
 REPO=/mnt/c/Users/1/Desktop/diss
+# OWN_PROTOCOL selects own_data/config/glm-4.6_v<version>.yaml (default 1.1 since PROTOCOL.md 1.1);
 # OWN_CFG / OWN_DEST_ROOT override the config and the destination only for probes outside the corpus (own_data/probes)
-CFG="${OWN_CFG:-$REPO/own_data/config/glm-4.6_v1.0.yaml}"
+PROTOCOL="${OWN_PROTOCOL:-1.1}"
+CFG="${OWN_CFG:-$REPO/own_data/config/glm-4.6_v${PROTOCOL}.yaml}"
+[ -f "$CFG" ] || { echo "no config $CFG"; exit 2; }
 REG_SRC="$REPO/own_data/config/litellm_model_registry.json"
 REG=/home/klieret/litellm_model_registry.json   # path written in the verbatim corpus config
 OUT="/opt/own/runs/$RUN_ID"
@@ -43,9 +46,9 @@ if grep -rqF -- "$ZAI_API_KEY" "$OUT"; then
 fi
 
 # run metadata: versions, hashes, image digests (no secrets)
-/opt/own/venv-agent/bin/python - "$OUT" "$RUN_ID" "$start" "$wall" "$rc" "$CFG" "$REG" <<'EOF'
+/opt/own/venv-agent/bin/python - "$OUT" "$RUN_ID" "$start" "$wall" "$rc" "$CFG" "$REG" "$PROTOCOL" <<'EOF'
 import hashlib, importlib.metadata as m, json, pathlib, subprocess, sys
-out, run_id, start, wall, rc, cfg, reg = sys.argv[1:]
+out, run_id, start, wall, rc, cfg, reg, protocol = sys.argv[1:]
 out = pathlib.Path(out)
 digests = {}
 for traj in out.glob("*/*.traj.json"):
@@ -54,7 +57,7 @@ for traj in out.glob("*/*.traj.json"):
         r = subprocess.run(["docker", "image", "inspect", "--format", "{{index .RepoDigests 0}}", img],
                            capture_output=True, text=True)
         digests[traj.parent.name] = r.stdout.strip()
-meta = {"run_id": run_id, "protocol_version": "1.0", "started_utc": start, "wall_time_s": int(wall),
+meta = {"run_id": run_id, "protocol_version": protocol, "started_utc": start, "wall_time_s": int(wall),
         "runner_exit_code": int(rc),
         "versions": {p: m.version(p) for p in ("mini-swe-agent", "litellm", "openai", "datasets")},
         "config_sha256": hashlib.sha256(pathlib.Path(cfg).read_bytes()).hexdigest(),

@@ -1,0 +1,18 @@
+{
+ "runs": 1,
+ "problems": [
+  "own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027/psf__requests-1766: config differs: ['agent', 'environment', 'model']",
+  "own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027/psf__requests-1766: not processed (unsupported_format:no_messages)"
+ ],
+ "scores": [
+  {
+   "run_id": "own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027b/psf__requests-1766",
+   "task_id": "psf__requests-1766",
+   "risk": 0.29772883206692186,
+   "resolved": 1,
+   "submitted": 1,
+   "n_steps": 10,
+   "cost_usd": 0.01273728
+  }
+ ]
+}
