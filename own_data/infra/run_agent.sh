@@ -8,11 +8,12 @@ set -euo pipefail
 RUN_ID="$1"; FILTER="$2"
 : "${ZAI_API_KEY:?ZAI_API_KEY is not set}"
 REPO=/mnt/c/Users/1/Desktop/diss
-CFG="$REPO/own_data/config/glm-4.6_v1.0.yaml"
+# OWN_CFG / OWN_DEST_ROOT override the config and the destination only for probes outside the corpus (own_data/probes)
+CFG="${OWN_CFG:-$REPO/own_data/config/glm-4.6_v1.0.yaml}"
 REG_SRC="$REPO/own_data/config/litellm_model_registry.json"
 REG=/home/klieret/litellm_model_registry.json   # path written in the verbatim corpus config
 OUT="/opt/own/runs/$RUN_ID"
-DEST="$REPO/own_data/raw/$RUN_ID"
+DEST="${OWN_DEST_ROOT:-$REPO/own_data/raw}/$RUN_ID"
 [ -e "$DEST" ] && { echo "refusing to overwrite $DEST (raw runs are immutable)"; exit 2; }
 
 bash "$REPO/own_data/infra/dockerd_up.sh"
