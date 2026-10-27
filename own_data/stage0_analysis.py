@@ -179,12 +179,33 @@ def candidate_reference(pilot: pd.DataFrame) -> list[dict]:
     return out
 
 
+MAIN_MODEL = "glm-4.6"            # PROTOCOL.md v1.0, TODO-2
+FALLBACK_MODEL = "devstral-small-2512"  # PROTOCOL.md v1.0, fallback (needs protocol v1.1)
+
+
+def protocol_reference(pool: pd.DataFrame) -> dict:
+    """Reference values of the pilot reproducibility criteria (PROTOCOL.md v1.0, TODO-6): the model's corpus runs
+    on the pool tasks with submitted == 1 -> share resolved +-0.2 and median length +-30%."""
+    runs = pd.read_parquet(ROOT / "data" / "demo" / "runs.parquet")
+    out = {}
+    for name in (MAIN_MODEL, FALLBACK_MODEL):
+        r = runs[(runs.model == name) & runs.task_id.isin(pool.index)]
+        s = r[r.submitted == 1]
+        share, med = float(s.resolved.mean()), float(s.n_steps.median())
+        out[name] = {"pool_tasks": len(pool), "runs": len(r), "submitted": len(s), "resolved": int(s.resolved.sum()),
+                     "not_submitted": r[r.submitted == 0][["task_id", "exit_status"]].to_dict("records"),
+                     "resolved_share": share, "resolved_share_corridor": [max(0.0, share - 0.2), min(1.0, share + 0.2)],
+                     "median_steps": med, "median_steps_corridor": [0.7 * med, 1.3 * med]}
+    return out
+
+
 def main() -> None:
     rows, configs = runs_summary()
     groups = template_groups(configs)
     t, pool, counts = task_pool()
     pilot, n_eligible = pick_pilot(pool)
     ref = candidate_reference(pilot)
+    proto_ref = protocol_reference(pool)
     cols = ["repo", "n_submitted", "n_resolved", "share_resolved", "share_resolved_all_runs", "median_steps"] + \
         list(CANDIDATES)
     pool_records = pool[cols].reset_index().to_dict("records")
@@ -200,7 +221,9 @@ def main() -> None:
         indent=1, ensure_ascii=False, default=str), encoding="utf-8")
     (OUT / "stage0_results.json").write_text(json.dumps(
         {"runs": rows, "template_groups": groups, "pool_counts": counts, "pilot_eligible": n_eligible,
-         "candidate_reference": ref}, indent=1, ensure_ascii=False, default=str), encoding="utf-8")
+         "candidate_reference": ref, "protocol_reference": proto_ref}, indent=1, ensure_ascii=False, default=str),
+        encoding="utf-8")
+    print(json.dumps(proto_ref, indent=1))
     print(json.dumps({"pool_counts": counts, "pilot_eligible": n_eligible, "template_groups": groups}, indent=1))
     print(pd.DataFrame(rows)[["run", "n_trajectories", "with_model_stats", "mini_version_in_trajectories",
                               "metadata_version", "temperature", "step_limit", "cost_limit", "cost_median",

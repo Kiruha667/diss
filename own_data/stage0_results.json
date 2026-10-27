@@ -660,5 +660,46 @@
    "pilot_resolved_share": 0.4,
    "pilot_median_steps": 61.0
   }
- ]
+ ],
+ "protocol_reference": {
+  "glm-4.6": {
+   "pool_tasks": 36,
+   "runs": 36,
+   "submitted": 35,
+   "resolved": 11,
+   "not_submitted": [
+    {
+     "task_id": "scikit-learn__scikit-learn-14629",
+     "exit_status": "LimitsExceeded"
+    }
+   ],
+   "resolved_share": 0.3142857142857143,
+   "resolved_share_corridor": [
+    0.11428571428571427,
+    0.5142857142857142
+   ],
+   "median_steps": 37.0,
+   "median_steps_corridor": [
+    25.9,
+    48.1
+   ]
+  },
+  "devstral-small-2512": {
+   "pool_tasks": 36,
+   "runs": 36,
+   "submitted": 36,
+   "resolved": 12,
+   "not_submitted": [],
+   "resolved_share": 0.3333333333333333,
+   "resolved_share_corridor": [
+    0.1333333333333333,
+    0.5333333333333333
+   ],
+   "median_steps": 74.5,
+   "median_steps_corridor": [
+    52.15,
+    96.85000000000001
+   ]
+  }
+ }
 }

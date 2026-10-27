@@ -18,3 +18,17 @@
   pytest-dev__pytest-7324, psf__requests-1766, pylint-dev__pylint-6386, sympy__sympy-23950, django__django-14376.
 - Создан `PROTOCOL.md` v0.1 (черновик) с TODO-1…TODO-6; отчёт — `STAGE0_REPORT.md`.
 - Расходы: $0.
+
+## 2026-10-27 — PROTOCOL.md 1.0
+
+- TODO-1…6 закрыты решениями автора: mini-swe-agent 1.17.1 и конфиг прогона `20251201_mini-v1.17.1_glm-4.6`
+  дословно (без поля `api_key`; ключ — из `ZAI_API_KEY`, в файлы не пишется); модель glm-4.6, провайдер z.ai;
+  temperature 1.0; `cost_limit` $3 и `step_limit` 250; критерий пилота — медианная стоимость ≤ $0.20, жёсткая
+  остановка пилота при расходе $5; smoke-тест и пилот — WSL2 + Docker Engine локально.
+- Опорные значения (glm-4.6, 36 задач пула, `submitted == 1`; `protocol_reference()` в `stage0_analysis.py`): решено
+  11 из 35 — доля 0.314, коридор [0.114; 0.514]; медиана длины 37 шагов, коридор [25.9; 48.1].
+- Проверено: `mini-swe-agent==1.17.1` есть на PyPI (2025-12-02; litellm не закреплён, `>=1.75.5`).
+- Обнаружено: аппаратная виртуализация в BIOS выключена (`systeminfo`), без неё WSL2 и Docker не работают — нужно
+  включить вручную; дословный конфиг ссылается на реестр litellm на чужой машине
+  (`/home/klieret/litellm_model_registry.json`) — решение до smoke-теста (PROTOCOL.md, раздел 8).
+- Расходы: $0.
