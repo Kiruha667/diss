@@ -31,4 +31,7 @@
 - Обнаружено: аппаратная виртуализация в BIOS выключена (`systeminfo`), без неё WSL2 и Docker не работают — нужно
   включить вручную; дословный конфиг ссылается на реестр litellm на чужой машине
   (`/home/klieret/litellm_model_registry.json`) — решение до smoke-теста (PROTOCOL.md, раздел 8).
+- Подготовка WSL2 (с разрешения автора): включены компоненты Windows `Microsoft-Windows-Subsystem-Linux` и
+  `VirtualMachinePlatform` (без перезагрузки; вступят в силу после неё). Дистрибутив Linux и Docker Engine ещё не
+  установлены — после включения виртуализации в BIOS.
 - Расходы: $0.
