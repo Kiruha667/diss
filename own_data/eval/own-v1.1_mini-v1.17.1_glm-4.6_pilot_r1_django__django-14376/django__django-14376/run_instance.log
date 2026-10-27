@@ -1,0 +1,96 @@
+2026-10-27 16:59:50,864 - INFO - Creating container for django__django-14376...
+2026-10-27 16:59:52,822 - INFO - Container for django__django-14376 created: 51715f642c525a1fb60d65ee29efb9ddfef1f550fb34d6664fd2d62093c56f5a
+2026-10-27 16:59:54,454 - INFO - Container for django__django-14376 started: 51715f642c525a1fb60d65ee29efb9ddfef1f550fb34d6664fd2d62093c56f5a
+2026-10-27 16:59:54,454 - INFO - Intermediate patch for django__django-14376 written to logs/run_evaluation/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_django__django-14376/glm-4.6/django__django-14376/patch.diff, now applying to container...
+2026-10-27 16:59:54,604 - INFO - >>>>> Applied Patch:
+/tmp/patch.diff:128: trailing whitespace.
+    
+/tmp/patch.diff:134: trailing whitespace.
+    
+/tmp/patch.diff:140: trailing whitespace.
+    
+/tmp/patch.diff:146: trailing whitespace.
+    
+/tmp/patch.diff:152: trailing whitespace.
+    
+Checking patch django/db/backends/mysql/base.py...
+Checking patch django/db/backends/mysql/client.py...
+Checking patch test_mysql_client.py...
+Checking patch test_mysql_client_v2.py...
+Checking patch test_mysql_connection_params.py...
+Applied patch django/db/backends/mysql/base.py cleanly.
+Applied patch django/db/backends/mysql/client.py cleanly.
+Applied patch test_mysql_client.py cleanly.
+Applied patch test_mysql_client_v2.py cleanly.
+Applied patch test_mysql_connection_params.py cleanly.
+warning: 5 lines add whitespace errors.
+
+2026-10-27 16:59:55,472 - INFO - Git diff before:
+diff --git a/django/db/backends/mysql/base.py b/django/db/backends/mysql/base.py
+index 2c62182d31..8b28a60485 100644
+--- a/django/db/backends/mysql/base.py
++++ b/django/db/backends/mysql/base.py
+@@ -200,9 +200,9 @@ class DatabaseWrapper(BaseDatabaseWrapper):
+         if settings_dict['USER']:
+             kwargs['user'] = settings_dict['USER']
+         if settings_dict['NAME']:
+-            kwargs['db'] = settings_dict['NAME']
++            kwargs['database'] = settings_dict['NAME']
+         if settings_dict['PASSWORD']:
+-            kwargs['passwd'] = settings_dict['PASSWORD']
++            kwargs['password'] = settings_dict['PASSWORD']
+         if settings_dict['HOST'].startswith('/'):
+             kwargs['unix_socket'] = settings_dict['HOST']
+         elif settings_dict['HOST']:
+diff --git a/django/db/backends/mysql/client.py b/django/db/backends/mysql/client.py
+index 95442a32b0..dd5a39b30e 100644
+--- a/django/db/backends/mysql/client.py
++++ b/django/db/backends/mysql/client.py
+@@ -8,7 +8,7 @@ class DatabaseClient(BaseDatabaseClient):
+     def settings_to_cmd_args_env(cls, settings_dict, parameters):
+         args = [cls.executable_name]
+         env = None
+-        db = settings_dict['OPTIONS'].get('db', settings_dict['NAME'])
++        db = settings_dict['OPTIONS'].get('database', settings_dict['OPTIONS'].get('db', settings_dict['NAME']))
+         user = settings_dict['OPTIONS'].get('user', settings_dict['USER'])
+         password = settings_dict['OPTIONS'].get(
+             'password',
+2026-10-27 16:59:55,473 - INFO - Eval script for django__django-14376 written to logs/run_evaluation/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_django__django-14376/glm-4.6/django__django-14376/eval.sh; copying to container...
+2026-10-27 17:00:08,532 - INFO - Test runtime: 12.96 seconds
+2026-10-27 17:00:08,533 - INFO - Test output for django__django-14376 written to logs/run_evaluation/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_django__django-14376/glm-4.6/django__django-14376/test_output.txt
+2026-10-27 17:00:08,653 - INFO - Git diff after:
+diff --git a/django/db/backends/mysql/base.py b/django/db/backends/mysql/base.py
+index 2c62182d31..8b28a60485 100644
+--- a/django/db/backends/mysql/base.py
++++ b/django/db/backends/mysql/base.py
+@@ -200,9 +200,9 @@ class DatabaseWrapper(BaseDatabaseWrapper):
+         if settings_dict['USER']:
+             kwargs['user'] = settings_dict['USER']
+         if settings_dict['NAME']:
+-            kwargs['db'] = settings_dict['NAME']
++            kwargs['database'] = settings_dict['NAME']
+         if settings_dict['PASSWORD']:
+-            kwargs['passwd'] = settings_dict['PASSWORD']
++            kwargs['password'] = settings_dict['PASSWORD']
+         if settings_dict['HOST'].startswith('/'):
+             kwargs['unix_socket'] = settings_dict['HOST']
+         elif settings_dict['HOST']:
+diff --git a/django/db/backends/mysql/client.py b/django/db/backends/mysql/client.py
+index 95442a32b0..dd5a39b30e 100644
+--- a/django/db/backends/mysql/client.py
++++ b/django/db/backends/mysql/client.py
+@@ -8,7 +8,7 @@ class DatabaseClient(BaseDatabaseClient):
+     def settings_to_cmd_args_env(cls, settings_dict, parameters):
+         args = [cls.executable_name]
+         env = None
+-        db = settings_dict['OPTIONS'].get('db', settings_dict['NAME'])
++        db = settings_dict['OPTIONS'].get('database', settings_dict['OPTIONS'].get('db', settings_dict['NAME']))
+         user = settings_dict['OPTIONS'].get('user', settings_dict['USER'])
+         password = settings_dict['OPTIONS'].get(
+             'password',
+2026-10-27 17:00:08,653 - INFO - Grading answer for django__django-14376...
+2026-10-27 17:00:08,654 - INFO - report: {'django__django-14376': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_options_non_deprecated_keys_preferred (dbshell.test_mysql.MySqlDbshellCommandTestCase)', 'test_options_override_settings_proper_values (dbshell.test_mysql.MySqlDbshellCommandTestCase)', 'test_parameters (dbshell.test_mysql.MySqlDbshellCommandTestCase)'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_basic_params_specified_in_settings (dbshell.test_mysql.MySqlDbshellCommandTestCase)', 'test_can_connect_using_sockets (dbshell.test_mysql.MySqlDbshellCommandTestCase)', 'test_crash_password_does_not_leak (dbshell.test_mysql.MySqlDbshellCommandTestCase)', 'test_fails_with_keyerror_on_incomplete_config (dbshell.test_mysql.MySqlDbshellCommandTestCase)', 'test_options_charset (dbshell.test_mysql.MySqlDbshellCommandTestCase)', 'test_ssl_certificate_is_added (dbshell.test_mysql.MySqlDbshellCommandTestCase)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-14376: resolved: True
+2026-10-27 17:00:08,655 - INFO - Attempting to stop container sweb.eval.django__django-14376.own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_django__django-14376...
+2026-10-27 17:00:27,781 - INFO - Attempting to remove container sweb.eval.django__django-14376.own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_django__django-14376...
+2026-10-27 17:00:31,216 - INFO - Container sweb.eval.django__django-14376.own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_django__django-14376 removed.

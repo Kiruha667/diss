@@ -1,0 +1,33 @@
+/opt/own/venv-agent/lib/python3.11/site-packages/click/core.py:1223: UserWarning: The parameter -c is used more than once. Remove its duplicate as parameters should be unique.
+  parser = self.make_parser(ctx)
+/opt/own/venv-agent/lib/python3.11/site-packages/click/core.py:1216: UserWarning: The parameter -c is used more than once. Remove its duplicate as parameters should be unique.
+  self.parse_args(ctx, args)
+minisweagent: INFO: Results will be saved to                                    
+/opt/own/runs/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pytest-dev__pytest-7324    
+Logging to '/opt/own/runs/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pytest-dev__pytest-7324/minisweagent.log'
+minisweagent: INFO: Loading dataset princeton-nlp/SWE-Bench_Verified, split     
+test...                                                                         
+minisweagent: INFO: Instance filter: 500 -> 1 instances                         
+minisweagent: INFO: Running on 1 instances...                                   
+minisweagent: INFO: Loading agent config from                                   
+'/mnt/c/Users/1/Desktop/diss/own_data/config/glm-4.6_v1.1.yaml'                 
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+minisweagent.environment: DEBUG: Starting container with command: docker run -d 
+--name minisweagent-17b9d74f -w /testbed --rm                                   
+docker.io/swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-7324:latest sleep 2h 
+minisweagent.environment: INFO: Started container minisweagent-17b9d74f with ID 
+6ac77b71657aae5038ea8d25d306c90367e67a5255dd532fcf58b9ae8d773ca3                
+minisweagent: INFO: Saved trajectory to                                         
+'/opt/own/runs/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pytest-dev__pytest-7324/py
+test-dev__pytest-7324/pytest-dev__pytest-7324.traj.json'                        
+┏━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Exit Status ┃ Count ┃ Most recent instances                                  ┃
+┡━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Submitted   │     1 │ pytest-dev__pytest-7324                                │
+└─────────────┴───────┴────────────────────────────────────────────────────────┘
+  Overall Progress ($0.09) ━━━━━━━━━━━━━━━━━━━━━━━ 1/1 100% 0:06:46 eta: 0:00:00

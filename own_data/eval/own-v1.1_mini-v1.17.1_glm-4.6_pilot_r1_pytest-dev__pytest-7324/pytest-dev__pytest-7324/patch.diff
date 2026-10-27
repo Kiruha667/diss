@@ -1,0 +1,34 @@
+diff --git a/src/_pytest/mark/expression.py b/src/_pytest/mark/expression.py
+index 04c73411a..c413bc44c 100644
+--- a/src/_pytest/mark/expression.py
++++ b/src/_pytest/mark/expression.py
+@@ -161,6 +161,8 @@ def not_expr(s: Scanner) -> ast.expr:
+         return ret
+     ident = s.accept(TokenType.IDENT)
+     if ident:
++        if ident.value in ("True", "False", "None"):
++            return ast.Name("@pytest_" + ident.value, ast.Load())
+         return ast.Name(ident.value, ast.Load())
+     s.reject((TokenType.NOT, TokenType.LPAREN, TokenType.IDENT))
+ 
+@@ -168,10 +170,20 @@ def not_expr(s: Scanner) -> ast.expr:
+ class MatcherAdapter(Mapping[str, bool]):
+     """Adapts a matcher function to a locals mapping as required by eval()."""
+ 
++    # Mangled names for Python keywords that can't be used as Name nodes.
++    _MANGLED_NAMES = {
++        "@pytest_True": "True",
++        "@pytest_False": "False",
++        "@pytest_None": "None",
++    }
++
+     def __init__(self, matcher: Callable[[str], bool]) -> None:
+         self.matcher = matcher
+ 
+     def __getitem__(self, key: str) -> bool:
++        # Check if this is a mangled name for a Python keyword.
++        if key in self._MANGLED_NAMES:
++            return self.matcher(self._MANGLED_NAMES[key])
+         return self.matcher(key)
+ 
+     def __iter__(self) -> Iterator[str]:

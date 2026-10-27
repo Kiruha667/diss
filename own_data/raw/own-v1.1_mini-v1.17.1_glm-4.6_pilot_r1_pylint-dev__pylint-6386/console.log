@@ -1,0 +1,33 @@
+/opt/own/venv-agent/lib/python3.11/site-packages/click/core.py:1223: UserWarning: The parameter -c is used more than once. Remove its duplicate as parameters should be unique.
+  parser = self.make_parser(ctx)
+/opt/own/venv-agent/lib/python3.11/site-packages/click/core.py:1216: UserWarning: The parameter -c is used more than once. Remove its duplicate as parameters should be unique.
+  self.parse_args(ctx, args)
+minisweagent: INFO: Results will be saved to                                    
+/opt/own/runs/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pylint-dev__pylint-6386    
+Logging to '/opt/own/runs/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pylint-dev__pylint-6386/minisweagent.log'
+minisweagent: INFO: Loading dataset princeton-nlp/SWE-Bench_Verified, split     
+test...                                                                         
+minisweagent: INFO: Instance filter: 500 -> 1 instances                         
+minisweagent: INFO: Running on 1 instances...                                   
+minisweagent: INFO: Loading agent config from                                   
+'/mnt/c/Users/1/Desktop/diss/own_data/config/glm-4.6_v1.1.yaml'                 
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+minisweagent.environment: DEBUG: Starting container with command: docker run -d 
+--name minisweagent-b2f79865 -w /testbed --rm                                   
+docker.io/swebench/sweb.eval.x86_64.pylint-dev_1776_pylint-6386:latest sleep 2h 
+minisweagent.environment: INFO: Started container minisweagent-b2f79865 with ID 
+a4ca36bd9f3f3e926817f2645a9248edc1f948d2c8a7ca7eccbd169856a2de4e                
+minisweagent: INFO: Saved trajectory to                                         
+'/opt/own/runs/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pylint-dev__pylint-6386/py
+lint-dev__pylint-6386/pylint-dev__pylint-6386.traj.json'                        
+┏━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Exit Status ┃ Count ┃ Most recent instances                                  ┃
+┡━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Submitted   │     1 │ pylint-dev__pylint-6386                                │
+└─────────────┴───────┴────────────────────────────────────────────────────────┘
+  Overall Progress ($0.24) ━━━━━━━━━━━━━━━━━━━━━━━ 1/1 100% 0:13:59 eta: 0:00:00

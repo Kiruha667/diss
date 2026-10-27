@@ -1,0 +1,7 @@
+{
+  "pytest-dev__pytest-7324": {
+    "model_name_or_path": "glm-4.6",
+    "instance_id": "pytest-dev__pytest-7324",
+    "model_patch": "diff --git a/src/_pytest/mark/expression.py b/src/_pytest/mark/expression.py\nindex 04c73411a..c413bc44c 100644\n--- a/src/_pytest/mark/expression.py\n+++ b/src/_pytest/mark/expression.py\n@@ -161,6 +161,8 @@ def not_expr(s: Scanner) -> ast.expr:\n         return ret\n     ident = s.accept(TokenType.IDENT)\n     if ident:\n+        if ident.value in (\"True\", \"False\", \"None\"):\n+            return ast.Name(\"@pytest_\" + ident.value, ast.Load())\n         return ast.Name(ident.value, ast.Load())\n     s.reject((TokenType.NOT, TokenType.LPAREN, TokenType.IDENT))\n \n@@ -168,10 +170,20 @@ def not_expr(s: Scanner) -> ast.expr:\n class MatcherAdapter(Mapping[str, bool]):\n     \"\"\"Adapts a matcher function to a locals mapping as required by eval().\"\"\"\n \n+    # Mangled names for Python keywords that can't be used as Name nodes.\n+    _MANGLED_NAMES = {\n+        \"@pytest_True\": \"True\",\n+        \"@pytest_False\": \"False\",\n+        \"@pytest_None\": \"None\",\n+    }\n+\n     def __init__(self, matcher: Callable[[str], bool]) -> None:\n         self.matcher = matcher\n \n     def __getitem__(self, key: str) -> bool:\n+        # Check if this is a mangled name for a Python keyword.\n+        if key in self._MANGLED_NAMES:\n+            return self.matcher(self._MANGLED_NAMES[key])\n         return self.matcher(key)\n \n     def __iter__(self) -> Iterator[str]:\n"
+  }
+}

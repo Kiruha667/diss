@@ -1,0 +1,159 @@
+diff --git a/django/db/backends/mysql/base.py b/django/db/backends/mysql/base.py
+index 2c62182d31..8b28a60485 100644
+--- a/django/db/backends/mysql/base.py
++++ b/django/db/backends/mysql/base.py
+@@ -200,9 +200,9 @@ class DatabaseWrapper(BaseDatabaseWrapper):
+         if settings_dict['USER']:
+             kwargs['user'] = settings_dict['USER']
+         if settings_dict['NAME']:
+-            kwargs['db'] = settings_dict['NAME']
++            kwargs['database'] = settings_dict['NAME']
+         if settings_dict['PASSWORD']:
+-            kwargs['passwd'] = settings_dict['PASSWORD']
++            kwargs['password'] = settings_dict['PASSWORD']
+         if settings_dict['HOST'].startswith('/'):
+             kwargs['unix_socket'] = settings_dict['HOST']
+         elif settings_dict['HOST']:
+diff --git a/django/db/backends/mysql/client.py b/django/db/backends/mysql/client.py
+index 95442a32b0..dd5a39b30e 100644
+--- a/django/db/backends/mysql/client.py
++++ b/django/db/backends/mysql/client.py
+@@ -8,7 +8,7 @@ class DatabaseClient(BaseDatabaseClient):
+     def settings_to_cmd_args_env(cls, settings_dict, parameters):
+         args = [cls.executable_name]
+         env = None
+-        db = settings_dict['OPTIONS'].get('db', settings_dict['NAME'])
++        db = settings_dict['OPTIONS'].get('database', settings_dict['OPTIONS'].get('db', settings_dict['NAME']))
+         user = settings_dict['OPTIONS'].get('user', settings_dict['USER'])
+         password = settings_dict['OPTIONS'].get(
+             'password',
+diff --git a/test_mysql_client.py b/test_mysql_client.py
+new file mode 100644
+index 0000000000..5ddf0ec956
+--- /dev/null
++++ b/test_mysql_client.py
+@@ -0,0 +1,33 @@
++# Test the client.py changes for backward compatibility
++# It should look for 'database' first, then fall back to 'db'
++# It should look for 'password' first, then fall back to 'passwd'
++
++import re
++
++# Read the client.py file
++with open('/testbed/django/db/backends/mysql/client.py', 'r') as f:
++    content = f.read()
++
++print("Checking client.py for backward compatibility...")
++
++# Check that 'database' is looked up first, with 'db' as fallback
++if "settings_dict['OPTIONS'].get('database'" in content and "settings_dict['OPTIONS'].get('db'" in content:
++    print("✓ 'database' lookup with 'db' fallback for backward compatibility")
++elif "settings_dict['OPTIONS'].get('database'" in content:
++    print("✓ Using 'database' (but no 'db' fallback)")
++else:
++    print("✗ NOT using 'database' option")
++
++# Check that 'password' is looked up first, with 'passwd' as fallback
++if "settings_dict['OPTIONS'].get('password'" in content and "settings_dict['OPTIONS'].get('passwd'" in content:
++    print("✓ 'password' lookup with 'passwd' fallback for backward compatibility")
++elif "settings_dict['OPTIONS'].get('password'" in content:
++    print("✓ Using 'password' (but no 'passwd' fallback)")
++else:
++    print("✗ NOT using 'password' option")
++
++print("\nRelevant code from settings_to_cmd_args_env:")
++for i, line in enumerate(content.split('\n'), 1):
++    if 'database' in line or 'password' in line or 'db' in line.lower() or 'passwd' in line.lower():
++        if 'OPTIONS' in line:  # Only show OPTIONS-related lines
++            print(f"  {i}: {line}")
+diff --git a/test_mysql_client_v2.py b/test_mysql_client_v2.py
+new file mode 100644
+index 0000000000..ab00f80ac1
+--- /dev/null
++++ b/test_mysql_client_v2.py
+@@ -0,0 +1,34 @@
++# Test the client.py changes for backward compatibility
++# Read the entire file and check the logic
++
++with open('/testbed/django/db/backends/mysql/client.py', 'r') as f:
++    content = f.read()
++
++print("Checking client.py...")
++
++# The password lookup should try 'password' first, then 'passwd' as fallback
++# The existing code already does this, which is correct
++if "'password'" in content and "'passwd'" in content:
++    print("✓ Both 'password' and 'passwd' options are supported for backward compatibility")
++else:
++    print("✗ Missing backward compatibility for password option")
++
++# The database lookup should try 'database' first, then 'db' as fallback
++if "'database'" in content and "'db'" in content:
++    print("✓ Both 'database' and 'db' options are supported for backward compatibility")
++else:
++    print("✗ Missing backward compatibility for database option")
++
++# Verify the order - 'database' should be checked before 'db'
++lines = content.split('\n')
++for i, line in enumerate(lines):
++    if 'db = ' in line and 'OPTIONS' in line:
++        print(f"\nDatabase option line {i+1}: {line.strip()}")
++    if 'password = ' in line or ('password' in line.lower() and 'OPTIONS' in line and 'get' in line):
++        print(f"Password option line {i+1}: {line.strip()}")
++
++print("\nFull relevant section:")
++print("---")
++for i, line in enumerate(lines[10:17], 11):
++    print(f"  {i}: {line}")
++print("---")
+diff --git a/test_mysql_connection_params.py b/test_mysql_connection_params.py
+new file mode 100644
+index 0000000000..d981b60445
+--- /dev/null
++++ b/test_mysql_connection_params.py
+@@ -0,0 +1,45 @@
++# Direct code analysis test - verify the get_connection_params method uses
++# 'database' and 'password' instead of deprecated 'db' and 'passwd'
++
++import re
++
++# Read the base.py file
++with open('/testbed/django/db/backends/mysql/base.py', 'r') as f:
++    content = f.read()
++
++# Find the get_connection_params method
++method_match = re.search(r'def get_connection_params\(self\):.*?(?=\n    def |\nclass |\Z)', content, re.DOTALL)
++if method_match:
++    method_content = method_match.group(0)
++    
++    # Check that 'database' is used
++    if "kwargs['database']" in method_content:
++        print("✓ Using 'database' instead of 'db'")
++    else:
++        print("✗ NOT using 'database', may still be using deprecated 'db'")
++    
++    # Check that 'password' is used
++    if "kwargs['password']" in method_content:
++        print("✓ Using 'password' instead of 'passwd'")
++    else:
++        print("✗ NOT using 'password', may still be using deprecated 'passwd'")
++    
++    # Check that deprecated 'db' is NOT used
++    if "kwargs['db']" in method_content:
++        print("✗ Still using deprecated 'db'")
++    else:
++        print("✓ Not using deprecated 'db'")
++    
++    # Check that deprecated 'passwd' is NOT used
++    if "kwargs['passwd']" in method_content:
++        print("✗ Still using deprecated 'passwd'")
++    else:
++        print("✓ Not using deprecated 'passwd'")
++    
++    print("\nRelevant code from get_connection_params:")
++    # Print the relevant lines
++    for i, line in enumerate(method_content.split('\n'), 1):
++        if 'database' in line or 'password' in line or 'db' in line.lower() or 'passwd' in line.lower():
++            print(f"  {i}: {line}")
++else:
++    print("Could not find get_connection_params method")

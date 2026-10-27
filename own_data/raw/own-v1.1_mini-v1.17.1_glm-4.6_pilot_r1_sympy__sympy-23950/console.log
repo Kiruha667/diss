@@ -1,0 +1,33 @@
+/opt/own/venv-agent/lib/python3.11/site-packages/click/core.py:1223: UserWarning: The parameter -c is used more than once. Remove its duplicate as parameters should be unique.
+  parser = self.make_parser(ctx)
+/opt/own/venv-agent/lib/python3.11/site-packages/click/core.py:1216: UserWarning: The parameter -c is used more than once. Remove its duplicate as parameters should be unique.
+  self.parse_args(ctx, args)
+minisweagent: INFO: Results will be saved to                                    
+/opt/own/runs/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_sympy__sympy-23950         
+Logging to '/opt/own/runs/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_sympy__sympy-23950/minisweagent.log'
+minisweagent: INFO: Loading dataset princeton-nlp/SWE-Bench_Verified, split     
+test...                                                                         
+minisweagent: INFO: Instance filter: 500 -> 1 instances                         
+minisweagent: INFO: Running on 1 instances...                                   
+minisweagent: INFO: Loading agent config from                                   
+'/mnt/c/Users/1/Desktop/diss/own_data/config/glm-4.6_v1.1.yaml'                 
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+minisweagent.environment: DEBUG: Starting container with command: docker run -d 
+--name minisweagent-665c92bd -w /testbed --rm                                   
+docker.io/swebench/sweb.eval.x86_64.sympy_1776_sympy-23950:latest sleep 2h      
+minisweagent.environment: INFO: Started container minisweagent-665c92bd with ID 
+633ea3158ecca36da346e55b3d421029bdbcc7f21792fcbbdac60f542c04bc75                
+minisweagent: INFO: Saved trajectory to                                         
+'/opt/own/runs/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_sympy__sympy-23950/sympy__
+sympy-23950/sympy__sympy-23950.traj.json'                                       
+┏━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Exit Status ┃ Count ┃ Most recent instances                                  ┃
+┡━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Submitted   │     1 │ sympy__sympy-23950                                     │
+└─────────────┴───────┴────────────────────────────────────────────────────────┘
+  Overall Progress ($0.07) ━━━━━━━━━━━━━━━━━━━━━━━ 1/1 100% 0:08:22 eta: 0:00:00

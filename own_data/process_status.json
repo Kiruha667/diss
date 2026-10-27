@@ -1,5 +1,5 @@
 {
- "runs": 6,
+ "runs": 11,
  "problems": [
   "own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027/psf__requests-1766: config differs: ['agent', 'environment', 'model']",
   "own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027/psf__requests-1766: not processed (unsupported_format:no_messages)"
@@ -58,6 +58,51 @@
    "submitted": 1,
    "n_steps": 28,
    "cost_usd": 0.03638700000000001
+  },
+  {
+   "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_django__django-14376/django__django-14376",
+   "task_id": "django__django-14376",
+   "risk": 0.1946171828706187,
+   "resolved": 1,
+   "submitted": 1,
+   "n_steps": 32,
+   "cost_usd": 0.045725800000000004
+  },
+  {
+   "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_psf__requests-1766/psf__requests-1766",
+   "task_id": "psf__requests-1766",
+   "risk": 0.18390640064516228,
+   "resolved": 1,
+   "submitted": 1,
+   "n_steps": 8,
+   "cost_usd": 0.00894456
+  },
+  {
+   "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pylint-dev__pylint-6386/pylint-dev__pylint-6386",
+   "task_id": "pylint-dev__pylint-6386",
+   "risk": 0.3566514901774878,
+   "resolved": 0,
+   "submitted": 1,
+   "n_steps": 91,
+   "cost_usd": 0.23992804
+  },
+  {
+   "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pytest-dev__pytest-7324/pytest-dev__pytest-7324",
+   "task_id": "pytest-dev__pytest-7324",
+   "risk": 0.24759488549469083,
+   "resolved": 1,
+   "submitted": 1,
+   "n_steps": 34,
+   "cost_usd": 0.08979987999999998
+  },
+  {
+   "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_sympy__sympy-23950/sympy__sympy-23950",
+   "task_id": "sympy__sympy-23950",
+   "risk": 0.24901569498528825,
+   "resolved": 1,
+   "submitted": 1,
+   "n_steps": 42,
+   "cost_usd": 0.07189276
   }
  ]
 }
