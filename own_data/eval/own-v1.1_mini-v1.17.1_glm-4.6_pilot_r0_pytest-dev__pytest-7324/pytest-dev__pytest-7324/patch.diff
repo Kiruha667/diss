@@ -1,0 +1,26 @@
+diff --git a/src/_pytest/mark/expression.py b/src/_pytest/mark/expression.py
+index 04c73411a..8eb385a15 100644
+--- a/src/_pytest/mark/expression.py
++++ b/src/_pytest/mark/expression.py
+@@ -161,6 +161,12 @@ def not_expr(s: Scanner) -> ast.expr:
+         return ret
+     ident = s.accept(TokenType.IDENT)
+     if ident:
++        # Prior to Python 3.8, None/True/False could be used as identifiers
++        # in expressions. In Python 3.8+, this is no longer allowed by the
++        # compiler, so we use a placeholder name which is later handled in
++        # MatcherAdapter.
++        if ident.value in ("True", "False", "None"):
++            return ast.Name(f"@pytest_mark_{ident.value}", ast.Load())
+         return ast.Name(ident.value, ast.Load())
+     s.reject((TokenType.NOT, TokenType.LPAREN, TokenType.IDENT))
+ 
+@@ -172,6 +178,8 @@ class MatcherAdapter(Mapping[str, bool]):
+         self.matcher = matcher
+ 
+     def __getitem__(self, key: str) -> bool:
++        if key.startswith("@pytest_mark_"):
++            key = key[len("@pytest_mark_"):]
+         return self.matcher(key)
+ 
+     def __iter__(self) -> Iterator[str]:

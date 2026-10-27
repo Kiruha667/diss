@@ -1,0 +1,68 @@
+2026-10-27 16:10:05,530 - INFO - Creating container for sympy__sympy-23950...
+2026-10-27 16:10:07,004 - INFO - Container for sympy__sympy-23950 created: 8978a5f85d79df5bf47b5cf9c743c0b93b4228c3064e050599176eccec440a6d
+2026-10-27 16:10:08,231 - INFO - Container for sympy__sympy-23950 started: 8978a5f85d79df5bf47b5cf9c743c0b93b4228c3064e050599176eccec440a6d
+2026-10-27 16:10:08,232 - INFO - Intermediate patch for sympy__sympy-23950 written to logs/run_evaluation/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_sympy__sympy-23950/glm-4.6/sympy__sympy-23950/patch.diff, now applying to container...
+2026-10-27 16:10:08,413 - INFO - >>>>> Applied Patch:
+Checking patch final_test.py...
+Checking patch sympy/sets/contains.py...
+Checking patch sympy/sets/tests/test_contains.py...
+Checking patch test_issue.py...
+Checking patch test_issue_extended.py...
+Applied patch final_test.py cleanly.
+Applied patch sympy/sets/contains.py cleanly.
+Applied patch sympy/sets/tests/test_contains.py cleanly.
+Applied patch test_issue.py cleanly.
+Applied patch test_issue_extended.py cleanly.
+
+2026-10-27 16:10:08,928 - INFO - Git diff before:
+diff --git a/sympy/sets/contains.py b/sympy/sets/contains.py
+index b2d4268d12..997a4d8e16 100644
+--- a/sympy/sets/contains.py
++++ b/sympy/sets/contains.py
+@@ -45,4 +45,4 @@ def binary_symbols(self):
+             isinstance(i, (Eq, Ne))])
+ 
+     def as_set(self):
+-        raise NotImplementedError()
++        return self.args[1]
+diff --git a/sympy/sets/tests/test_contains.py b/sympy/sets/tests/test_contains.py
+index 1973fed19c..89002df847 100644
+--- a/sympy/sets/tests/test_contains.py
++++ b/sympy/sets/tests/test_contains.py
+@@ -41,10 +41,11 @@ def test_binary_symbols():
+ def test_as_set():
+     x = Symbol('x')
+     y = Symbol('y')
+-    # Contains is a BooleanFunction whose value depends on an arg's
+-    # containment in a Set -- rewriting as a Set is not yet implemented
+-    raises(NotImplementedError, lambda:
+-           Contains(x, FiniteSet(y)).as_set())
++    # Contains.as_set() should return the set that is the second argument
++    assert Contains(x, FiniteSet(y)).as_set() == FiniteSet(y)
++    assert Contains(x, S.Reals).as_set() == S.Reals
++    assert Contains(x, S.Integers).as_set() == S.Integers
++    assert Contains(x, Interval(0, 1)).as_set() == Interval(0, 1)
+ 
+ def test_type_error():
+     # Pass in a parameter not of type "set"
+2026-10-27 16:10:08,928 - INFO - Eval script for sympy__sympy-23950 written to logs/run_evaluation/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_sympy__sympy-23950/glm-4.6/sympy__sympy-23950/eval.sh; copying to container...
+2026-10-27 16:10:15,735 - INFO - Test runtime: 6.67 seconds
+2026-10-27 16:10:15,735 - INFO - Test output for sympy__sympy-23950 written to logs/run_evaluation/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_sympy__sympy-23950/glm-4.6/sympy__sympy-23950/test_output.txt
+2026-10-27 16:10:15,872 - INFO - Git diff after:
+diff --git a/sympy/sets/contains.py b/sympy/sets/contains.py
+index b2d4268d12..997a4d8e16 100644
+--- a/sympy/sets/contains.py
++++ b/sympy/sets/contains.py
+@@ -45,4 +45,4 @@ def binary_symbols(self):
+             isinstance(i, (Eq, Ne))])
+ 
+     def as_set(self):
+-        raise NotImplementedError()
++        return self.args[1]
+2026-10-27 16:10:15,872 - INFO - Git diff changed after running eval script
+2026-10-27 16:10:15,872 - INFO - Grading answer for sympy__sympy-23950...
+2026-10-27 16:10:15,873 - INFO - report: {'sympy__sympy-23950': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_as_set'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_contains_basic', 'test_issue_6194', 'test_issue_10326', 'test_binary_symbols'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-23950: resolved: True
+2026-10-27 16:10:15,873 - INFO - Attempting to stop container sweb.eval.sympy__sympy-23950.own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_sympy__sympy-23950...
+2026-10-27 16:10:34,028 - INFO - Attempting to remove container sweb.eval.sympy__sympy-23950.own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_sympy__sympy-23950...
+2026-10-27 16:10:35,275 - INFO - Container sweb.eval.sympy__sympy-23950.own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_sympy__sympy-23950 removed.

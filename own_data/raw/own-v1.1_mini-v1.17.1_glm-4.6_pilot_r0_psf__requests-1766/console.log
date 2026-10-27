@@ -1,0 +1,33 @@
+/opt/own/venv-agent/lib/python3.11/site-packages/click/core.py:1223: UserWarning: The parameter -c is used more than once. Remove its duplicate as parameters should be unique.
+  parser = self.make_parser(ctx)
+/opt/own/venv-agent/lib/python3.11/site-packages/click/core.py:1216: UserWarning: The parameter -c is used more than once. Remove its duplicate as parameters should be unique.
+  self.parse_args(ctx, args)
+minisweagent: INFO: Results will be saved to                                    
+/opt/own/runs/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_psf__requests-1766         
+Logging to '/opt/own/runs/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_psf__requests-1766/minisweagent.log'
+minisweagent: INFO: Loading dataset princeton-nlp/SWE-Bench_Verified, split     
+test...                                                                         
+minisweagent: INFO: Instance filter: 500 -> 1 instances                         
+minisweagent: INFO: Running on 1 instances...                                   
+minisweagent: INFO: Loading agent config from                                   
+'/mnt/c/Users/1/Desktop/diss/own_data/config/glm-4.6_v1.1.yaml'                 
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+minisweagent.environment: DEBUG: Starting container with command: docker run -d 
+--name minisweagent-5dd9217b -w /testbed --rm                                   
+docker.io/swebench/sweb.eval.x86_64.psf_1776_requests-1766:latest sleep 2h      
+minisweagent.environment: INFO: Started container minisweagent-5dd9217b with ID 
+6b171d1413f92db983da742d138ebd01bfa2799d6c02daafe40cdb275903677d                
+minisweagent: INFO: Saved trajectory to                                         
+'/opt/own/runs/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_psf__requests-1766/psf__re
+quests-1766/psf__requests-1766.traj.json'                                       
+┏━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Exit Status ┃ Count ┃ Most recent instances                                  ┃
+┡━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Submitted   │     1 │ psf__requests-1766                                     │
+└─────────────┴───────┴────────────────────────────────────────────────────────┘
+  Overall Progress ($0.02) ━━━━━━━━━━━━━━━━━━━━━━━ 1/1 100% 0:01:48 eta: 0:00:00

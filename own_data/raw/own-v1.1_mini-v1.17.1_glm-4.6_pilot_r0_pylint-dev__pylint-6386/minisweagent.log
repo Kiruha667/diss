@@ -1,0 +1,7 @@
+2026-10-27 15:52:34,969 - minisweagent - INFO - Loading dataset princeton-nlp/SWE-Bench_Verified, split test...
+2026-10-27 15:52:39,212 - minisweagent - INFO - Instance filter: 500 -> 1 instances
+2026-10-27 15:52:39,214 - minisweagent - INFO - Running on 1 instances...
+2026-10-27 15:52:39,217 - minisweagent - INFO - Loading agent config from '/mnt/c/Users/1/Desktop/diss/own_data/config/glm-4.6_v1.1.yaml'
+2026-10-27 15:52:42,270 - minisweagent.environment - DEBUG - Starting container with command: docker run -d --name minisweagent-b6134508 -w /testbed --rm docker.io/swebench/sweb.eval.x86_64.pylint-dev_1776_pylint-6386:latest sleep 2h
+2026-10-27 15:52:44,821 - minisweagent.environment - INFO - Started container minisweagent-b6134508 with ID d39e2012648c4e9b755afb2cc3096403f0a79e43f84c671f43812a0346406b74
+2026-10-27 16:03:38,140 - minisweagent - INFO - Saved trajectory to '/opt/own/runs/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_pylint-dev__pylint-6386/pylint-dev__pylint-6386/pylint-dev__pylint-6386.traj.json'

@@ -1,0 +1,163 @@
+diff --git a/final_test.py b/final_test.py
+new file mode 100644
+index 0000000000..5c91094d21
+--- /dev/null
++++ b/final_test.py
+@@ -0,0 +1,48 @@
++from sympy import Symbol, Contains, S, Piecewise, Interval
++
++x = Symbol('x')
++
++# Test from PR description - Contains.as_set() should return a set, not Contains
++print("Test 1: Contains.as_set() returns a Set, not Contains")
++result = Contains(x, S.Reals).as_set()
++print(f"  Contains(x, Reals).as_set() = {result}")
++assert result == S.Reals, f"Expected Reals, got {result}"
++assert result != Contains(x, S.Reals), "Should not return Contains object"
++print("  PASSED")
++print()
++
++# Test from PR description - Piecewise with Contains should work
++print("Test 2: Piecewise with Contains should work (no AttributeError)")
++try:
++    pw = Piecewise((6, Contains(x, S.Reals)), (7, True))
++    print(f"  Piecewise((6, Contains(x, Reals)), (7, True)) = {pw}")
++    print("  PASSED")
++except AttributeError as e:
++    print(f"  FAILED: {e}")
++print()
++
++# Test that as_set().as_relational() works
++print("Test 3: as_set() result has as_relational method")
++result = Contains(x, S.Reals).as_set()
++print(f"  hasattr(Reals, 'as_relational') = {hasattr(result, 'as_relational')}")
++rel = result.as_relational(x)
++print(f"  Reals.as_relational(x) = {rel}")
++print("  PASSED")
++print()
++
++# Test with different sets
++print("Test 4: Works with different set types")
++tests = [
++    (S.Integers, "Integers"),
++    (S.Naturals, "Naturals"),
++    (Interval(0, 1), "Interval(0, 1)"),
++    (S.Reals, "Reals"),
++]
++for s, name in tests:
++    result = Contains(x, s).as_set()
++    print(f"  Contains(x, {name}).as_set() = {result}")
++    assert result == s, f"Expected {s}, got {result}"
++print("  PASSED")
++print()
++
++print("All tests passed!")
+diff --git a/sympy/sets/contains.py b/sympy/sets/contains.py
+index b2d4268d12..997a4d8e16 100644
+--- a/sympy/sets/contains.py
++++ b/sympy/sets/contains.py
+@@ -45,4 +45,4 @@ def binary_symbols(self):
+             isinstance(i, (Eq, Ne))])
+ 
+     def as_set(self):
+-        raise NotImplementedError()
++        return self.args[1]
+diff --git a/sympy/sets/tests/test_contains.py b/sympy/sets/tests/test_contains.py
+index 1973fed19c..89002df847 100644
+--- a/sympy/sets/tests/test_contains.py
++++ b/sympy/sets/tests/test_contains.py
+@@ -41,10 +41,11 @@ def test_binary_symbols():
+ def test_as_set():
+     x = Symbol('x')
+     y = Symbol('y')
+-    # Contains is a BooleanFunction whose value depends on an arg's
+-    # containment in a Set -- rewriting as a Set is not yet implemented
+-    raises(NotImplementedError, lambda:
+-           Contains(x, FiniteSet(y)).as_set())
++    # Contains.as_set() should return the set that is the second argument
++    assert Contains(x, FiniteSet(y)).as_set() == FiniteSet(y)
++    assert Contains(x, S.Reals).as_set() == S.Reals
++    assert Contains(x, S.Integers).as_set() == S.Integers
++    assert Contains(x, Interval(0, 1)).as_set() == Interval(0, 1)
+ 
+ def test_type_error():
+     # Pass in a parameter not of type "set"
+diff --git a/test_issue.py b/test_issue.py
+new file mode 100644
+index 0000000000..3456bd1af9
+--- /dev/null
++++ b/test_issue.py
+@@ -0,0 +1,19 @@
++from sympy import Symbol, Contains, S, Piecewise
++
++x = Symbol('x')
++
++# Test 1: Contains.as_set() should return a set, not Contains
++print("Test 1: Contains.as_set()")
++result = Contains(x, S.Reals).as_set()
++print(f"Result: {result}")
++print(f"Type: {type(result)}")
++print(f"Is it a Set? {isinstance(result, S.Reals.__class__)}")
++print()
++
++# Test 2: Piecewise with Contains should work
++print("Test 2: Piecewise with Contains")
++try:
++    pw = Piecewise((6, Contains(x, S.Reals)), (7, True))
++    print(f"Result: {pw}")
++except AttributeError as e:
++    print(f"Error: {e}")
+diff --git a/test_issue_extended.py b/test_issue_extended.py
+new file mode 100644
+index 0000000000..f163a01fbf
+--- /dev/null
++++ b/test_issue_extended.py
+@@ -0,0 +1,48 @@
++from sympy import Symbol, Contains, S, Piecewise, Interval
++
++x = Symbol('x')
++
++# Test 1: Contains.as_set() should return a set
++print("Test 1: Contains.as_set() returns a set")
++result = Contains(x, S.Reals).as_set()
++print(f"Contains(x, Reals).as_set() = {result}")
++assert result == S.Reals, f"Expected Reals, got {result}"
++print("PASSED")
++print()
++
++# Test 2: Contains with Integers
++print("Test 2: Contains with Integers")
++result = Contains(x, S.Integers).as_set()
++print(f"Contains(x, Integers).as_set() = {result}")
++assert result == S.Integers, f"Expected Integers, got {result}"
++print("PASSED")
++print()
++
++# Test 3: Contains with Interval
++print("Test 3: Contains with Interval")
++interval = Interval(0, 1)
++result = Contains(x, interval).as_set()
++print(f"Contains(x, Interval(0, 1)).as_set() = {result}")
++assert result == interval, f"Expected {interval}, got {result}"
++print("PASSED")
++print()
++
++# Test 4: Piecewise with Contains should work
++print("Test 4: Piecewise with Contains")
++try:
++    pw = Piecewise((6, Contains(x, S.Reals)), (7, True))
++    print(f"Piecewise((6, Contains(x, Reals)), (7, True)) = {pw}")
++    print("PASSED")
++except AttributeError as e:
++    print(f"FAILED: {e}")
++print()
++
++# Test 5: The as_set() result should have as_relational method
++print("Test 5: as_set() result has as_relational method")
++result = Contains(x, S.Reals).as_set()
++print(f"hasattr(result, 'as_relational') = {hasattr(result, 'as_relational')}")
++assert hasattr(result, 'as_relational'), "as_set() result should have as_relational method"
++print("PASSED")
++print()
++
++print("All tests passed!")

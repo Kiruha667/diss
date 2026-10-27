@@ -1,0 +1,19 @@
+{
+ "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_pytest-dev__pytest-7324",
+ "protocol_version": "1.1",
+ "started_utc": "2026-10-27T10:41:44Z",
+ "wall_time_s": 352,
+ "runner_exit_code": 0,
+ "versions": {
+  "mini-swe-agent": "1.17.1",
+  "litellm": "1.80.7",
+  "openai": "2.8.1",
+  "datasets": "4.4.1"
+ },
+ "config_sha256": "e4c88cd01c591f50ce37f2b8394f7791d118ca1d11b40fcf73c10973f206c41c",
+ "registry_sha256": "d7acd3d8ee025c03647f5880a37e3e4fe38e54f2c4190bb0032a99918ae0d657",
+ "provider": "z.ai (OpenAI-compatible endpoint, litellm provider openai)",
+ "image_digests": {
+  "pytest-dev__pytest-7324": "swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-7324@sha256:bbdb6c6576dc1294ac789dd5ab3bed3ae231aec39c2d4f3d643bab76a4ef34ff"
+ }
+}
