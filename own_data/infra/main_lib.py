@@ -16,6 +16,7 @@ from __future__ import annotations
 import datetime as dt
 import functools
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -31,6 +32,9 @@ PILOT_PREFIX = "own-v1.1_mini-v1.17.1_glm-4.6_pilot"
 # agent outcomes; any other exit status (config/datasets.yaml infra_exit_statuses, RetryError after the API retries,
 # Docker / environment exceptions) is a technical failure: mini-swe-agent then writes the exception text as the patch
 AGENT_OUTCOMES = {"Submitted", "LimitsExceeded"}
+# the agent's container is gone (it lives `container_timeout: 2h` and is started with --rm): every later command gets
+# this Docker error, so the outcome says nothing about the agent — a technical failure whatever the exit status
+CONTAINER_LOST = re.compile(r"Error response from daemon: (No such container|Container \S+ is not running)", re.I)
 HEADER = "## 2026-10-28 — этап 4: основной сбор (протокол 1.2)"
 
 
@@ -68,7 +72,8 @@ def state(rid: str) -> str:
     if not raw.exists():
         return "new"
     traj, info = traj_info(rid)
-    if traj is None or (raw / "FAILED.json").exists() or info.get("exit_status") not in AGENT_OUTCOMES:
+    if traj is None or (raw / "FAILED.json").exists() or info.get("exit_status") not in AGENT_OUTCOMES or \
+            CONTAINER_LOST.search(traj.read_text(encoding="utf-8")):
         return "incomplete"
     iid = traj.parent.name
     if (OWN / "eval" / rid / iid / "report.json").exists() or empty_patch(rid, iid) or \
