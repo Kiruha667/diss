@@ -1,0 +1,50 @@
+{
+ "20250726_mini-v1.0.0_gemini-2.5-pro": [
+  "psf__requests-1724",
+  "psf__requests-1766",
+  "psf__requests-1921",
+  "psf__requests-2317"
+ ],
+ "20250822_mini-v1.9.1_glm-4.5": [
+  "psf__requests-1724",
+  "psf__requests-1766",
+  "psf__requests-1921"
+ ],
+ "20250929_mini-v1.13.3_sonnet-4-5-20250929": [
+  "psf__requests-1724",
+  "psf__requests-1766",
+  "psf__requests-1921",
+  "psf__requests-2317"
+ ],
+ "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118": [
+  "psf__requests-1921",
+  "psf__requests-2317"
+ ],
+ "20251124_mini-v1.17.0_minimax-m2": [
+  "psf__requests-1724",
+  "psf__requests-1766",
+  "psf__requests-1921",
+  "psf__requests-2317"
+ ],
+ "20251201_mini-v1.17.1_glm-4.6": [
+  "psf__requests-1724",
+  "psf__requests-1766",
+  "psf__requests-1921",
+  "psf__requests-2317"
+ ],
+ "20251209_mini-v1.17.2_devstral-2512": [
+  "psf__requests-1724",
+  "psf__requests-1766",
+  "psf__requests-1921",
+  "psf__requests-2317"
+ ],
+ "20251209_mini-v1.17.2_devstral-small-2512": [
+  "psf__requests-1724",
+  "psf__requests-1766",
+  "psf__requests-1921",
+  "psf__requests-2317"
+ ],
+ "20260226_mini-v2.0.0_gemini-3-pro-high": [
+  "psf__requests-1766"
+ ]
+}

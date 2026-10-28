@@ -1,0 +1,16 @@
+run_id	agent_wall_s	eval_s
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_django__django-14376	302	70
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_psf__requests-1766	114	81
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_pylint-dev__pylint-6386	665	60
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_pytest-dev__pytest-7324	352	82
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_sympy__sympy-23950	308	54
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_django__django-14376	374	65
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_psf__requests-1766	85	82
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pylint-dev__pylint-6386	846	56
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pytest-dev__pytest-7324	413	70
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_sympy__sympy-23950	508	56
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_django__django-14376	296	63
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_psf__requests-1766	105	82
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pylint-dev__pylint-6386	391	60
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pytest-dev__pytest-7324	939	62
+own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_sympy__sympy-23950	434	106

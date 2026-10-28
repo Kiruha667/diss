@@ -1,0 +1,2586 @@
+{
+ "s3_base": "https://swe-bench-submissions.s3.amazonaws.com",
+ "prefixes": {
+  "20250726_mini-v1.0.0_gemini-2.5-pro": "bash-only/20250726_mini-v1.0.0_gemini-2.5-pro",
+  "20250822_mini-v1.9.1_glm-4.5": "bash-only/20250822_mini-v1.9.1_glm-4.5",
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929": "bash-only/20250929_mini-v1.13.3_sonnet-4-5-20250929",
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118": "bash-only/20251118_mini-v1.15.0_gemini-3-pro-preview-20251118",
+  "20251124_mini-v1.17.0_minimax-m2": "bash-only/20251124_mini-v1.17.0_minimax-m2",
+  "20251201_mini-v1.17.1_glm-4.6": "bash-only/20251201_mini-v1.17.1_glm-4.6",
+  "20251209_mini-v1.17.2_devstral-2512": "bash-only/20251209_mini-v1.17.2_devstral-2512",
+  "20251209_mini-v1.17.2_devstral-small-2512": "bash-only/20251209_mini-v1.17.2_devstral-small-2512",
+  "20260217_mini-v2.0.0_gemini-3-flash-high": "bash-only/20260217_mini-v2.0.0_gemini-3-flash-high",
+  "20260226_mini-v2.0.0_gemini-3-pro-high": "bash-only/20260226_mini-v2.0.0_gemini-3-pro-high",
+  "20260217_mini-v2.0.0_deepseek-3-2-high": "bash-only/20260217_mini-v2.0.0_deepseek-3-2-high",
+  "20260217_mini-v2.0.0_glm-5-high": "bash-only/20260217_mini-v2.0.0_glm-5-high",
+  "20260217_mini-v2.0.0_kimi-k2-5-high": "bash-only/20260217_mini-v2.0.0_kimi-k2-5-high",
+  "20260217_mini-v2.0.0_minimax-2-5-high": "bash-only/20260217_mini-v2.0.0_minimax-2-5-high",
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high": "bash-only/20260217_mini-v2.0.0_claude-4-5-sonnet-high",
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high": "bash-only/20260217_mini-v2.0.0_claude-4-5-haiku-high"
+ },
+ "tasks": [
+  "psf__requests-1142",
+  "psf__requests-1724",
+  "psf__requests-1766",
+  "psf__requests-1921",
+  "psf__requests-2317",
+  "psf__requests-2931",
+  "psf__requests-5414",
+  "psf__requests-6028"
+ ],
+ "files_wanted": 512,
+ "files_ok": 504,
+ "bytes_downloaded": 26909169,
+ "redactions_total": 0,
+ "timing": {
+  "listing_s": 23.4,
+  "download_s": 18.4,
+  "workers": 8
+ },
+ "files": {
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 1162,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 53832,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 868514,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1142/job-output.json": {
+   "status": "absent in listing"
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 8058,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 47365,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 877,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1724/job-output.json": {
+   "status": "absent in listing"
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 8069,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 23741,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 751,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1766/job-output.json": {
+   "status": "absent in listing"
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 10575,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 51798,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 606,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-1921/job-output.json": {
+   "status": "absent in listing"
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 12984,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 61662,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 397,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-2317/job-output.json": {
+   "status": "absent in listing"
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 7809,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 89969,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 805,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-2931/job-output.json": {
+   "status": "absent in listing"
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 15158,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 237163,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 1234,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-5414/job-output.json": {
+   "status": "absent in listing"
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 20052,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 47847,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 744,
+   "redactions": 0
+  },
+  "20250726_mini-v1.0.0_gemini-2.5-pro/psf__requests-6028/job-output.json": {
+   "status": "absent in listing"
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 55813,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 872536,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 57390,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5968,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 51129,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 983,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 53284,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5995,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 50761,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 453,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 51848,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7925,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 55977,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 8627,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 57674,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9777,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 26998,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 398,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 27965,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5737,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 92007,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 2346,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 93122,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12166,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 240354,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 40567,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 243439,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15958,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 49345,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 39973,
+   "redactions": 0
+  },
+  "20250822_mini-v1.9.1_glm-4.5/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 50856,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 56504,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 893623,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 59187,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5970,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 57027,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 1790,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 60864,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5997,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 57251,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 453,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 58338,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7925,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 60362,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 18355,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 62965,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9776,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 70932,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 21931,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 72235,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5738,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 90587,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 14959,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 92364,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12166,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 242636,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 16810,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 244987,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15958,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 49639,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 25118,
+   "redactions": 0
+  },
+  "20250929_mini-v1.13.3_sonnet-4-5-20250929/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 51676,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 55794,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 868176,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 57589,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5971,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 22308,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 532,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 23561,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5998,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 22393,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 453,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 23480,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7927,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 25440,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 495,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 26595,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9776,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 27290,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 833,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 29145,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5738,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 90263,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 685,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 91802,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12167,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 164668,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 604,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 166041,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15958,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 49125,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 701,
+   "redactions": 0
+  },
+  "20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 50734,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 56300,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 890183,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 58813,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5968,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 47264,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 0,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 47403,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5997,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 57488,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 15855,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 58575,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7925,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 55125,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 28517,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 56346,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9776,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 78042,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 17244,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 79651,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5737,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 92121,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 8113,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 93240,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12166,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 249656,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 746,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 251325,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15958,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 49788,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 70219,
+   "redactions": 0
+  },
+  "20251124_mini-v1.17.0_minimax-m2/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 51681,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 55848,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 875557,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 57479,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5970,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 57245,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 16790,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 60832,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5995,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 50940,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 10130,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 52047,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7925,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 61772,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 6676,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 63545,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9776,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 73454,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 497,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 74625,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5737,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 92129,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 4532,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 93388,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12167,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 166138,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 45323,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 169683,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15958,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 49518,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 12283,
+   "redactions": 0
+  },
+  "20251201_mini-v1.17.1_glm-4.6/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 51419,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 66116,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 899655,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 78778,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5970,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 57256,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 1478,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 60451,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5997,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 57447,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 453,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 58534,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7925,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 105615,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 43001,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 150943,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9776,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 78025,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 991,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 80230,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5738,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 90247,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 662,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 91754,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12167,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 164902,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 6844,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 166231,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15958,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 49250,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 831,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-2512/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 51109,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 65767,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 877713,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 77789,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5970,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 57491,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 10844,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 60614,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5997,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 57513,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 17190,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 58600,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7925,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 104975,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 43072,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 150455,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9776,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 77669,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 14810,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 78636,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5738,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 91298,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 10343,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 93762,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12167,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 165155,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 6505,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 167008,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15958,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 48152,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 0,
+   "redactions": 0
+  },
+  "20251209_mini-v1.17.2_devstral-small-2512/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 48291,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 56113,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 1112,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 58546,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5971,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 22308,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 530,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 23561,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5998,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 22393,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 451,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 23480,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7928,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 25281,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 1204,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 27912,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9777,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 26635,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 943,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 28750,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5738,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 90391,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 800,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 92186,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12167,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 164835,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 765,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 166542,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15958,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 49368,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 953,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_gemini-3-flash-high/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 51457,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 56369,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 2026,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 60720,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5971,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 26801,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 5207,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 37762,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5997,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 23686,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 451,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 24773,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7928,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 28650,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 5287,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 39749,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9776,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 36322,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 396,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 37289,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5737,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 95851,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 4445,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 105202,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12167,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 164652,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 588,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 165993,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15957,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 46541,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 510,
+   "redactions": 0
+  },
+  "20260226_mini-v2.0.0_gemini-3-pro-high/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 47738,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 57002,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 1972,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 61213,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5970,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 151547,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 7778,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 167786,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5998,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 23572,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 1587,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 27017,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7928,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 29606,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 6209,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 42617,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9777,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 30672,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 5511,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 42233,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5737,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 100097,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 4754,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 110110,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12166,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 236978,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 2379,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 241981,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15958,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 51496,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 2961,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_deepseek-3-2-high/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 57775,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 55469,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 489,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 56614,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5971,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 22308,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 530,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 23561,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5998,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 22393,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 451,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 23480,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7928,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 25270,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 1140,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 27763,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9777,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 31199,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 6016,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 43814,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5738,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 90332,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 745,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 92009,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12167,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 164954,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 884,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 166899,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15957,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 46440,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 413,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_glm-5-high/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 47435,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 55469,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 489,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 56614,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5971,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 23045,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 1256,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 25768,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5998,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 22393,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 451,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 23480,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7928,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 24543,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 493,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 25698,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9777,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 26471,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 831,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 28326,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5737,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 91897,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 497,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 93070,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12166,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 251154,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 836,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 253003,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15958,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 48847,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 441,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_kimi-k2-5-high/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 49894,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 55469,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 489,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 56614,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5971,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 22308,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 530,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 23561,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5998,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 22393,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 451,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 23480,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7928,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 24872,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 815,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 26685,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9777,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 26471,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 831,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 28326,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5737,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 91815,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 417,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 92824,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12166,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 248291,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 789,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 250046,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15958,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 49009,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 603,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_minimax-2-5-high/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 50380,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 55469,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 489,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 56614,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5971,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 22308,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 530,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 23561,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5998,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 22393,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 451,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 23480,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7928,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 24864,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 807,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 26661,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9777,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 26027,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 396,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 26994,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5738,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 90399,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 810,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 92210,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12166,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 241600,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 1384,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 244565,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15958,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 48943,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 537,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 50182,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1142/report.json": {
+   "status": "ok",
+   "bytes_source": 688,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1142/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 55469,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1142/patch.diff": {
+   "status": "ok",
+   "bytes_source": 489,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1142/job-output.json": {
+   "status": "ok",
+   "bytes_source": 56614,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1724/report.json": {
+   "status": "ok",
+   "bytes_source": 5971,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1724/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 22303,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1724/patch.diff": {
+   "status": "ok",
+   "bytes_source": 525,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1724/job-output.json": {
+   "status": "ok",
+   "bytes_source": 23546,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1766/report.json": {
+   "status": "ok",
+   "bytes_source": 5998,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1766/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 22393,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1766/patch.diff": {
+   "status": "ok",
+   "bytes_source": 451,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1766/job-output.json": {
+   "status": "ok",
+   "bytes_source": 23480,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1921/report.json": {
+   "status": "ok",
+   "bytes_source": 7928,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1921/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 29919,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1921/patch.diff": {
+   "status": "ok",
+   "bytes_source": 6050,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-1921/job-output.json": {
+   "status": "ok",
+   "bytes_source": 42578,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-2317/report.json": {
+   "status": "ok",
+   "bytes_source": 9777,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-2317/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 26684,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-2317/patch.diff": {
+   "status": "ok",
+   "bytes_source": 1040,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-2317/job-output.json": {
+   "status": "ok",
+   "bytes_source": 28965,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-2931/report.json": {
+   "status": "ok",
+   "bytes_source": 5739,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-2931/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 91333,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-2931/patch.diff": {
+   "status": "ok",
+   "bytes_source": 1025,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-2931/job-output.json": {
+   "status": "ok",
+   "bytes_source": 93586,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-5414/report.json": {
+   "status": "ok",
+   "bytes_source": 12167,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-5414/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 164822,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-5414/patch.diff": {
+   "status": "ok",
+   "bytes_source": 751,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-5414/job-output.json": {
+   "status": "ok",
+   "bytes_source": 166503,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-6028/report.json": {
+   "status": "ok",
+   "bytes_source": 15958,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-6028/test_output.txt": {
+   "status": "ok",
+   "bytes_source": 48995,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-6028/patch.diff": {
+   "status": "ok",
+   "bytes_source": 587,
+   "redactions": 0
+  },
+  "20260217_mini-v2.0.0_claude-4-5-haiku-high/psf__requests-6028/job-output.json": {
+   "status": "ok",
+   "bytes_source": 50338,
+   "redactions": 0
+  }
+ }
+}
