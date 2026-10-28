@@ -1,5 +1,5 @@
 {
- "runs": 16,
+ "runs": 18,
  "problems": [
   "own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027/psf__requests-1766: config differs: ['agent', 'environment', 'model']",
   "own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027/psf__requests-1766: not processed (unsupported_format:no_messages)"
@@ -8,7 +8,7 @@
   {
    "run_id": "own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027b/psf__requests-1766",
    "task_id": "psf__requests-1766",
-   "risk": 0.29772883206692186,
+   "risk": 0.2977288320669218,
    "resolved": 1,
    "submitted": 1,
    "n_steps": 10,
@@ -35,11 +35,11 @@
   {
    "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_pylint-dev__pylint-6386/pylint-dev__pylint-6386",
    "task_id": "pylint-dev__pylint-6386",
-   "risk": 0.21638390192579987,
+   "risk": 0.2163839019257998,
    "resolved": 1,
    "submitted": 1,
    "n_steps": 70,
-   "cost_usd": 0.16445000000000004
+   "cost_usd": 0.16445
   },
   {
    "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_pytest-dev__pytest-7324/pytest-dev__pytest-7324",
@@ -53,11 +53,11 @@
   {
    "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_sympy__sympy-23950/sympy__sympy-23950",
    "task_id": "sympy__sympy-23950",
-   "risk": 0.17097382252648297,
+   "risk": 0.1709738225264829,
    "resolved": 1,
    "submitted": 1,
    "n_steps": 28,
-   "cost_usd": 0.03638700000000001
+   "cost_usd": 0.036387
   },
   {
    "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_django__django-14376/django__django-14376",
@@ -66,12 +66,12 @@
    "resolved": 1,
    "submitted": 1,
    "n_steps": 32,
-   "cost_usd": 0.045725800000000004
+   "cost_usd": 0.0457258
   },
   {
    "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_psf__requests-1766/psf__requests-1766",
    "task_id": "psf__requests-1766",
-   "risk": 0.18390640064516228,
+   "risk": 0.1839064006451622,
    "resolved": 1,
    "submitted": 1,
    "n_steps": 8,
@@ -89,16 +89,16 @@
   {
    "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pytest-dev__pytest-7324/pytest-dev__pytest-7324",
    "task_id": "pytest-dev__pytest-7324",
-   "risk": 0.24759488549469083,
+   "risk": 0.2475948854946908,
    "resolved": 1,
    "submitted": 1,
    "n_steps": 34,
-   "cost_usd": 0.08979987999999998
+   "cost_usd": 0.0897998799999999
   },
   {
    "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_sympy__sympy-23950/sympy__sympy-23950",
    "task_id": "sympy__sympy-23950",
-   "risk": 0.24901569498528825,
+   "risk": 0.2490156949852882,
    "resolved": 1,
    "submitted": 1,
    "n_steps": 42,
@@ -116,7 +116,7 @@
   {
    "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_psf__requests-1766/psf__requests-1766",
    "task_id": "psf__requests-1766",
-   "risk": 0.33056944936742366,
+   "risk": 0.3305694493674236,
    "resolved": 1,
    "submitted": 1,
    "n_steps": 13,
@@ -125,7 +125,7 @@
   {
    "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pylint-dev__pylint-6386/pylint-dev__pylint-6386",
    "task_id": "pylint-dev__pylint-6386",
-   "risk": 0.24734537808172685,
+   "risk": 0.2473453780817268,
    "resolved": 0,
    "submitted": 1,
    "n_steps": 33,
@@ -134,7 +134,7 @@
   {
    "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pytest-dev__pytest-7324/pytest-dev__pytest-7324",
    "task_id": "pytest-dev__pytest-7324",
-   "risk": 0.16239415935939044,
+   "risk": 0.1623941593593904,
    "resolved": 1,
    "submitted": 1,
    "n_steps": 34,
@@ -143,11 +143,29 @@
   {
    "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_sympy__sympy-23950/sympy__sympy-23950",
    "task_id": "sympy__sympy-23950",
-   "risk": 0.11943033389129065,
+   "risk": 0.1194303338912906,
    "resolved": 1,
    "submitted": 1,
    "n_steps": 38,
-   "cost_usd": 0.04868416000000001
+   "cost_usd": 0.04868416
+  },
+  {
+   "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_sympy__sympy-15875/sympy__sympy-15875",
+   "task_id": "sympy__sympy-15875",
+   "risk": 0.3219879154025706,
+   "resolved": 0,
+   "submitted": 1,
+   "n_steps": 70,
+   "cost_usd": 0.16237636
+  },
+  {
+   "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563/django__django-15563",
+   "task_id": "django__django-15563",
+   "risk": 0.35893565051814114,
+   "resolved": 0,
+   "submitted": 1,
+   "n_steps": 69,
+   "cost_usd": 0.276785
   }
  ]
 }

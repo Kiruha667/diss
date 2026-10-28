@@ -1,0 +1,73 @@
+2026-10-28 22:56:02,863 - INFO - Creating container for django__django-15563...
+2026-10-28 22:56:05,208 - INFO - Container for django__django-15563 created: 43c427a62d1be2fe4f8828012bbbca9c4bda82a15b2ec96a7f1ac510767e70c6
+2026-10-28 22:56:06,489 - INFO - Container for django__django-15563 started: 43c427a62d1be2fe4f8828012bbbca9c4bda82a15b2ec96a7f1ac510767e70c6
+2026-10-28 22:56:06,489 - INFO - Intermediate patch for django__django-15563 written to logs/run_evaluation/own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563/glm-4.6/django__django-15563/patch.diff, now applying to container...
+2026-10-28 22:56:06,820 - INFO - >>>>> Applied Patch:
+Checking patch django/db/models/sql/subqueries.py...
+Applied patch django/db/models/sql/subqueries.py cleanly.
+
+2026-10-28 22:56:07,676 - INFO - Git diff before:
+diff --git a/django/db/models/sql/subqueries.py b/django/db/models/sql/subqueries.py
+index 04063f73bc..d707f25fab 100644
+--- a/django/db/models/sql/subqueries.py
++++ b/django/db/models/sql/subqueries.py
+@@ -134,7 +134,22 @@ class UpdateQuery(Query):
+             query = UpdateQuery(model)
+             query.values = values
+             if self.related_ids is not None:
+-                query.add_filter("pk__in", self.related_ids)
++                # For multi-table inheritance, we need to use the correct
++                # primary key values for each parent model. If the model is
++                # a parent of the concrete model, we need to find the pointer
++                # field from the child to the parent and use a subquery to
++                # get the parent's pk values.
++                if model in self.get_meta().parents:
++                    # Find the pointer field from the child to this parent
++                    ptr_field = self.get_meta().parents[model]
++                    # Create a subquery that selects the parent's pk values
++                    # from the child table where the child's pk is in related_ids
++                    subquery = Query(self.get_meta().concrete_model)
++                    subquery.add_filter("pk__in", self.related_ids)
++                    subquery.add_fields([ptr_field.attname])
++                    query.add_filter("pk__in", subquery)
++                else:
++                    query.add_filter("pk__in", self.related_ids)
+             result.append(query)
+         return result
+2026-10-28 22:56:07,676 - INFO - Eval script for django__django-15563 written to logs/run_evaluation/own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563/glm-4.6/django__django-15563/eval.sh; copying to container...
+2026-10-28 22:56:22,654 - INFO - Test runtime: 14.85 seconds
+2026-10-28 22:56:22,654 - INFO - Test output for django__django-15563 written to logs/run_evaluation/own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563/glm-4.6/django__django-15563/test_output.txt
+2026-10-28 22:56:22,769 - INFO - Git diff after:
+diff --git a/django/db/models/sql/subqueries.py b/django/db/models/sql/subqueries.py
+index 04063f73bc..d707f25fab 100644
+--- a/django/db/models/sql/subqueries.py
++++ b/django/db/models/sql/subqueries.py
+@@ -134,7 +134,22 @@ class UpdateQuery(Query):
+             query = UpdateQuery(model)
+             query.values = values
+             if self.related_ids is not None:
+-                query.add_filter("pk__in", self.related_ids)
++                # For multi-table inheritance, we need to use the correct
++                # primary key values for each parent model. If the model is
++                # a parent of the concrete model, we need to find the pointer
++                # field from the child to the parent and use a subquery to
++                # get the parent's pk values.
++                if model in self.get_meta().parents:
++                    # Find the pointer field from the child to this parent
++                    ptr_field = self.get_meta().parents[model]
++                    # Create a subquery that selects the parent's pk values
++                    # from the child table where the child's pk is in related_ids
++                    subquery = Query(self.get_meta().concrete_model)
++                    subquery.add_filter("pk__in", self.related_ids)
++                    subquery.add_fields([ptr_field.attname])
++                    query.add_filter("pk__in", subquery)
++                else:
++                    query.add_filter("pk__in", self.related_ids)
+             result.append(query)
+         return result
+2026-10-28 22:56:22,769 - INFO - Grading answer for django__django-15563...
+2026-10-28 22:56:22,771 - INFO - report: {'django__django-15563': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_mti_update_parent_through_child (model_inheritance_regress.tests.ModelInheritanceTest)'], 'failure': ['test_mti_update_grand_parent_through_child (model_inheritance_regress.tests.ModelInheritanceTest)']}, 'PASS_TO_PASS': {'success': ['test_abstract_base_class_m2m_relation_inheritance (model_inheritance_regress.tests.ModelInheritanceTest)', 'test_abstract_base_class_m2m_relation_inheritance_manager_reused (model_inheritance_regress.tests.ModelInheritanceTest)', 'verbose_name_plural correctly inherited from ABC if inheritance chain', 'Regression tests for #7588', 'Primary key set correctly with concrete->abstract->concrete inheritance.', 'test_create_new_instance_with_pk_equals_none (model_inheritance_regress.tests.ModelInheritanceTest)', 'test_create_new_instance_with_pk_equals_none_multi_inheritance (model_inheritance_regress.tests.ModelInheritanceTest)', 'test_filter_with_parent_fk (model_inheritance_regress.tests.ModelInheritanceTest)', 'Regression tests for #8076', 'test_id_field_update_on_ancestor_change (model_inheritance_regress.tests.ModelInheritanceTest)', 'test_inheritance_joins (model_inheritance_regress.tests.ModelInheritanceTest)', 'test_inheritance_resolve_columns (model_inheritance_regress.tests.ModelInheritanceTest)', 'test_inheritance_select_related (model_inheritance_regress.tests.ModelInheritanceTest)', 'Regression test for #8825 and #9390', 'test_inherited_nullable_exclude (model_inheritance_regress.tests.ModelInheritanceTest)', 'A model which has different primary key for the parent model passes', 'Regression test for #11764', 'test_issue_21554 (model_inheritance_regress.tests.ModelInheritanceTest)', 'Regression test for #6755', 'test_issue_7105 (model_inheritance_regress.tests.ModelInheritanceTest)', 'test_issue_7276 (model_inheritance_regress.tests.ModelInheritanceTest)', 'Regression test for #7853', 'test_model_inheritance (model_inheritance_regress.tests.ModelInheritanceTest)', 'test_ptr_accessor_assigns_state (model_inheritance_regress.tests.ModelInheritanceTest)', 'test_queries_on_parent_access (model_inheritance_regress.tests.ModelInheritanceTest)', 'Regression test for #10362', 'test_related_filtering_query_efficiency_ticket_15844 (model_inheritance_regress.tests.ModelInheritanceTest)', 'The connector from child to parent need not be the pk on the child.', 'test_use_explicit_o2o_to_parent_from_abstract_model (model_inheritance_regress.tests.ModelInheritanceTest)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-15563: resolved: False
+2026-10-28 22:56:22,771 - INFO - Attempting to stop container sweb.eval.django__django-15563.own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563...
+2026-10-28 22:56:43,207 - INFO - Attempting to remove container sweb.eval.django__django-15563.own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563...
+2026-10-28 22:56:46,307 - INFO - Container sweb.eval.django__django-15563.own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563 removed.

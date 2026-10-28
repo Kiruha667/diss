@@ -1,0 +1,20 @@
+diff --git a/sympy/core/add.py b/sympy/core/add.py
+index 83a5f2aed..6cb3e5cf6 100644
+--- a/sympy/core/add.py
++++ b/sympy/core/add.py
+@@ -561,7 +561,14 @@ def _eval_is_zero(self):
+             if not im_or_z and not im:
+                 return True
+             if im and not im_or_z:
+-                return False
++                # When there are imaginary terms but no im_or_z terms,
++                # we need to check if the imaginary part is also zero
++                # i = imaginary part of self
++                _, i = self.as_real_imag()
++                if i.is_zero:
++                    return True
++                if i.is_zero is False:
++                    return False
+         if b.is_zero is False:
+             return False
+ 

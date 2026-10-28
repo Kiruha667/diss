@@ -1,0 +1,7 @@
+{
+  "django__django-15563": {
+    "model_name_or_path": "glm-4.6",
+    "instance_id": "django__django-15563",
+    "model_patch": ""
+  }
+}

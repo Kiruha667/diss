@@ -5,6 +5,8 @@
 # Commit + push after every 10 finished runs. At the end (all rounds done or budget stop): gold_post validation.
 # Requires the stage V result own_data/gold_validation.json. Images are pulled before, never during the runs.
 # Run from anywhere:  powershell -ExecutionPolicy Bypass -File own_data\infra\main.ps1
+# Pause after the current run: create the file .own_main_stop in the repository root (main_lib.py log); no Cyrillic in
+# this file: Windows PowerShell 5.1 reads it as cp1251, LOG.md lines are written by main_lib.py.
 Set-Location C:\Users\1\Desktop\diss
 $env:Path = "C:\Users\1\.local\mingit\cmd;$env:Path"
 $env:ZAI_API_KEY = [Environment]::GetEnvironmentVariable("ZAI_API_KEY", "User")
@@ -48,7 +50,7 @@ function Archive([string]$rid) {
     if (Test-Path "own_data\raw\$rid") { Move-Item "own_data\raw\$rid" "$dest\raw" }
     if (Test-Path "own_data\eval\$rid") { Move-Item "own_data\eval\$rid" "$dest\eval" }
     Write-Output ("{0} archived {1} -> {2}" -f (Get-Date -Format s), $rid, $dest)
-    & $py -c "import sys; open('own_data/LOG.md','a',encoding='utf-8',newline='\n').write('- технический сбой: ' + sys.argv[1] + ' перенесён в ' + sys.argv[2].replace(chr(92), '/') + ', повтор под тем же run_id\n')" $rid $dest
+    & $py own_data\infra\main_lib.py archived $rid $dest
 }
 
 function Evaluate([string]$rid) {
@@ -97,10 +99,10 @@ while ($true) {
 }
 if ($stop) {
     Write-Output "MAIN COLLECTION STOPPED: $stop"
-    & $py -c "import sys; open('own_data/LOG.md','a',encoding='utf-8',newline='\n').write('- **ОСНОВНОЙ СБОР ОСТАНОВЛЕН:** ' + sys.argv[1] + '\n')" $stop
+    & $py own_data\infra\main_lib.py stopped $stop
 } else {
     Write-Output "MAIN COLLECTION DONE"
-    & $py -c "open('own_data/LOG.md','a',encoding='utf-8',newline='\n').write('- **Основной сбор завершён**: все круги выполнены.\n')"
+    & $py own_data\infra\main_lib.py finished
 }
 CommitPush "own_data: main collection finished or stopped (protocol 1.2)"
 if (-not $skipGold) {

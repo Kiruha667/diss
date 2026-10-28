@@ -1,0 +1,28 @@
+diff --git a/django/db/models/sql/subqueries.py b/django/db/models/sql/subqueries.py
+index 04063f73bc..d707f25fab 100644
+--- a/django/db/models/sql/subqueries.py
++++ b/django/db/models/sql/subqueries.py
+@@ -134,7 +134,22 @@ class UpdateQuery(Query):
+             query = UpdateQuery(model)
+             query.values = values
+             if self.related_ids is not None:
+-                query.add_filter("pk__in", self.related_ids)
++                # For multi-table inheritance, we need to use the correct
++                # primary key values for each parent model. If the model is
++                # a parent of the concrete model, we need to find the pointer
++                # field from the child to the parent and use a subquery to
++                # get the parent's pk values.
++                if model in self.get_meta().parents:
++                    # Find the pointer field from the child to this parent
++                    ptr_field = self.get_meta().parents[model]
++                    # Create a subquery that selects the parent's pk values
++                    # from the child table where the child's pk is in related_ids
++                    subquery = Query(self.get_meta().concrete_model)
++                    subquery.add_filter("pk__in", self.related_ids)
++                    subquery.add_fields([ptr_field.attname])
++                    query.add_filter("pk__in", subquery)
++                else:
++                    query.add_filter("pk__in", self.related_ids)
+             result.append(query)
+         return result
+ 

@@ -1,0 +1,21 @@
+2026-10-28T18:05:39 start own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563 (round 0, spent 0,0000)
+{"run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563", "protocol_version": "1.2", "started_utc": "2026-10-28T13:05:39Z", "wall_time_s": 14735, "runner_exit_code": 0, "versions": {"mini-swe-agent": "1.17.1", "litellm": "1.80.7", "openai": "2.8.1", "datasets": "4.4.1"}, "config_sha256": "e4c88cd01c591f50ce37f2b8394f7791d118ca1d11b40fcf73c10973f206c41c", "registry_sha256": "d7acd3d8ee025c03647f5880a37e3e4fe38e54f2c4190bb0032a99918ae0d657", "provider": "z.ai (OpenAI-compatible endpoint, litellm provider openai)", "image_digests": {"django__django-15563": "swebench/sweb.eval.x86_64.django_1776_django-15563@sha256:8ad1a52cd8c746541f87d77df6e56e3ad1fe17742494153ec4215c86108a641a"}}
+saved to /mnt/c/Users/1/Desktop/diss/own_data/raw/own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563 (runner exit code 0, 14735s)
+
+2026-10-28T22:11:27 done own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563: OK
+2026-10-28T22:11:33 start own-v1.2_mini-v1.17.1_glm-4.6_main_r0_sympy__sympy-15875 (round 0, spent 0,9358)
+{"run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_sympy__sympy-15875", "protocol_version": "1.2", "started_utc": "2026-10-28T17:11:34Z", "wall_time_s": 1514, "runner_exit_code": 0, "versions": {"mini-swe-agent": "1.17.1", "litellm": "1.80.7", "openai": "2.8.1", "datasets": "4.4.1"}, "config_sha256": "e4c88cd01c591f50ce37f2b8394f7791d118ca1d11b40fcf73c10973f206c41c", "registry_sha256": "d7acd3d8ee025c03647f5880a37e3e4fe38e54f2c4190bb0032a99918ae0d657", "provider": "z.ai (OpenAI-compatible endpoint, litellm provider openai)", "image_digests": {"sympy__sympy-15875": "swebench/sweb.eval.x86_64.sympy_1776_sympy-15875@sha256:e2812656720310590f43b2773a81f896dafe9e36efa151494a6663bb26ec49f0"}}
+saved to /mnt/c/Users/1/Desktop/diss/own_data/raw/own-v1.2_mini-v1.17.1_glm-4.6_main_r0_sympy__sympy-15875 (runner exit code 0, 1514s)
+
+{"swebench": "4.1.0", "resolved": {"sympy__sympy-15875": {"sympy__sympy-15875": false}}}
+
+2026-10-28T22:39:11 done own-v1.2_mini-v1.17.1_glm-4.6_main_r0_sympy__sympy-15875: OK
+2026-10-28T22:39:20 archived own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563 -> own_data\raw_failed\own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563-attempt1
+2026-10-28T22:39:20 start own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563 (round 0, spent 1,0982)
+{"run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563", "protocol_version": "1.2", "started_utc": "2026-10-28T17:39:21Z", "wall_time_s": 973, "runner_exit_code": 0, "versions": {"mini-swe-agent": "1.17.1", "litellm": "1.80.7", "openai": "2.8.1", "datasets": "4.4.1"}, "config_sha256": "e4c88cd01c591f50ce37f2b8394f7791d118ca1d11b40fcf73c10973f206c41c", "registry_sha256": "d7acd3d8ee025c03647f5880a37e3e4fe38e54f2c4190bb0032a99918ae0d657", "provider": "z.ai (OpenAI-compatible endpoint, litellm provider openai)", "image_digests": {"django__django-15563": "swebench/sweb.eval.x86_64.django_1776_django-15563@sha256:8ad1a52cd8c746541f87d77df6e56e3ad1fe17742494153ec4215c86108a641a"}}
+saved to /mnt/c/Users/1/Desktop/diss/own_data/raw/own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563 (runner exit code 0, 973s)
+
+{"swebench": "4.1.0", "resolved": {"django__django-15563": {"django__django-15563": false}}}
+
+2026-10-28T22:57:39 done own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563: STOP: pause requested (.own_main_stop: restart main.ps1 with the LOG encoding fix)
+MAIN COLLECTION STOPPED: STOP: pause requested (.own_main_stop: restart main.ps1 with the LOG encoding fix)

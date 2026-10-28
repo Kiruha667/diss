@@ -8,6 +8,10 @@ Run from the repository root.
   python own_data/infra/main_lib.py evalfail <run_id> -> mark a run whose evaluation gave no report twice
   python own_data/infra/main_lib.py log <run_id> <round>   -> append the run's LOG.md line; prints OK or STOP: <reason>
   python own_data/infra/main_lib.py summary           -> counts for the commit message: '<done main runs>'
+  python own_data/infra/main_lib.py archived <run_id> <dest> | stopped <reason> | finished  -> LOG.md lines of main.ps1
+    (written here: Windows PowerShell 5.1 reads a .ps1 without BOM as cp1251, Cyrillic text there gets garbled)
+Pause: the file .own_main_stop in the repository root makes `log` answer STOP after the current run (main.ps1 then
+commits and exits without gold_post); delete the file and start main.ps1 again to continue.
 Rounds: 0, 1, 2 over all tasks of the pool (tasks_main.json order, minus gold_pre exclusions), then 3, 4 over the
 first 30 tasks with a mixed outcome among rounds 0-2. Rounds 0-2 of the pilot tasks are the pilot runs (protocol 1.1).
 """
@@ -25,6 +29,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[2]
 OWN = ROOT / "own_data"
 LOG = OWN / "LOG.md"
+STOP_FILE = ROOT / ".own_main_stop"
 BUDGET = 35.0
 MAX_EXTRA_TASKS = 30
 PREFIX = "own-v1.2_mini-v1.17.1_glm-4.6_main"
@@ -176,7 +181,21 @@ def log(rid: str, rnd: str) -> str:
         return "STOP: " + "; ".join(stop)
     if total >= BUDGET:
         return f"STOP: budget ${total:.4f} >= ${BUDGET}"
+    if STOP_FILE.exists():
+        return f"STOP: pause requested ({STOP_FILE.name}: {STOP_FILE.read_text(encoding='utf-8').strip()})"
     return "OK"
+
+
+def archived(rid: str, dest: str) -> None:
+    append(f"- технический сбой: {rid} перенесён в {dest.replace(chr(92), '/')}, повтор под тем же run_id")
+
+
+def stopped(reason: str) -> None:
+    append(f"- **ОСНОВНОЙ СБОР ОСТАНОВЛЕН:** {reason}")
+
+
+def finished() -> None:
+    append("- **Основной сбор завершён**: все круги выполнены.")
 
 
 def summary() -> str:
@@ -201,3 +220,9 @@ if __name__ == "__main__":
         print(log(sys.argv[2], sys.argv[3]))
     elif cmd == "summary":
         print(summary())
+    elif cmd == "archived":
+        archived(sys.argv[2], sys.argv[3])
+    elif cmd == "stopped":
+        stopped(sys.argv[2])
+    elif cmd == "finished":
+        finished()

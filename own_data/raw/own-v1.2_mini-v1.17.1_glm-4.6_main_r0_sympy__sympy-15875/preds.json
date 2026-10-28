@@ -1,0 +1,7 @@
+{
+  "sympy__sympy-15875": {
+    "model_name_or_path": "glm-4.6",
+    "instance_id": "sympy__sympy-15875",
+    "model_patch": "diff --git a/sympy/core/add.py b/sympy/core/add.py\nindex 83a5f2aed..6cb3e5cf6 100644\n--- a/sympy/core/add.py\n+++ b/sympy/core/add.py\n@@ -561,7 +561,14 @@ def _eval_is_zero(self):\n             if not im_or_z and not im:\n                 return True\n             if im and not im_or_z:\n-                return False\n+                # When there are imaginary terms but no im_or_z terms,\n+                # we need to check if the imaginary part is also zero\n+                # i = imaginary part of self\n+                _, i = self.as_real_imag()\n+                if i.is_zero:\n+                    return True\n+                if i.is_zero is False:\n+                    return False\n         if b.is_zero is False:\n             return False\n \n"
+  }
+}
