@@ -184,4 +184,8 @@
 - 2026-10-28 17:39 UTC круг 0 `own-v1.2_mini-v1.17.1_glm-4.6_main_r0_sympy__sympy-15875`: Submitted, 70 шагов, $0.1624, resolved=0, 1514 с; ключ в файлах: нет; расход сбора $1.0982
 - технический сбой: own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563 перенесён в own_data/raw_failed/own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563-attempt1, повтор под тем же run_id
 - 2026-10-28 17:57 UTC круг 0 `own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563`: Submitted, 69 шагов, $0.2768, resolved=0, 973 с; ключ в файлах: нет; расход сбора $2.3108
-- **РћРЎРќРћР’РќРћР™ РЎР‘РћР  РћРЎРўРђРќРћР’Р›Р•Рќ:** STOP: pause requested (.own_main_stop: restart main.ps1 with the LOG encoding fix)
+- **ОСНОВНОЙ СБОР ОСТАНОВЛЕН:** STOP: pause requested (.own_main_stop: restart main.ps1 with the LOG encoding fix)
+- 2026-10-28 18:05 UTC, исправления запускателя (пауза через `.own_main_stop` после повтора django-15563 r0):
+  (1) «расход сбора $2.3108» в строке повтора django-15563 r0 завышен: архив попытки 1 содержит траекторию дважды (`raw/`, перенесённый `main.ps1`, и копию из WSL от `archive_failed.sh`), `spent()` считал обе. Исправлено: одна траектория на попытку и задачу. Верный расход после 2 прогонов и 1 сбоя: $1.3750 (0.9358 + 0.1624 + 0.2768).
+  (2) Строки LOG, которые писал сам `main.ps1` (технический сбой, остановка), были искажены: Windows PowerShell 5.1 читает .ps1 без BOM как cp1251. Две строки восстановлены (cp1251 → UTF-8), запись перенесена в `main_lib.py` (`archived`, `stopped`, `finished`), в `main.ps1` нет кириллицы.
+  (3) Пауза: файл `.own_main_stop` в корне (в .gitignore) — остановка после текущего прогона, без gold_post; запускатель перезапущен с места остановки.

@@ -125,8 +125,13 @@ def attempt(rid: str) -> int:
 
 def spent() -> float:
     total = 0.0
-    paths = list((OWN / "raw").glob(f"{PREFIX}_*/*/*.traj.json")) + \
-        list((OWN / "raw_failed").glob(f"{PREFIX}_*-attempt*/**/*.traj.json"))
+    paths = list((OWN / "raw").glob(f"{PREFIX}_*/*/*.traj.json"))
+    # an archived attempt can hold its trajectory twice (raw/ moved by main.ps1 and the WSL copy of
+    # archive_failed.sh): one trajectory per attempt and instance
+    failed = {}
+    for p in sorted((OWN / "raw_failed").glob(f"{PREFIX}_*-attempt*/**/*.traj.json")):
+        failed.setdefault((p.relative_to(OWN / "raw_failed").parts[0], p.parent.name), p)
+    paths += list(failed.values())
     for p in paths:
         total += float((json.loads(p.read_text(encoding="utf-8")).get("info", {}).get("model_stats") or {})
                        .get("instance_cost") or 0.0)

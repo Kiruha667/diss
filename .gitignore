@@ -15,3 +15,6 @@ kaggle/pulled/
 
 # features.csv is 109 MB (> GitHub 100 MB limit): the repo keeps outputs/features.csv.gz
 outputs/features.csv
+
+# pause request for own_data/infra/main.ps1 (main_lib.py STOP_FILE)
+.own_main_stop

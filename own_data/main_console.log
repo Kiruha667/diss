@@ -19,3 +19,5 @@ saved to /mnt/c/Users/1/Desktop/diss/own_data/raw/own-v1.2_mini-v1.17.1_glm-4.6_
 
 2026-10-28T22:57:39 done own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563: STOP: pause requested (.own_main_stop: restart main.ps1 with the LOG encoding fix)
 MAIN COLLECTION STOPPED: STOP: pause requested (.own_main_stop: restart main.ps1 with the LOG encoding fix)
+committed: 68cc43f own_data: main collection finished or stopped (protocol 1.2)
+True
