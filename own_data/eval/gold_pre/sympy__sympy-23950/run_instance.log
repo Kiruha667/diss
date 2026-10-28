@@ -1,0 +1,39 @@
+2026-10-28 17:59:33,302 - INFO - Creating container for sympy__sympy-23950...
+2026-10-28 17:59:34,381 - INFO - Container for sympy__sympy-23950 created: d7ad361a2a376ef892e24849b28aab482965b0406c64a8d0b4b1116a8ba466f8
+2026-10-28 17:59:35,511 - INFO - Container for sympy__sympy-23950 started: d7ad361a2a376ef892e24849b28aab482965b0406c64a8d0b4b1116a8ba466f8
+2026-10-28 17:59:35,512 - INFO - Intermediate patch for sympy__sympy-23950 written to logs/run_evaluation/gold_pre/gold/sympy__sympy-23950/patch.diff, now applying to container...
+2026-10-28 17:59:35,824 - INFO - >>>>> Applied Patch:
+Checking patch sympy/sets/contains.py...
+Applied patch sympy/sets/contains.py cleanly.
+
+2026-10-28 17:59:38,498 - INFO - Git diff before:
+diff --git a/sympy/sets/contains.py b/sympy/sets/contains.py
+index b2d4268d12..997a4d8e16 100644
+--- a/sympy/sets/contains.py
++++ b/sympy/sets/contains.py
+@@ -45,4 +45,4 @@ def binary_symbols(self):
+             isinstance(i, (Eq, Ne))])
+ 
+     def as_set(self):
+-        raise NotImplementedError()
++        return self.args[1]
+2026-10-28 17:59:38,498 - INFO - Eval script for sympy__sympy-23950 written to logs/run_evaluation/gold_pre/gold/sympy__sympy-23950/eval.sh; copying to container...
+2026-10-28 17:59:44,589 - INFO - Test runtime: 5.96 seconds
+2026-10-28 17:59:44,589 - INFO - Test output for sympy__sympy-23950 written to logs/run_evaluation/gold_pre/gold/sympy__sympy-23950/test_output.txt
+2026-10-28 17:59:44,689 - INFO - Git diff after:
+diff --git a/sympy/sets/contains.py b/sympy/sets/contains.py
+index b2d4268d12..997a4d8e16 100644
+--- a/sympy/sets/contains.py
++++ b/sympy/sets/contains.py
+@@ -45,4 +45,4 @@ def binary_symbols(self):
+             isinstance(i, (Eq, Ne))])
+ 
+     def as_set(self):
+-        raise NotImplementedError()
++        return self.args[1]
+2026-10-28 17:59:44,689 - INFO - Grading answer for sympy__sympy-23950...
+2026-10-28 17:59:44,689 - INFO - report: {'sympy__sympy-23950': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_as_set'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_contains_basic', 'test_issue_6194', 'test_issue_10326', 'test_binary_symbols'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-23950: resolved: True
+2026-10-28 17:59:44,690 - INFO - Attempting to stop container sweb.eval.sympy__sympy-23950.gold_pre...
+2026-10-28 18:00:04,340 - INFO - Attempting to remove container sweb.eval.sympy__sympy-23950.gold_pre...
+2026-10-28 18:00:08,572 - INFO - Container sweb.eval.sympy__sympy-23950.gold_pre removed.

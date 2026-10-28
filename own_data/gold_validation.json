@@ -1,0 +1,8 @@
+{
+ "run_id": "gold_pre",
+ "n_tasks": 65,
+ "n_resolved": 65,
+ "excluded": [],
+ "stop_rule": "more than 5 excluded -> stop (PROTOCOL.md 11.7)",
+ "stop": false
+}

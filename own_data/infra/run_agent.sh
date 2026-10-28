@@ -8,10 +8,12 @@ set -euo pipefail
 RUN_ID="$1"; FILTER="$2"
 : "${ZAI_API_KEY:?ZAI_API_KEY is not set}"
 REPO=/mnt/c/Users/1/Desktop/diss
-# OWN_PROTOCOL selects own_data/config/glm-4.6_v<version>.yaml (default 1.1 since PROTOCOL.md 1.1);
-# OWN_CFG / OWN_DEST_ROOT override the config and the destination only for probes outside the corpus (own_data/probes)
+# OWN_PROTOCOL selects own_data/config/glm-4.6_v<version>.yaml (default 1.1 since PROTOCOL.md 1.1; protocol 1.2 keeps
+# the config of 1.1, PROTOCOL.md 11.8); OWN_CFG / OWN_DEST_ROOT override the config and the destination only for
+# probes outside the corpus (own_data/probes)
 PROTOCOL="${OWN_PROTOCOL:-1.1}"
-CFG="${OWN_CFG:-$REPO/own_data/config/glm-4.6_v${PROTOCOL}.yaml}"
+CFG_VERSION="$PROTOCOL"; [ "$PROTOCOL" = "1.2" ] && CFG_VERSION=1.1
+CFG="${OWN_CFG:-$REPO/own_data/config/glm-4.6_v${CFG_VERSION}.yaml}"
 [ -f "$CFG" ] || { echo "no config $CFG"; exit 2; }
 REG_SRC="$REPO/own_data/config/litellm_model_registry.json"
 REG=/home/klieret/litellm_model_registry.json   # path written in the verbatim corpus config

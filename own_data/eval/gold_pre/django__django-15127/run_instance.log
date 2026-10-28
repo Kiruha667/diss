@@ -1,0 +1,65 @@
+2026-10-28 17:17:28,105 - INFO - Creating container for django__django-15127...
+2026-10-28 17:17:30,505 - INFO - Container for django__django-15127 created: 9f6c63f0378a2e83321b5ad382ef40d87adaad28132dc52366db4c07a60c7cf3
+2026-10-28 17:17:32,691 - INFO - Container for django__django-15127 started: 9f6c63f0378a2e83321b5ad382ef40d87adaad28132dc52366db4c07a60c7cf3
+2026-10-28 17:17:32,692 - INFO - Intermediate patch for django__django-15127 written to logs/run_evaluation/gold_pre/gold/django__django-15127/patch.diff, now applying to container...
+2026-10-28 17:17:32,955 - INFO - >>>>> Applied Patch:
+Checking patch django/contrib/messages/apps.py...
+Applied patch django/contrib/messages/apps.py cleanly.
+
+2026-10-28 17:17:38,739 - INFO - Git diff before:
+diff --git a/django/contrib/messages/apps.py b/django/contrib/messages/apps.py
+index 0ff25d3885..064b9a4bde 100644
+--- a/django/contrib/messages/apps.py
++++ b/django/contrib/messages/apps.py
+@@ -1,7 +1,18 @@
+ from django.apps import AppConfig
++from django.contrib.messages.storage import base
++from django.contrib.messages.utils import get_level_tags
++from django.test.signals import setting_changed
+ from django.utils.translation import gettext_lazy as _
+ 
+ 
++def update_level_tags(setting, **kwargs):
++    if setting == 'MESSAGE_TAGS':
++        base.LEVEL_TAGS = get_level_tags()
++
++
+ class MessagesConfig(AppConfig):
+     name = 'django.contrib.messages'
+     verbose_name = _("Messages")
++
++    def ready(self):
++        setting_changed.connect(update_level_tags)
+2026-10-28 17:17:38,740 - INFO - Eval script for django__django-15127 written to logs/run_evaluation/gold_pre/gold/django__django-15127/eval.sh; copying to container...
+2026-10-28 17:17:51,199 - INFO - Test runtime: 12.35 seconds
+2026-10-28 17:17:51,199 - INFO - Test output for django__django-15127 written to logs/run_evaluation/gold_pre/gold/django__django-15127/test_output.txt
+2026-10-28 17:17:51,313 - INFO - Git diff after:
+diff --git a/django/contrib/messages/apps.py b/django/contrib/messages/apps.py
+index 0ff25d3885..064b9a4bde 100644
+--- a/django/contrib/messages/apps.py
++++ b/django/contrib/messages/apps.py
+@@ -1,7 +1,18 @@
+ from django.apps import AppConfig
++from django.contrib.messages.storage import base
++from django.contrib.messages.utils import get_level_tags
++from django.test.signals import setting_changed
+ from django.utils.translation import gettext_lazy as _
+ 
+ 
++def update_level_tags(setting, **kwargs):
++    if setting == 'MESSAGE_TAGS':
++        base.LEVEL_TAGS = get_level_tags()
++
++
+ class MessagesConfig(AppConfig):
+     name = 'django.contrib.messages'
+     verbose_name = _("Messages")
++
++    def ready(self):
++        setting_changed.connect(update_level_tags)
+2026-10-28 17:17:51,313 - INFO - Grading answer for django__django-15127...
+2026-10-28 17:17:51,313 - INFO - report: {'django__django-15127': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_override_settings_level_tags (messages_tests.tests.TestLevelTags)'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_eq (messages_tests.tests.MessageTests)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-15127: resolved: True
+2026-10-28 17:17:51,314 - INFO - Attempting to stop container sweb.eval.django__django-15127.gold_pre...
+2026-10-28 17:18:12,476 - INFO - Attempting to remove container sweb.eval.django__django-15127.gold_pre...
+2026-10-28 17:18:14,602 - INFO - Container sweb.eval.django__django-15127.gold_pre removed.

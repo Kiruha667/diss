@@ -13,6 +13,11 @@ For every own_data/raw/<run_id>/<instance>/<instance>.traj.json with a report in
     the features recomputed by demo_lib from the steps.
 Checks: the trajectory's info.config equals own_data/config/glm-4.6_v1.0.yaml (except image / selectors), no API
 key field in it, demo_lib features equal the original code's.
+PROTOCOL.md 1.2: runs of protocol 1.2 use the config of 1.1 (CONFIG_OF); a run whose patch is empty has no harness
+report and gets label 1 = not resolved (label_source = empty_patch); in_main_collection = 1 for the runs of protocol
+>= 1.1 on the tasks of tasks_main.json not excluded by the gold validation (gold_validation.json).
+  python own_data/infra/process_runs.py                 -> all runs (full rebuild)
+  python own_data/infra/process_runs.py --only <run_id> -> only this run, merged into the existing outputs
 """
 from __future__ import annotations
 
@@ -76,7 +81,26 @@ def demo_model_without(task: str, corpus: pd.DataFrame):
         train[dfeat.FEATURES].to_numpy(float), 1 - train.resolved.to_numpy())
 
 
+CONFIG_OF = {"1.2": "1.1"}  # protocol version -> version of own_data/config/glm-4.6_v<version>.yaml
+
+
+def empty_patch(run_dir: Path, iid: str) -> bool:
+    preds = run_dir / "preds.json"
+    if not preds.exists():
+        return False
+    p = json.loads(preds.read_text(encoding="utf-8")).get(iid)
+    return p is not None and not (p.get("model_patch") or "").strip()
+
+
+def main_pool() -> set[str]:
+    tasks = {t["task_id"] for t in json.loads((OWN / "tasks_main.json").read_text(encoding="utf-8"))["tasks"]}
+    gv = OWN / "gold_validation.json"
+    excluded = set(json.loads(gv.read_text(encoding="utf-8")).get("excluded", [])) if gv.exists() else set()
+    return tasks - excluded
+
+
 def main() -> None:
+    only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else None
     cfg_src = load_cfg()["swebench_bashonly"] if "swebench_bashonly" in load_cfg() else load_cfg()
     infra = list(cfg_src.get("infra_exit_statuses") or [])
     mre = compile_markers(load_leak_markers())
@@ -85,17 +109,22 @@ def main() -> None:
             for p in (OWN / "config").glob("glm-4.6_v*.yaml")}
     corpus = pd.read_parquet(ROOT / "data" / "demo" / "runs.parquet")
     corpus = corpus[corpus.submitted == 1]
+    pool = main_pool()
     runs, steps, scores, problems = [], [], [], []
-    for meta_path in sorted((OWN / "raw").glob("*/run_meta.json")):
+    metas = [OWN / "raw" / only / "run_meta.json"] if only else sorted((OWN / "raw").glob("*/run_meta.json"))
+    for meta_path in metas:
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
         run_id = meta["run_id"]
         version = str(meta.get("protocol_version"))
-        cfg_yaml = cfgs[version]
+        cfg_yaml = cfgs[CONFIG_OF.get(version, version)]
         rep_m = re.search(r"_r(\d+)(?:_|$)", run_id)
         for traj in sorted(meta_path.parent.glob("*/*.traj.json")):
             iid = traj.parent.name
             report = OWN / "eval" / run_id / iid / "report.json"
             label = read_label(report, iid) if report.exists() else None
+            label_source = "report"
+            if label is None and empty_patch(meta_path.parent, iid):
+                label, label_source = 1, "empty_patch"
             d = json.loads(traj.read_text(encoding="utf-8"))
             info = d.get("info", {})
             diffs = config_check(info.get("config", {}), cfg_yaml)
@@ -120,7 +149,9 @@ def main() -> None:
                         "config_sha256": meta.get("config_sha256"),
                         "image_digest": meta.get("image_digests", {}).get(iid),
                         "protocol_version": version, "reasoning_sources": " + ".join(reasoning),
+                        "label_source": label_source,
                         "in_analysis": int(version != "1.0" and "_smoke" not in run_id),
+                        "in_main_collection": int(version != "1.0" and "_smoke" not in run_id and iid in pool),
                         "note": ("smoke-тест протокола 1.0 (рассуждения glm-4.6 включены), не входит в анализ"
                                  if version == "1.0" else "")})
             # features recomputed by demo_lib from the steps (score_trajectory path) must equal the original ones
@@ -135,14 +166,24 @@ def main() -> None:
                            "submitted": run["submitted"], "n_steps": run["n_steps"], "cost_usd": run["cost_usd"]})
             runs.append(run)
             steps += st
-    if runs:
-        rdf = pd.DataFrame(runs)
+    rdf, sdf, cdf = pd.DataFrame(runs), pd.DataFrame(steps), pd.DataFrame(scores)
+    if only:  # merge: the outputs of all other runs are kept as they are
+        mine = lambda df: df.run_id.str.startswith(only + "/")
+        old_r = pd.read_parquet(OWN / "runs_own.parquet")
+        old_s = pd.read_parquet(OWN / "steps_own.parquet")
+        old_c = pd.read_csv(OWN / "scores_own.csv")
+        old_status = json.loads((OWN / "process_status.json").read_text(encoding="utf-8"))
+        rdf = pd.concat([old_r[~mine(old_r)], rdf], ignore_index=True)
+        sdf = pd.concat([old_s[~mine(old_s)], sdf], ignore_index=True)
+        cdf = pd.concat([old_c[~mine(old_c)], cdf], ignore_index=True)
+        problems = [p for p in old_status["problems"] if not p.startswith(only + "/")] + problems
+        scores = cdf.to_dict("records")
+    if len(rdf):
         rdf.to_parquet(OWN / "runs_own.parquet", index=False)
-        sdf = pd.DataFrame(steps)
         sdf["commands"] = sdf["commands"].apply(list)
         sdf.to_parquet(OWN / "steps_own.parquet", index=False)
-        pd.DataFrame(scores).to_csv(OWN / "scores_own.csv", index=False)
-    status = {"runs": len(runs), "problems": problems, "scores": scores}
+        cdf.to_csv(OWN / "scores_own.csv", index=False)
+    status = {"runs": len(rdf), "problems": problems, "scores": scores}
     (OWN / "process_status.json").write_text(json.dumps(status, indent=1, ensure_ascii=False, default=str),
                                              encoding="utf-8")
     print(json.dumps(status, indent=1, default=str))

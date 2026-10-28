@@ -1,0 +1,55 @@
+2026-10-28 17:53:17,673 - INFO - Creating container for sympy__sympy-14976...
+2026-10-28 17:53:22,817 - INFO - Container for sympy__sympy-14976 created: 5728897c3bf6a1717c8895120acb272e53c24c02b021df319cce02fae737e33d
+2026-10-28 17:53:24,812 - INFO - Container for sympy__sympy-14976 started: 5728897c3bf6a1717c8895120acb272e53c24c02b021df319cce02fae737e33d
+2026-10-28 17:53:24,812 - INFO - Intermediate patch for sympy__sympy-14976 written to logs/run_evaluation/gold_pre/gold/sympy__sympy-14976/patch.diff, now applying to container...
+2026-10-28 17:53:25,047 - INFO - >>>>> Applied Patch:
+Checking patch sympy/printing/pycode.py...
+Applied patch sympy/printing/pycode.py cleanly.
+
+2026-10-28 17:53:27,631 - INFO - Git diff before:
+diff --git a/sympy/printing/pycode.py b/sympy/printing/pycode.py
+index d06901425..243fb857a 100644
+--- a/sympy/printing/pycode.py
++++ b/sympy/printing/pycode.py
+@@ -332,6 +332,13 @@ def _print_Float(self, e):
+         return '{func}({args})'.format(func=self._module_format('mpmath.mpf'), args=args)
+ 
+ 
++    def _print_Rational(self, e):
++        return '{0}({1})/{0}({2})'.format(
++            self._module_format('mpmath.mpf'),
++            e.p,
++            e.q,
++            )
++
+     def _print_uppergamma(self, e):
+         return "{0}({1}, {2}, {3})".format(
+             self._module_format('mpmath.gammainc'),
+2026-10-28 17:53:27,631 - INFO - Eval script for sympy__sympy-14976 written to logs/run_evaluation/gold_pre/gold/sympy__sympy-14976/eval.sh; copying to container...
+2026-10-28 17:53:36,510 - INFO - Test runtime: 8.77 seconds
+2026-10-28 17:53:36,510 - INFO - Test output for sympy__sympy-14976 written to logs/run_evaluation/gold_pre/gold/sympy__sympy-14976/test_output.txt
+2026-10-28 17:53:36,608 - INFO - Git diff after:
+diff --git a/sympy/printing/pycode.py b/sympy/printing/pycode.py
+index d06901425..243fb857a 100644
+--- a/sympy/printing/pycode.py
++++ b/sympy/printing/pycode.py
+@@ -332,6 +332,13 @@ def _print_Float(self, e):
+         return '{func}({args})'.format(func=self._module_format('mpmath.mpf'), args=args)
+ 
+ 
++    def _print_Rational(self, e):
++        return '{0}({1})/{0}({2})'.format(
++            self._module_format('mpmath.mpf'),
++            e.p,
++            e.q,
++            )
++
+     def _print_uppergamma(self, e):
+         return "{0}({1}, {2}, {3})".format(
+             self._module_format('mpmath.gammainc'),
+2026-10-28 17:53:36,608 - INFO - Grading answer for sympy__sympy-14976...
+2026-10-28 17:53:36,608 - INFO - report: {'sympy__sympy-14976': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_MpmathPrinter'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_PythonCodePrinter', 'test_NumPyPrinter', 'test_SciPyPrinter', 'test_pycode_reserved_words', 'test_printmethod', 'test_codegen_ast_nodes', 'test_nsolve_denominator', 'test_nsolve', 'test_issue_6408', 'test_increased_dps', 'test_nsolve_precision', 'test_nsolve_complex', 'test_nsolve_dict_kwarg'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-14976: resolved: True
+2026-10-28 17:53:36,609 - INFO - Attempting to stop container sweb.eval.sympy__sympy-14976.gold_pre...
+2026-10-28 17:53:57,491 - INFO - Attempting to remove container sweb.eval.sympy__sympy-14976.gold_pre...
+2026-10-28 17:54:01,300 - INFO - Container sweb.eval.sympy__sympy-14976.gold_pre removed.
