@@ -1,5 +1,5 @@
 {
- "runs": 18,
+ "runs": 24,
  "problems": [
   "own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027/psf__requests-1766: config differs: ['agent', 'environment', 'model']",
   "own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027/psf__requests-1766: not processed (unsupported_format:no_messages)"
@@ -161,11 +161,65 @@
   {
    "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563/django__django-15563",
    "task_id": "django__django-15563",
-   "risk": 0.35893565051814114,
+   "risk": 0.3589356505181411,
    "resolved": 0,
    "submitted": 1,
    "n_steps": 69,
    "cost_usd": 0.276785
+  },
+  {
+   "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-14140/django__django-14140",
+   "task_id": "django__django-14140",
+   "risk": 0.1396817107388735,
+   "resolved": 0,
+   "submitted": 1,
+   "n_steps": 31,
+   "cost_usd": 0.06725708
+  },
+  {
+   "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15128/django__django-15128",
+   "task_id": "django__django-15128",
+   "risk": 0.436261414445068,
+   "resolved": 1,
+   "submitted": 1,
+   "n_steps": 97,
+   "cost_usd": 0.4698539199999999
+  },
+  {
+   "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-11433/django__django-11433",
+   "task_id": "django__django-11433",
+   "risk": 0.6411108685509451,
+   "resolved": 0,
+   "submitted": 1,
+   "n_steps": 130,
+   "cost_usd": 0.6707963599999998
+  },
+  {
+   "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-13568/django__django-13568",
+   "task_id": "django__django-13568",
+   "risk": 0.2589623233461904,
+   "resolved": 1,
+   "submitted": 1,
+   "n_steps": 44,
+   "cost_usd": 0.1393854
+  },
+  {
+   "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15554/django__django-15554",
+   "task_id": "django__django-15554",
+   "risk": 0.7130675751505422,
+   "resolved": 1,
+   "submitted": 1,
+   "n_steps": 158,
+   "cost_usd": 0.9936849999999998
+  },
+  {
+   "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_sympy__sympy-13877/sympy__sympy-13877",
+   "task_id": "sympy__sympy-13877",
+   "risk": 0.1319470956718487,
+   "resolved": 1,
+   "submitted": 1,
+   "n_steps": 42,
+   "cost_usd": 0.11410523999999997
   }
  ]
 }

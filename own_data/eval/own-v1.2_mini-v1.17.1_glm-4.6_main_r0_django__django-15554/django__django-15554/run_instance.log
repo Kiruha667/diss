@@ -1,0 +1,85 @@
+2026-10-29 12:49:26,707 - INFO - Creating container for django__django-15554...
+2026-10-29 12:49:28,129 - INFO - Container for django__django-15554 created: d2910e1d3d6ecf78c6ecdccbbf9ed324ecf92bf5d9ee8e20f24853ff7f8940c4
+2026-10-29 12:49:29,473 - INFO - Container for django__django-15554 started: d2910e1d3d6ecf78c6ecdccbbf9ed324ecf92bf5d9ee8e20f24853ff7f8940c4
+2026-10-29 12:49:29,473 - INFO - Intermediate patch for django__django-15554 written to logs/run_evaluation/own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15554/glm-4.6/django__django-15554/patch.diff, now applying to container...
+2026-10-29 12:49:29,782 - INFO - >>>>> Applied Patch:
+Checking patch django/db/models/sql/query.py...
+Applied patch django/db/models/sql/query.py cleanly.
+
+2026-10-29 12:49:31,809 - INFO - Git diff before:
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 54f3258eac..0d07b442f0 100644
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -1029,6 +1029,15 @@ class Query(BaseExpression):
+             for a, j in self.alias_map.items()
+             if (reuse is None or a in reuse) and j.equals(join)
+         ]
++        # If the new join has a filtered_relation, don't reuse aliases
++        # where the existing join has a different filtered_relation.
++        if join.filtered_relation:
++            reuse_aliases = [
++                a
++                for a in reuse_aliases
++                if not self.alias_map[a].filtered_relation
++                or self.alias_map[a].filtered_relation == join.filtered_relation
++            ]
+         if reuse_aliases:
+             if join.table_alias in reuse_aliases:
+                 reuse_alias = join.table_alias
+@@ -1818,7 +1827,11 @@ class Query(BaseExpression):
+                 nullable,
+                 filtered_relation=filtered_relation,
+             )
+-            reuse = can_reuse if join.m2m else None
++            # Reuse can_reuse for join reuse if it's a non-empty set.
++            # This is needed for FilteredRelation condition building where
++            # we want to restrict join reuse to only the aliases in the
++            # filtered relation's path.
++            reuse = can_reuse if (join.m2m or (can_reuse and isinstance(can_reuse, set) and len(can_reuse) > 1)) else None
+             alias = self.join(connection, reuse=reuse)
+             joins.append(alias)
+             if filtered_relation:
+2026-10-29 12:49:31,809 - INFO - Eval script for django__django-15554 written to logs/run_evaluation/own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15554/glm-4.6/django__django-15554/eval.sh; copying to container...
+2026-10-29 12:49:46,217 - INFO - Test runtime: 14.31 seconds
+2026-10-29 12:49:46,218 - INFO - Test output for django__django-15554 written to logs/run_evaluation/own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15554/glm-4.6/django__django-15554/test_output.txt
+2026-10-29 12:49:46,349 - INFO - Git diff after:
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 54f3258eac..0d07b442f0 100644
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -1029,6 +1029,15 @@ class Query(BaseExpression):
+             for a, j in self.alias_map.items()
+             if (reuse is None or a in reuse) and j.equals(join)
+         ]
++        # If the new join has a filtered_relation, don't reuse aliases
++        # where the existing join has a different filtered_relation.
++        if join.filtered_relation:
++            reuse_aliases = [
++                a
++                for a in reuse_aliases
++                if not self.alias_map[a].filtered_relation
++                or self.alias_map[a].filtered_relation == join.filtered_relation
++            ]
+         if reuse_aliases:
+             if join.table_alias in reuse_aliases:
+                 reuse_alias = join.table_alias
+@@ -1818,7 +1827,11 @@ class Query(BaseExpression):
+                 nullable,
+                 filtered_relation=filtered_relation,
+             )
+-            reuse = can_reuse if join.m2m else None
++            # Reuse can_reuse for join reuse if it's a non-empty set.
++            # This is needed for FilteredRelation condition building where
++            # we want to restrict join reuse to only the aliases in the
++            # filtered relation's path.
++            reuse = can_reuse if (join.m2m or (can_reuse and isinstance(can_reuse, set) and len(can_reuse) > 1)) else None
+             alias = self.join(connection, reuse=reuse)
+             joins.append(alias)
+             if filtered_relation:
+2026-10-29 12:49:46,349 - INFO - Grading answer for django__django-15554...
+2026-10-29 12:49:46,351 - INFO - report: {'django__django-15554': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_multiple (filtered_relation.tests.FilteredRelationTests)'], 'failure': []}, 'PASS_TO_PASS': {'success': ['filtered_relation() not only improves performance but also creates', 'test_aggregate (filtered_relation.tests.FilteredRelationAnalyticalAggregationTests)', 'test_as_subquery (filtered_relation.tests.FilteredRelationTests)', 'test_condition_deeper_relation_name (filtered_relation.tests.FilteredRelationTests)', 'test_condition_outside_relation_name (filtered_relation.tests.FilteredRelationTests)', 'test_deep_nested_foreign_key (filtered_relation.tests.FilteredRelationTests)', 'test_defer (filtered_relation.tests.FilteredRelationTests)', 'test_difference (filtered_relation.tests.FilteredRelationTests)', 'test_eq (filtered_relation.tests.FilteredRelationTests)', 'test_exclude_relation_with_join (filtered_relation.tests.FilteredRelationTests)', 'test_extra (filtered_relation.tests.FilteredRelationTests)', 'test_internal_queryset_alias_mapping (filtered_relation.tests.FilteredRelationTests)', 'test_intersection (filtered_relation.tests.FilteredRelationTests)', 'test_multiple_times (filtered_relation.tests.FilteredRelationTests)', 'test_nested_chained_relations (filtered_relation.tests.FilteredRelationTests)', 'test_nested_foreign_key (filtered_relation.tests.FilteredRelationTests)', 'test_nested_foreign_key_filtered_base_object (filtered_relation.tests.FilteredRelationTests)', 'test_nested_foreign_key_nested_field (filtered_relation.tests.FilteredRelationTests)', 'test_nested_m2m_filtered (filtered_relation.tests.FilteredRelationTests)', 'test_only_not_supported (filtered_relation.tests.FilteredRelationTests)', 'test_relation_name_lookup (filtered_relation.tests.FilteredRelationTests)', 'test_select_for_update (filtered_relation.tests.FilteredRelationTests)', 'test_select_related (filtered_relation.tests.FilteredRelationTests)', 'test_select_related_foreign_key (filtered_relation.tests.FilteredRelationTests)', 'test_select_related_multiple (filtered_relation.tests.FilteredRelationTests)', 'test_select_related_with_empty_relation (filtered_relation.tests.FilteredRelationTests)', 'test_union (filtered_relation.tests.FilteredRelationTests)', 'test_values (filtered_relation.tests.FilteredRelationTests)', 'test_values_list (filtered_relation.tests.FilteredRelationTests)', 'test_with_condition_as_expression_error (filtered_relation.tests.FilteredRelationTests)', 'test_with_empty_relation_name_error (filtered_relation.tests.FilteredRelationTests)', 'test_with_exclude (filtered_relation.tests.FilteredRelationTests)', 'test_with_generic_foreign_key (filtered_relation.tests.FilteredRelationTests)', 'test_with_join (filtered_relation.tests.FilteredRelationTests)', 'test_with_join_and_complex_condition (filtered_relation.tests.FilteredRelationTests)', 'test_with_m2m (filtered_relation.tests.FilteredRelationTests)', 'test_with_m2m_deep (filtered_relation.tests.FilteredRelationTests)', 'test_with_m2m_multijoin (filtered_relation.tests.FilteredRelationTests)', 'test_with_multiple_filter (filtered_relation.tests.FilteredRelationTests)', 'test_with_prefetch_related (filtered_relation.tests.FilteredRelationTests)', 'test_without_join (filtered_relation.tests.FilteredRelationTests)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-15554: resolved: True
+2026-10-29 12:49:46,352 - INFO - Attempting to stop container sweb.eval.django__django-15554.own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15554...
+2026-10-29 12:50:04,298 - INFO - Attempting to remove container sweb.eval.django__django-15554.own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15554...
+2026-10-29 12:50:05,849 - INFO - Container sweb.eval.django__django-15554.own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15554 removed.

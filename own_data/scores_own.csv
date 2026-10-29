@@ -16,4 +16,10 @@ own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pylint-dev__pylint-6386/pylint-dev__pylin
 own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pytest-dev__pytest-7324/pytest-dev__pytest-7324,pytest-dev__pytest-7324,0.1623941593593904,1,1,34,0.11017644
 own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_sympy__sympy-23950/sympy__sympy-23950,sympy__sympy-23950,0.1194303338912906,1,1,38,0.04868416
 own-v1.2_mini-v1.17.1_glm-4.6_main_r0_sympy__sympy-15875/sympy__sympy-15875,sympy__sympy-15875,0.3219879154025706,0,1,70,0.16237636
-own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563/django__django-15563,django__django-15563,0.35893565051814114,0,1,69,0.276785
+own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563/django__django-15563,django__django-15563,0.3589356505181411,0,1,69,0.276785
+own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-14140/django__django-14140,django__django-14140,0.1396817107388735,0,1,31,0.06725708
+own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15128/django__django-15128,django__django-15128,0.436261414445068,1,1,97,0.4698539199999999
+own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-11433/django__django-11433,django__django-11433,0.6411108685509451,0,1,130,0.6707963599999998
+own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-13568/django__django-13568,django__django-13568,0.2589623233461904,1,1,44,0.1393854
+own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15554/django__django-15554,django__django-15554,0.7130675751505422,1,1,158,0.9936849999999998
+own-v1.2_mini-v1.17.1_glm-4.6_main_r0_sympy__sympy-13877/sympy__sympy-13877,sympy__sympy-13877,0.1319470956718487,1,1,42,0.11410523999999997

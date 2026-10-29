@@ -1,0 +1,42 @@
+diff --git a/reproduce_issue.py b/reproduce_issue.py
+new file mode 100644
+index 000000000..197a8c81b
+--- /dev/null
++++ b/reproduce_issue.py
+@@ -0,0 +1,23 @@
++from sympy import *
++from sympy.abc import a
++
++f = lambda n: det(Matrix([[i + a*j for i in range(n)] for j in range(n)]))
++
++print("f(1) =", f(1))
++print("f(2) =", f(2))
++print("f(3) =", f(3))
++print("f(4) =", f(4))
++
++# This should work but returns nan
++try:
++    result = f(5)
++    print("f(5) =", result)
++except Exception as e:
++    print("f(5) raised:", type(e).__name__, str(e))
++
++# This raises TypeError
++try:
++    result = f(6)
++    print("f(6) =", result)
++except Exception as e:
++    print("f(6) raised:", type(e).__name__, str(e))
+diff --git a/sympy/matrices/matrices.py b/sympy/matrices/matrices.py
+index 97cde62e2..215e68f7f 100644
+--- a/sympy/matrices/matrices.py
++++ b/sympy/matrices/matrices.py
+@@ -208,7 +208,7 @@ def bareiss(mat, cumm=1):
+             def entry(i, j):
+                 ret = (pivot_val*tmp_mat[i, j + 1] - mat[pivot_pos, j + 1]*tmp_mat[i, 0]) / cumm
+                 if not ret.is_Atom:
+-                    cancel(ret)
++                    ret = cancel(ret)
+                 return ret
+ 
+             return sign*bareiss(self._new(mat.rows - 1, mat.cols - 1, entry), pivot_val)

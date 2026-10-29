@@ -1,0 +1,41 @@
+diff --git a/django/forms/models.py b/django/forms/models.py
+index 5edbbd376f..43d3480286 100644
+--- a/django/forms/models.py
++++ b/django/forms/models.py
+@@ -42,15 +42,32 @@ def construct_instance(form, instance, fields=None, exclude=None):
+         if not f.editable or isinstance(f, models.AutoField) \
+                 or f.name not in cleaned_data:
+             continue
+-        if fields is not None and f.name not in fields:
++        if fields is not None and f.name not in fields and f.name in form.fields:
+             continue
+         if exclude and f.name in exclude:
+             continue
+         # Leave defaults for fields that aren't in POST data, except for
+         # checkbox inputs because they don't appear in POST data if not checked.
+-        if (f.has_default() and
+-                form[f.name].field.widget.value_omitted_from_data(form.data, form.files, form.add_prefix(f.name))):
+-            continue
++        # However, if cleaned_data was explicitly set by the user (e.g., in
++        # Form.clean()), use that value instead of the default.
++        if f.name in form.fields:
++            field = form[f.name].field
++            if (f.has_default() and
++                    field.widget.value_omitted_from_data(form.data, form.files, form.add_prefix(f.name))):
++                # Determine the value that the form would have automatically set.
++                # If cleaned_data has a different value, the user must have set it
++                # explicitly, so we should use it.
++                value_from_datadict = field.widget.value_from_datadict(
++                    form.data, form.files, form.add_prefix(f.name)
++                )
++                try:
++                    expected_value = field.clean(value_from_datadict)
++                except ValidationError:
++                    # If the field doesn't validate, the form wouldn't be valid
++                    # and we wouldn't be here, so we can safely use cleaned_data.
++                    expected_value = cleaned_data[f.name]
++                if cleaned_data[f.name] == expected_value:
++                    continue
+         # Defer saving file-type fields until after the other fields, so a
+         # callable upload_to can use the values from other fields.
+         if isinstance(f, models.FileField):

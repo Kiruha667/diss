@@ -1,0 +1,7 @@
+{
+  "sympy__sympy-21379": {
+    "model_name_or_path": "glm-4.6",
+    "instance_id": "sympy__sympy-21379",
+    "model_patch": "RetryError[<Future at 0x7f8ca30a4350 state=finished raised RateLimitError>]"
+  }
+}

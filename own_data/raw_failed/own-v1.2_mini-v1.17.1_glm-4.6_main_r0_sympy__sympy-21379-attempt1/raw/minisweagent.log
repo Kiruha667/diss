@@ -1,0 +1,105 @@
+2026-10-29 13:01:02,052 - minisweagent - INFO - Loading dataset princeton-nlp/SWE-Bench_Verified, split test...
+2026-10-29 13:01:10,270 - minisweagent - INFO - Instance filter: 500 -> 1 instances
+2026-10-29 13:01:10,273 - minisweagent - INFO - Running on 1 instances...
+2026-10-29 13:01:10,277 - minisweagent - INFO - Loading agent config from '/mnt/c/Users/1/Desktop/diss/own_data/config/glm-4.6_v1.1.yaml'
+2026-10-29 13:01:15,660 - minisweagent.environment - DEBUG - Starting container with command: docker run -d --name minisweagent-0b92d11f -w /testbed --rm docker.io/swebench/sweb.eval.x86_64.sympy_1776_sympy-21379:latest sleep 2h
+2026-10-29 13:01:18,387 - minisweagent.environment - INFO - Started container minisweagent-0b92d11f with ID 5d2a48327ed4b1babe8fdf3d893b828c0e18e1655190c8292e8769bb22d494c8
+2026-10-29 13:05:56,875 - minisweagent - ERROR - Error processing instance sympy__sympy-21379: RetryError[<Future at 0x7f8ca30a4350 state=finished raised RateLimitError>]
+Traceback (most recent call last):
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/litellm/llms/openai/openai.py", line 745, in completion
+    raise e
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/litellm/llms/openai/openai.py", line 673, in completion
+    ) = self.make_sync_openai_chat_completion_request(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/litellm/litellm_core_utils/logging_utils.py", line 237, in sync_wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/litellm/llms/openai/openai.py", line 489, in make_sync_openai_chat_completion_request
+    raise e
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/litellm/llms/openai/openai.py", line 471, in make_sync_openai_chat_completion_request
+    raw_response = openai_client.chat.completions.with_raw_response.create(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/openai/_legacy_response.py", line 364, in wrapped
+    return cast(LegacyAPIResponse[R], func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/openai/_utils/_utils.py", line 286, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/openai/resources/chat/completions/completions.py", line 1189, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/openai/_base_client.py", line 1259, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/openai/_base_client.py", line 1047, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.RateLimitError: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/litellm/main.py", line 2164, in completion
+    raise e
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/litellm/main.py", line 2136, in completion
+    response = openai_chat_completions.completion(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/litellm/llms/openai/openai.py", line 756, in completion
+    raise OpenAIError(
+litellm.llms.openai.common_utils.OpenAIError: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/tenacity/__init__.py", line 480, in __call__
+    result = fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/models/litellm_model.py", line 61, in _query
+    return litellm.completion(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/litellm/utils.py", line 1382, in wrapper
+    raise e
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/litellm/utils.py", line 1251, in wrapper
+    result = original_function(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/litellm/main.py", line 3842, in completion
+    raise exception_type(
+          ^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/litellm/litellm_core_utils/exception_mapping_utils.py", line 2328, in exception_type
+    raise e
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/litellm/litellm_core_utils/exception_mapping_utils.py", line 355, in exception_type
+    raise RateLimitError(
+litellm.exceptions.RateLimitError: litellm.RateLimitError: RateLimitError: OpenAIException - Insufficient balance or no resource package. Please recharge.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/run/extra/swebench.py", line 152, in process_instance
+    exit_status, result = agent.run(task)
+                          ^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/agents/default.py", line 82, in run
+    self.step()
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/run/extra/swebench.py", line 66, in step
+    return super().step()
+           ^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/agents/default.py", line 91, in step
+    return self.get_observation(self.query())
+                                ^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/agents/default.py", line 97, in query
+    response = self.model.query(self.messages)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/minisweagent/models/litellm_model.py", line 71, in query
+    response = self._query(messages, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/tenacity/__init__.py", line 338, in wrapped_f
+    return copy(f, *args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/tenacity/__init__.py", line 477, in __call__
+    do = self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/tenacity/__init__.py", line 378, in iter
+    result = action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/opt/own/venv-agent/lib/python3.11/site-packages/tenacity/__init__.py", line 421, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x7f8ca30a4350 state=finished raised RateLimitError>]
+2026-10-29 13:05:57,633 - minisweagent - INFO - Saved trajectory to '/opt/own/runs/own-v1.2_mini-v1.17.1_glm-4.6_main_r0_sympy__sympy-21379/sympy__sympy-21379/sympy__sympy-21379.traj.json'

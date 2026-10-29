@@ -1,0 +1,19 @@
+{
+ "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_sympy__sympy-13877",
+ "protocol_version": "1.2",
+ "started_utc": "2026-10-29T07:51:10Z",
+ "wall_time_s": 451,
+ "runner_exit_code": 0,
+ "versions": {
+  "mini-swe-agent": "1.17.1",
+  "litellm": "1.80.7",
+  "openai": "2.8.1",
+  "datasets": "4.4.1"
+ },
+ "config_sha256": "e4c88cd01c591f50ce37f2b8394f7791d118ca1d11b40fcf73c10973f206c41c",
+ "registry_sha256": "d7acd3d8ee025c03647f5880a37e3e4fe38e54f2c4190bb0032a99918ae0d657",
+ "provider": "z.ai (OpenAI-compatible endpoint, litellm provider openai)",
+ "image_digests": {
+  "sympy__sympy-13877": "swebench/sweb.eval.x86_64.sympy_1776_sympy-13877@sha256:e8c37ba67508d19e3f3595de6bdd8f834e518d8fb73c687ce355a894feb41a31"
+ }
+}
