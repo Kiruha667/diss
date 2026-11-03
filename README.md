@@ -6,6 +6,10 @@
 Демонстрационный ноутбук `notebooks/demo.ipynb`: датасет, примеры траекторий, признаки, обучение и оценка модели
 (Runtime → Run all, около 3 минут; описание данных — `data/demo/DATASET_CARD.md`).
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Kiruha667/diss/blob/main/notebooks/visual_demo.ipynb)
+Наглядный ноутбук `notebooks/visual_demo.ipynb` для читателя без подготовки в ИИ: как бенчмарк выставляет оценку,
+открытый рейтинг, как работает модель, собственный набор — графики с пояснениями (Runtime → Run all, около 1–2 минут).
+
 **Тема:** Разработка модели оценки достоверности утверждений LLM-агентов о выполнении задачи
 на основе структуры траектории выполнения
 
