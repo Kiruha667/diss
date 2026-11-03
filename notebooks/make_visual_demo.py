@@ -3,7 +3,8 @@ grades a run, the open leaderboard, our risk model, our own runs). Run from the 
     python notebooks/make_visual_demo.py
 The notebook downloads its files from the repository at the pinned commit DATA_REF (raw.githubusercontent.com) and
 checks their SHA256, taken here from the git objects of that commit. The model code is the one of
-notebooks/demo.ipynb (make_demo_notebook.py, section 6), so the AUROC values equal DEMO_REPORT.md.
+notebooks/demo.ipynb (make_demo_notebook.py, section 6), so the AUROC values equal DEMO_REPORT.md; the models M and
+M+S and the pairs of combos of close strength (section 3c) equal reports/E7_REPORT.md (sections 2 and 9).
 """
 from __future__ import annotations
 
@@ -435,13 +436,15 @@ plt.show()
 
 md("""
 Те же модели в числах, с 95% интервалами (черта над столбиком). Слева — сравнение любых прогонов между собой; справа —
-только прогонов **одной и той же задачи**, где сложность задачи одинакова. Внутри задачи длина почти бесполезна
-(0.542 — близко к угадыванию), а структура траектории сохраняет различимость (0.640): это главный результат.
+**различение внутри задачи между разными моделями**: в рейтинге каждая связка делала одну попытку на задачу, поэтому
+решённый и нерешённый прогоны одной задачи всегда сделаны разными моделями. Там длина почти бесполезна (0.542), а
+структура даёт 0.640 — но одно лишь знание модели даёт там 0.742 (этап E7, следующий график), то есть 0.640 в основном
+отражает, какая модель работала.
 """)
 
 code("""
 modes = [("по всем задачам", {m: auroc(y, risk[m]) for m in MODELS}, boot),
-         ("внутри одной задачи", within, wboot)]
+         ("внутри одной задачи\\n(пары разных моделей)", within, wboot)]
 fig, ax = plt.subplots(figsize=(7, 4.2))
 w = 0.36
 for j, name in enumerate(MODELS):
@@ -458,6 +461,96 @@ ax.set_ylim(0.4, 0.75)
 ax.set_ylabel("AUROC (риск считается для невиданных задач)")
 ax.set_title("Качество моделей с 95% интервалами")
 ax.legend(loc="upper left", frameon=False)
+plt.show()
+""")
+
+md("""
+**Что стоит за 0.640.** Та же модель, которой известно только, какая связка работала (ни одного признака траектории),
+различает прогоны внутри задачи лучше структуры — 0.742, а знание модели вместе со структурой дают лучший результат по
+всем задачам — 0.685. Справа — только пары, где обе модели почти одинаково сильны (доля решённых задач различается
+меньше чем на 3 процентных пункта): там знание модели не помогает (0.491), а структура даёт 0.544 — слабый сигнал,
+предварительный: он проверяется на повторных прогонах одной модели (оговорки — `reports/E7_REPORT.md`, раздел 9).
+""")
+
+code("""
+# E7 (reports/E7_REPORT.md): the same logistic regression on the model identity alone (M: one-hot of the 16 combos,
+# not a single trajectory feature) and on model identity + the 21 features (M+S); S is M_struct+len above
+combo = (pop.model + " | " + pop.agent_version).to_numpy()
+COMBOS = sorted(set(combo))
+MCOLS = [f"combo: {c}" for c in COMBOS]
+for c, col in zip(COMBOS, MCOLS):
+    pop[col] = (combo == c).astype(float)
+risk7 = {"M": oof_risk(MCOLS), "S": risk["M_struct+len"], "M+S": oof_risk(MCOLS + FEATURES)}
+
+
+def prec10(yy, ss):  # share of unresolved among the 10% riskiest runs
+    return float(yy[np.argsort(-ss, kind="mergesort")[:math.ceil(0.10 * len(yy))]].mean())
+
+
+# strength of a combo = its share of resolved runs; descriptive (computed from all labels), used only to pick pairs
+strength = 1 - pd.Series(y).groupby(combo).transform("mean").to_numpy()
+CLOSE = 0.03
+
+
+def close_pair_counts(r):  # within-task pairs whose two combos differ in strength by less than CLOSE
+    conc, n = [], []
+    for ix in pair_tasks:
+        u, s = ix[y[ix] == 1], ix[y[ix] == 0]
+        close = np.abs(strength[u][:, None] - strength[s][None, :]) < CLOSE
+        dd = r[u][:, None] - r[s][None, :]
+        conc.append(((dd > 0) + 0.5 * (dd == 0))[close].sum())
+        n.append(close.sum())
+    return np.array(conc), np.array(n)
+
+
+e7 = {}  # (pairs, model) -> (AUROC, bootstrap values); the same resamples as above
+for name, r in risk7.items():
+    e7[("all", name)] = (auroc(y, r), boot["M_struct+len"] if name == "S" else
+                         np.array([auroc(y[ix], r[ix]) for ix in boot_idx]))
+    c, n = pair_counts(r)
+    e7[("within", name)] = (c.sum() / n.sum(), np.array([c[s].sum() / n[s].sum() for s in wsamples]))
+    if name != "M+S":
+        c, n = close_pair_counts(r)
+        e7[("close", name)] = (c.sum() / n.sum(), np.array([c[s].sum() / n[s].sum() for s in wsamples]))
+p10 = {name: prec10(y, r) for name, r in risk7.items()}
+p10_boot = {name: np.array([prec10(y[ix], r[ix]) for ix in boot_idx]) for name, r in risk7.items()}
+n_close = int(close_pair_counts(risk7["S"])[1].sum())
+
+# the numbers must equal reports/E7_REPORT.md (sections 2 and 9)
+EXPECTED_E7 = {("all", "M"): 0.593, ("within", "M"): 0.742, ("all", "M+S"): 0.685, ("within", "M+S"): 0.689,
+               ("close", "S"): 0.544, ("close", "M"): 0.491}
+for key, val in EXPECTED_E7.items():
+    assert round(e7[key][0], 3) == val, f"{key}: {e7[key][0]:.3f}, E7_REPORT.md {val}"
+assert round(p10["M+S"], 3) == 0.656 and n_close == 1987, (p10["M+S"], n_close)
+print("M, M+S и пары близких по силе моделей: числа совпадают с E7_REPORT.md")
+
+E7_COLOR = {"M": "#9a6fb0", "S": MODEL_COLOR["M_struct+len"], "M+S": "#1b1b1b"}
+E7_NAME = {"M": "только знание модели (M): какая связка работала", "S": "длина + структура (M_struct+len)",
+           "M+S": "знание модели + длина + структура (M+S)"}
+groups7 = [("all", "по всем задачам", ["M", "S", "M+S"]),
+           ("within", "внутри одной задачи\\n(пары разных моделей)", ["M", "S", "M+S"]),
+           ("close", f"внутри задачи, модели\\nблизки по силе ({n_close} пар)", ["M", "S"])]
+fig, ax = plt.subplots(figsize=(9, 5.2))
+w = 0.26
+for gi, (key, _, names) in enumerate(groups7):
+    for j, name in enumerate(names):
+        v, b = e7[(key, name)]
+        lo, hi = ci(b)
+        x = gi + (j - (len(names) - 1) / 2) * w
+        ax.bar(x, v, w * 0.9, color=E7_COLOR[name], hatch="//" if key == "close" else None, edgecolor="white",
+               lw=0, label=E7_NAME[name] if gi == 0 else None)
+        ax.errorbar(x, v, yerr=[[v - lo], [hi - v]], color="black", capsize=4, lw=1)
+        ax.text(x, hi + 0.008, f"{v:.3f}", ha="center", fontsize=8)
+ax.text(2, 0.66, "предварительно:\\nпроверяется на\\nповторных прогонах", ha="center", va="bottom", fontsize=8.5,
+        style="italic", color="#444444")
+ax.axhline(0.5, color="black", lw=1, ls="--", label="случайное угадывание: AUROC 0.5")
+ax.set_xticks(np.arange(len(groups7)), [g[1] for g in groups7])
+ax.set_xlim(-0.5, len(groups7) - 0.5)
+ax.set_ylim(0.4, 0.8)
+ax.set_ylabel("AUROC (риск считается для невиданных задач)")
+ax.set_title("Что стоит за различением внутри задачи: знание модели и структура траектории")
+ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.17), ncol=1, frameon=False)
+plt.tight_layout()
 plt.show()
 """)
 
@@ -612,7 +705,7 @@ code("""
 feat = np.array([[trajectory_features(steps_from_frame(steps_own[steps_own.run_id == rid].sort_values("step_idx")))[c]
                   for c in FEATURES] for rid in own.run_id], dtype=float)
 assert np.abs(feat - own[FEATURES].to_numpy(float)).max() < 1e-9  # demo_lib = stored features
-own["risk"] = full.predict_proba(feat)[:, 1]  # model trained on the whole open leaderboard (section 3e)
+own["risk"] = full.predict_proba(feat)[:, 1]  # model trained on the whole open leaderboard (section 3f)
 tasks = list(dict.fromkeys(own.task_id))
 fig, ax = plt.subplots(figsize=(10, 4.8))
 for res, name in ((1, "решено"), (0, "не решено")):
@@ -633,10 +726,10 @@ plt.show()
 """)
 
 md("""
-Самое честное сравнение — две попытки одной задачи, одна решённая, другая нет: сложность задачи одинакова, разница
-только в поведении агента. У нас таких задач две (django-14376 и pylint-6386), пар — 4; линия идёт от решённой попытки к
-нерешённой и должна подниматься. Это иллюстрация на четырёх парах, не статистика: на рейтинге то же сравнение по 10 852
-парам дало 0.640 (раздел 3).
+Самое честное сравнение — две попытки одной задачи **одной и той же моделью**, одна решённая, другая нет: одинаковы и
+задача, и модель, разница только в поведении агента. У нас таких задач две (django-14376 и pylint-6386), пар — 4; линия
+идёт от решённой попытки к нерешённой и должна подниматься. Это иллюстрация на четырёх парах, не статистика; в рейтинге
+таких пар нет вовсе — там каждая модель делала одну попытку на задачу (раздел 3).
 """)
 
 code("""
@@ -669,19 +762,33 @@ plt.show()
 # ---------------------------------------------------------------- 5
 md("""
 ## 5. Итог
+
+**Главный практический результат — модель «знание модели + длина + структура» (M+S): AUROC 0.685, а среди 10% самых
+рискованных прогонов не решены 65.6%** (precision@10%; в среднем по рейтингу не решена треть прогонов). Различение
+внутри задачи (0.640) в основном отражает, какая модель работала; сигнал поведения сверх этого (0.544 у моделей,
+близких по силе) предварительный и проверяется на повторных прогонах одной модели.
 """)
 
 code("""
-k10 = math.ceil(0.10 * len(y))
+fmt = lambda v, b: f"{v:.3f} [{ci(b)[0]:.3f}; {ci(b)[1]:.3f}]"  # noqa: E731
 rows = [
     ("Открытый рейтинг: прогонов / отправлено / задач", f"{len(runs)} / {len(pop)} / {pop.task_id.nunique()}"),
     ("Доля нерешённых среди отправленных", f"{y.mean():.3f}"),
+    ("ГЛАВНОЕ. AUROC, знание модели + длина + структура (M+S): все задачи [95% ДИ]", fmt(*e7[("all", "M+S")])),
+    ("ГЛАВНОЕ. precision@10%, M+S: доля нерешённых среди 10% самых рискованных [95% ДИ]",
+     fmt(p10["M+S"], p10_boot["M+S"])),
 ]
 for name in MODELS:
-    lo, hi = ci(boot[name])
-    wlo, whi = ci(wboot[name])
-    rows.append((f"AUROC, {MODEL_NAME[name]}: все задачи [95% ДИ]", f"{auroc(y, risk[name]):.3f} [{lo:.3f}; {hi:.3f}]"))
-    rows.append((f"AUROC, {MODEL_NAME[name]}: внутри задач [95% ДИ]", f"{within[name]:.3f} [{wlo:.3f}; {whi:.3f}]"))
+    rows.append((f"AUROC, {MODEL_NAME[name]}: все задачи [95% ДИ]", fmt(auroc(y, risk[name]), boot[name])))
+    rows.append((f"AUROC, {MODEL_NAME[name]}: внутри задач, пары разных моделей [95% ДИ]",
+                 fmt(within[name], wboot[name])))
+rows += [
+    ("AUROC, только знание модели (M): внутри задач, пары разных моделей [95% ДИ]", fmt(*e7[("within", "M")])),
+    (f"AUROC внутри задач, модели близки по силе ({n_close} пар), предварительно: длина + структура",
+     fmt(*e7[("close", "S")])),
+    (f"AUROC внутри задач, модели близки по силе ({n_close} пар), предварительно: только знание модели",
+     fmt(*e7[("close", "M")])),
+]
 for name in MODELS:
     rows.append((f"Проверка 10% самых рискованных, {MODEL_NAME[name]}: найдено нерешённых",
                  f"{found[name][9]:.0%} (случайная проверка: 10%)"))
@@ -694,6 +801,7 @@ summary = pd.DataFrame(rows, columns=["показатель", "значение"
 display(summary.style.hide(axis="index"))
 Path("visual_demo_results.json").write_text(json.dumps(
     {"summary": dict(rows), "auroc": {m: auroc(y, risk[m]) for m in MODELS}, "within": dict(within),
+     "e7": {f"{k[0]}|{k[1]}": v[0] for k, v in e7.items()}, "e7_p10": p10,
      "own_risk": own[["run_id", "resolved", "risk"]].to_dict("records"), "elapsed_s": round(time.time() - T0, 1)},
     indent=1, ensure_ascii=False, default=float), encoding="utf-8")
 print(f"готово за {time.time() - T0:.0f} с (после установки scikit-learn)")
