@@ -14,12 +14,14 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_REF = "caf70577556af8216c48f44937b32528482925dc"  # commit with own_data/eval_summary.json
+# commit with the E8 results; the other files are byte-identical to caf7057 (own_data/eval_summary.json)
+DATA_REF = "f4a310123517633447f15b50adf97e8a6ccc04d9"
 PYLINT_REPORT = ("own_data/eval/own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pylint-dev__pylint-6386/"
                  "pylint-dev__pylint-6386/report.json")
 FILES = ["data/demo/runs.parquet", "own_data/runs_own.parquet", "own_data/steps_own.parquet",
          "own_data/eval_summary.json", PYLINT_REPORT,
-         "demo_lib/__init__.py", "demo_lib/phases.py", "demo_lib/features.py"]
+         "demo_lib/__init__.py", "demo_lib/phases.py", "demo_lib/features.py",
+         "outputs/e8_metrics.csv", "outputs/e8_summary.json"]
 
 
 def blob_sha256(path: str) -> str:
@@ -469,7 +471,8 @@ md("""
 различает прогоны внутри задачи лучше структуры — 0.742, а знание модели вместе со структурой дают лучший результат по
 всем задачам — 0.685. Справа — только пары, где обе модели почти одинаково сильны (доля решённых задач различается
 меньше чем на 3 процентных пункта): там знание модели не помогает (0.491), а структура даёт 0.544 — слабый сигнал,
-предварительный: он проверяется на повторных прогонах одной модели (оговорки — `reports/E7_REPORT.md`, раздел 9).
+найденный задним числом (оговорки — `reports/E7_REPORT.md`, раздел 9); его проверка на повторах одной модели — в
+следующем разделе.
 """)
 
 code("""
@@ -550,6 +553,103 @@ ax.set_ylim(0.4, 0.8)
 ax.set_ylabel("AUROC (риск считается для невиданных задач)")
 ax.set_title("Что стоит за различением внутри задачи: знание модели и структура траектории")
 ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.17), ncol=1, frameon=False)
+plt.tight_layout()
+plt.show()
+""")
+
+md("""
+### Повторы одной модели на одной задаче
+
+В открытом рейтинге каждая модель делала одну попытку на задачу, поэтому удачную и неудачную попытку **одной и той же
+модели** там не сравнить. Для этого взяты открытые данные другой работы (ASSERT-KTH, «On Randomness in Agentic Evals»,
+arXiv 2602.07150, лицензия CC BY 4.0): агент nano-agent с тремя моделями, по 10 попыток на каждую задачу SWE-bench
+Verified. Сравниваются решённые и нерешённые попытки одной модели на одной задаче (**единица** = модель × задача):
+задача и модель одинаковы, различается только ход попытки (сохранённые результаты этапа E8, `reports/E8_REPORT.md`).
+""")
+
+code("""
+# E8 (reports/E8_REPORT.md): saved results are only read here, no model is trained
+e8m = pd.read_csv(DATA / "outputs/e8_metrics.csv")
+e8s = json.loads((DATA / "outputs/e8_summary.json").read_text(encoding="utf-8"))
+SETTING_NAME = {"nano-agent-Qwen_Qwen3-32B": "Qwen3-32B", "nano-agent-agentica-org_DeepSWE-Preview": "DeepSWE-Preview",
+                "nano-agent-mistral_devstral-2512": "devstral-2512", "all": "все три вместе"}
+SETTINGS8 = [s for s in SETTING_NAME if s != "all"]
+p2 = e8m[(e8m.predictor == "P2") & (e8m.metric == "within_unit_auroc")].set_index("scope")  # S trained on E8 data
+desc8 = e8s["descriptives"]
+
+# the numbers must equal reports/E8_REPORT.md (sections 2 and 3)
+EXPECTED_E8 = {  # AUROC [95% CI]; units with both outcomes, pairs, share of runs with tests, share unresolved
+    "nano-agent-Qwen_Qwen3-32B": ((0.531, 0.492, 0.569), (146, 2176, 0.006, 0.807)),
+    "nano-agent-agentica-org_DeepSWE-Preview": ((0.499, 0.468, 0.531), (252, 3731, 0.019, 0.655)),
+    "nano-agent-mistral_devstral-2512": ((0.578, 0.538, 0.616), (180, 2920, 0.933, 0.362)),
+    "all": ((0.533, 0.512, 0.554), (578, 8827, 0.345, 0.596))}
+for s, (auc, counts) in EXPECTED_E8.items():
+    r, d = p2.loc[s], desc8[s]
+    got = (round(r.value, 3), round(r.ci_lo, 3), round(r.ci_hi, 3))
+    assert got == auc, f"{s}: AUROC {got}, E8_REPORT.md {auc}"
+    got = (d["units_with_both"], d["within_pairs"], round(d["has_any_verification"], 3), round(d["unresolved_share"], 3))
+    assert got == counts, f"{s}: {got}, E8_REPORT.md {counts}"
+print("E8: числа совпадают с E8_REPORT.md")
+
+tbl8 = pd.DataFrame([{"модель (агент nano-agent)": SETTING_NAME[s],
+                      "решено (из оценённых попыток)": f"{1 - desc8[s]['unresolved_share']:.1%}",
+                      "единиц с обоими исходами": desc8[s]["units_with_both"],
+                      "пар «нерешённая — решённая»": desc8[s]["within_pairs"],
+                      "доля попыток с запуском тестов": f"{desc8[s]['has_any_verification']:.1%}"} for s in SETTINGS8])
+display(tbl8.style.hide(axis="index"))
+""")
+
+md("""
+Модель «длина + структура», обученная на этих попытках, сравнивает две попытки одной модели на одной задаче (AUROC
+внутри единиц, черта — 95% интервал). Сигнал есть у devstral-2512 (0.578) и у трёх моделей вместе (0.533), но до порога
+практической пользы 0.60 (верхний пунктир) он не дотягивает нигде; у Qwen3-32B и DeepSWE-Preview интервал захватывает
+0.5 — там сигнала нет.
+""")
+
+code("""
+order8 = SETTINGS8 + ["all"]
+xs8 = [0, 1, 2, 3.3]
+fig, ax = plt.subplots(figsize=(8, 4.6))
+for x, s in zip(xs8, order8):
+    r = p2.loc[s]
+    ax.bar(x, r.value, 0.6, color=MODEL_COLOR["M_struct+len"])
+    ax.errorbar(x, r.value, yerr=[[r.value - r.ci_lo], [r.ci_hi - r.value]], color="black", capsize=5, lw=1)
+    ax.text(x, r.ci_hi + 0.006, f"{r.value:.3f}", ha="center", fontsize=9)
+ax.axhline(0.5, color="black", lw=1, ls="--", label="0.5 — случайное угадывание")
+ax.axhline(0.60, color="#777777", lw=1.2, ls="--", label="0.60 — порог практической пользы")
+ax.set_xticks(xs8, [SETTING_NAME[s] for s in order8])
+ax.set_xlim(-0.6, 3.9)
+ax.set_ylim(0.4, 0.7)
+ax.set_ylabel("AUROC внутри единицы\\n(попытки одной модели на одной задаче)")
+ax.set_title("Удачная или неудачная попытка той же модели: модель «длина + структура»")
+ax.legend(loc="upper left", frameon=False)
+plt.tight_layout()
+plt.show()
+""")
+
+md("""
+Сигнал заметен только там, где агент сам запускает тесты: devstral-2512 делает это в 93% попыток, две другие модели —
+меньше чем в 2%. Без проверок в траектории почти нет той структуры («правка → проверка»), которую считывает модель.
+Точек всего три, поэтому это наблюдение, а не закономерность; интервалы — на предыдущем графике.
+""")
+
+code("""
+fig, ax = plt.subplots(figsize=(7.5, 4.6))
+for s in SETTINGS8:
+    x, v = desc8[s]["has_any_verification"] * 100, p2.loc[s].value
+    ax.scatter(x, v, s=90, color=MODEL_COLOR["M_struct+len"], edgecolor="white", zorder=3)
+    right = x < 50
+    ax.annotate(f"{SETTING_NAME[s]}: {v:.3f}", (x, v), xytext=(10 if right else -10, -8), textcoords="offset points",
+                ha="left" if right else "right", va="top", fontsize=9, zorder=4,
+                bbox={"facecolor": "white", "edgecolor": "none", "pad": 1})
+ax.axhline(0.5, color="black", lw=1, ls="--", label="0.5 — случайное угадывание")
+ax.axhline(0.60, color="#777777", lw=1.2, ls="--", label="0.60 — порог практической пользы")
+ax.set_xlim(-5, 105)
+ax.set_ylim(0.45, 0.65)
+ax.set_xlabel("доля попыток, в которых агент запускал тесты, %")
+ax.set_ylabel("AUROC внутри единицы")
+ax.set_title("Сигнал попытки там, где агент проверяет свою правку")
+ax.legend(loc="upper left", frameon=False)
 plt.tight_layout()
 plt.show()
 """)
@@ -763,14 +863,16 @@ plt.show()
 md("""
 ## 5. Итог
 
-**Главный практический результат — модель «знание модели + длина + структура» (M+S): AUROC 0.685, а среди 10% самых
-рискованных прогонов не решены 65.6%** (precision@10%; в среднем по рейтингу не решена треть прогонов). Различение
-внутри задачи (0.640) в основном отражает, какая модель работала; сигнал поведения сверх этого (0.544 у моделей,
-близких по силе) предварительный и проверяется на повторных прогонах одной модели.
+Модель полезна для отбора решений на проверку (M+S: precision@10% 0.656 при доле нерешённых 0.330). Сигнал уровня
+отдельной попытки слабый: 0.533 на повторах одной модели; он заметен только у агента, который сам запускает тесты
+(0.578).
 """)
 
 code("""
 fmt = lambda v, b: f"{v:.3f} [{ci(b)[0]:.3f}; {ci(b)[1]:.3f}]"  # noqa: E731
+# the numbers in the text above
+assert (round(p10["M+S"], 3), round(y.mean(), 3)) == (0.656, 0.330)
+assert (round(p2.loc["all"].value, 3), round(p2.loc[SETTINGS8[2]].value, 3)) == (0.533, 0.578)
 rows = [
     ("Открытый рейтинг: прогонов / отправлено / задач", f"{len(runs)} / {len(pop)} / {pop.task_id.nunique()}"),
     ("Доля нерешённых среди отправленных", f"{y.mean():.3f}"),
@@ -788,6 +890,10 @@ rows += [
      fmt(*e7[("close", "S")])),
     (f"AUROC внутри задач, модели близки по силе ({n_close} пар), предварительно: только знание модели",
      fmt(*e7[("close", "M")])),
+    ("Повторы одной модели (E8), длина + структура: AUROC внутри единиц, три модели вместе [95% ДИ]",
+     f"{p2.loc['all'].value:.3f} [{p2.loc['all'].ci_lo:.3f}; {p2.loc['all'].ci_hi:.3f}]"),
+    ("Повторы одной модели (E8): то же у devstral-2512 — агент сам запускает тесты [95% ДИ]",
+     f"{p2.loc[SETTINGS8[2]].value:.3f} [{p2.loc[SETTINGS8[2]].ci_lo:.3f}; {p2.loc[SETTINGS8[2]].ci_hi:.3f}]"),
 ]
 for name in MODELS:
     rows.append((f"Проверка 10% самых рискованных, {MODEL_NAME[name]}: найдено нерешённых",
@@ -802,6 +908,7 @@ display(summary.style.hide(axis="index"))
 Path("visual_demo_results.json").write_text(json.dumps(
     {"summary": dict(rows), "auroc": {m: auroc(y, risk[m]) for m in MODELS}, "within": dict(within),
      "e7": {f"{k[0]}|{k[1]}": v[0] for k, v in e7.items()}, "e7_p10": p10,
+     "e8_p2_within": {s: p2.loc[s].value for s in order8},
      "own_risk": own[["run_id", "resolved", "risk"]].to_dict("records"), "elapsed_s": round(time.time() - T0, 1)},
     indent=1, ensure_ascii=False, default=float), encoding="utf-8")
 print(f"готово за {time.time() - T0:.0f} с (после установки scikit-learn)")
