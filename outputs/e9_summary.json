@@ -1,0 +1,78 @@
+{
+ "descriptives": {
+  "nano-agent-Qwen_Qwen3-32B": {
+   "attempts": 5000,
+   "submitted_share": 0.8516,
+   "eval_errors": 11,
+   "pass_at_1": 0.1638,
+   "units": 500,
+   "mixed_units": 150,
+   "units_never_solved": 329,
+   "units_always_solved": 21
+  },
+  "nano-agent-agentica-org_DeepSWE-Preview": {
+   "attempts": 5000,
+   "submitted_share": 0.915,
+   "eval_errors": 22,
+   "pass_at_1": 0.3138,
+   "units": 500,
+   "mixed_units": 258,
+   "units_never_solved": 210,
+   "units_always_solved": 32
+  },
+  "nano-agent-mistral_devstral-2512": {
+   "attempts": 5000,
+   "submitted_share": 0.9958,
+   "eval_errors": 1,
+   "pass_at_1": 0.6354,
+   "units": 500,
+   "mixed_units": 181,
+   "units_never_solved": 103,
+   "units_always_solved": 216
+  },
+  "all": {
+   "attempts": 15000,
+   "submitted_share": 0.9208,
+   "eval_errors": 34,
+   "pass_at_1": 0.371,
+   "units": 1500,
+   "mixed_units": 589,
+   "units_never_solved": 642,
+   "units_always_solved": 269
+  }
+ },
+ "criteria": {
+  "nano-agent-Qwen_Qwen3-32B": {
+   "1_gain_P2": false,
+   "2_practical_P2": false,
+   "3_struct_over_length": false,
+   "4_transfer_P1": false
+  },
+  "nano-agent-agentica-org_DeepSWE-Preview": {
+   "1_gain_P2": false,
+   "2_practical_P2": false,
+   "3_struct_over_length": false,
+   "4_transfer_P1": false
+  },
+  "nano-agent-mistral_devstral-2512": {
+   "1_gain_P2": false,
+   "2_practical_P2": false,
+   "3_struct_over_length": false,
+   "4_transfer_P1": false
+  },
+  "all": {
+   "1_gain_P2": false,
+   "2_practical_P2": false,
+   "3_struct_over_length": false,
+   "4_transfer_P1": false
+  }
+ },
+ "checks": {
+  "p1_max_abs_diff_vs_e8": 4.999738734134951e-09,
+  "eval_error_without_fold": 10
+ },
+ "k_main": 5,
+ "n_subsets": 200,
+ "n_boot": 1000,
+ "seconds": 42.5
+}
