@@ -1,0 +1,49 @@
+population,question,model,baseline,metric,diff,ci_lo,ci_hi,primary,bonf_lo,bonf_hi,verdict
+all,б,M+S,M,auroc,0.092378,0.068623,0.114938,False,,,gain
+all,б,M+S,M,within,-0.052248,-0.071995,-0.034588,True,-0.075767,-0.030436,loss
+all,б,M+S,M,brier,-0.016291,-0.021406,-0.011139,False,,,gain
+all,б,M+S,M,p@5,0.304569,0.228426,0.375635,False,,,gain
+all,б,M+S,M,p@10,0.203304,0.152667,0.25413,False,,,gain
+all,б,M+S,M,p@20,0.118881,0.085132,0.155216,False,,,gain
+all,в,T+M+S,T+M,auroc,0.052201,0.040607,0.062901,True,0.037849,0.064846,gain
+all,в,T+M+S,T+M,within,-0.008662,-0.023245,0.004768,False,,,not shown
+all,в,T+M+S,T+M,brier,-0.01435,-0.01755,-0.010912,False,,,gain
+all,в,T+M+S,T+M,p@5,0.175127,0.086236,0.244275,False,,,gain
+all,в,T+M+S,T+M,p@10,0.139771,0.099357,0.172594,False,,,gain
+all,в,T+M+S,T+M,p@20,0.07883,0.058332,0.10133,False,,,gain
+all,г-A,T+M+S+A,T+M+S,auroc,0.009223,0.00393,0.014836,True,0.002047,0.015783,gain
+all,г-A,T+M+S+A,T+M+S,within,-0.017969,-0.029888,-0.006179,False,,,loss
+all,г-A,T+M+S+A,T+M+S,brier,-0.002279,-0.003992,-0.000569,False,,,gain
+all,г-A,T+M+S+A,T+M+S,p@5,0.015228,-0.012723,0.048223,False,,,not shown
+all,г-A,T+M+S+A,T+M+S,p@10,0.021601,-0.002545,0.040842,False,,,not shown
+all,г-A,T+M+S+A,T+M+S,p@20,0.02225,0.00827,0.040051,False,,,gain
+all,г-R,T+M+S+R,T+M+S,auroc,0.017822,0.007365,0.0287,True,0.00466,0.032421,gain
+all,г-R,T+M+S+R,T+M+S,within,-0.002119,-0.01028,0.006009,False,,,not shown
+all,г-R,T+M+S+R,T+M+S,brier,-0.003755,-0.007119,-0.000189,False,,,gain
+all,г-R,T+M+S+R,T+M+S,p@5,0.032995,-0.012691,0.07888,False,,,not shown
+all,г-R,T+M+S+R,T+M+S,p@10,0.024142,-0.001272,0.050826,False,,,not shown
+all,г-R,T+M+S+R,T+M+S,p@20,0.0178,-0.000652,0.036852,False,,,not shown
+no_psf_requests,б,M+S,M,auroc,0.097844,0.074714,0.12142,False,,,gain
+no_psf_requests,б,M+S,M,within,-0.054007,-0.074394,-0.033884,True,-0.07907,-0.027983,loss
+no_psf_requests,б,M+S,M,brier,-0.017548,-0.022721,-0.012265,False,,,gain
+no_psf_requests,б,M+S,M,p@5,0.382429,0.291971,0.45478,False,,,gain
+no_psf_requests,б,M+S,M,p@10,0.24031,0.186856,0.290707,False,,,gain
+no_psf_requests,б,M+S,M,p@20,0.134367,0.098186,0.16775,False,,,gain
+no_psf_requests,в,T+M+S,T+M,auroc,0.056928,0.045073,0.069272,True,0.043034,0.073069,gain
+no_psf_requests,в,T+M+S,T+M,within,-0.00881,-0.023824,0.005311,False,,,not shown
+no_psf_requests,в,T+M+S,T+M,brier,-0.01532,-0.01882,-0.011773,False,,,gain
+no_psf_requests,в,T+M+S,T+M,p@5,0.18863,0.126289,0.252594,False,,,gain
+no_psf_requests,в,T+M+S,T+M,p@10,0.149871,0.098318,0.190974,False,,,gain
+no_psf_requests,в,T+M+S,T+M,p@20,0.093023,0.071102,0.116011,False,,,gain
+no_psf_requests,г-A,T+M+S+A,T+M+S,auroc,0.007204,0.001607,0.012857,True,0.000281,0.014512,gain
+no_psf_requests,г-A,T+M+S+A,T+M+S,within,-0.021258,-0.032054,-0.010312,False,,,loss
+no_psf_requests,г-A,T+M+S+A,T+M+S,brier,-0.001347,-0.002915,0.000197,False,,,not shown
+no_psf_requests,г-A,T+M+S+A,T+M+S,p@5,0.010336,-0.018088,0.038662,False,,,not shown
+no_psf_requests,г-A,T+M+S+A,T+M+S,p@10,0.018088,0.002587,0.048969,False,,,gain
+no_psf_requests,г-A,T+M+S+A,T+M+S,p@20,0.014858,0.000646,0.029795,False,,,gain
+no_psf_requests,г-R,T+M+S+R,T+M+S,auroc,0.019266,0.007536,0.030535,True,0.004967,0.034293,gain
+no_psf_requests,г-R,T+M+S+R,T+M+S,within,-0.003735,-0.011907,0.005049,False,,,not shown
+no_psf_requests,г-R,T+M+S+R,T+M+S,brier,-0.004188,-0.007477,-0.000349,False,,,gain
+no_psf_requests,г-R,T+M+S+R,T+M+S,p@5,0.036176,0.0,0.064599,False,,,not shown
+no_psf_requests,г-R,T+M+S+R,T+M+S,p@10,0.021964,-0.001326,0.056776,False,,,not shown
+no_psf_requests,г-R,T+M+S+R,T+M+S,p@20,0.023256,0.005164,0.043817,False,,,gain
