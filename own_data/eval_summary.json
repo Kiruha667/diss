@@ -1,0 +1,892 @@
+[
+ {
+  "run_id": "gold_pre",
+  "task_id": "astropy__astropy-14182",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 9,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "astropy__astropy-14365",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 8,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "astropy__astropy-14369",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 3,
+  "f2p_fail": 0,
+  "p2p_pass": 732,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-10097",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 438,
+  "f2p_fail": 0,
+  "p2p_pass": 1432,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-11138",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 73,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-11149",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 2,
+  "f2p_fail": 0,
+  "p2p_pass": 46,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-11265",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 30,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-11433",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 142,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-11532",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 148,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-11728",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 2,
+  "f2p_fail": 0,
+  "p2p_pass": 44,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-11848",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 2,
+  "f2p_fail": 0,
+  "p2p_pass": 43,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-11885",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 43,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-12193",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 11,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-12663",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 135,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-13401",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 32,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-13406",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 3,
+  "f2p_fail": 0,
+  "p2p_pass": 32,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-13512",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 3,
+  "f2p_fail": 0,
+  "p2p_pass": 32,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-13568",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 13,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-14140",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 4,
+  "f2p_fail": 0,
+  "p2p_pass": 199,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-14376",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 3,
+  "f2p_fail": 0,
+  "p2p_pass": 6,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-14404",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 2,
+  "f2p_fail": 0,
+  "p2p_pass": 323,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-14534",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 2,
+  "f2p_fail": 0,
+  "p2p_pass": 118,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-14725",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 3,
+  "f2p_fail": 0,
+  "p2p_pass": 64,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-15022",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 3,
+  "f2p_fail": 0,
+  "p2p_pass": 56,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-15127",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 1,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-15128",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 282,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-15280",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 85,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-15503",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 2,
+  "f2p_fail": 0,
+  "p2p_pass": 78,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-15554",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 41,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-15563",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 2,
+  "f2p_fail": 0,
+  "p2p_pass": 29,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-15732",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 125,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-15916",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 2,
+  "f2p_fail": 0,
+  "p2p_pass": 149,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-16454",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 45,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-16560",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 8,
+  "f2p_fail": 0,
+  "p2p_pass": 66,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-16642",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 21,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-16938",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 23,
+  "f2p_fail": 0,
+  "p2p_pass": 65,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "django__django-16950",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 3,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "matplotlib__matplotlib-24177",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 768,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "matplotlib__matplotlib-25960",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 137,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "pydata__xarray-6599",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 264,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "pydata__xarray-6938",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 430,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "pylint-dev__pylint-6386",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 7,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "pylint-dev__pylint-7080",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 120,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "pytest-dev__pytest-5787",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 2,
+  "f2p_fail": 0,
+  "p2p_pass": 123,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "pytest-dev__pytest-6197",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 2,
+  "f2p_fail": 0,
+  "p2p_pass": 145,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "pytest-dev__pytest-7324",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 3,
+  "f2p_fail": 0,
+  "p2p_pass": 58,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "scikit-learn__scikit-learn-14087",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 3,
+  "f2p_fail": 0,
+  "p2p_pass": 172,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "scikit-learn__scikit-learn-14629",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 26,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "scikit-learn__scikit-learn-25102",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 2,
+  "f2p_fail": 0,
+  "p2p_pass": 59,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sphinx-doc__sphinx-8056",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 40,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sphinx-doc__sphinx-8265",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 22,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sphinx-doc__sphinx-9258",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 45,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sympy__sympy-13031",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 9,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sympy__sympy-13091",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 2,
+  "f2p_fail": 0,
+  "p2p_pass": 89,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sympy__sympy-13877",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 110,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sympy__sympy-13878",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 19,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sympy__sympy-13974",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 4,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sympy__sympy-14976",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 13,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sympy__sympy-15599",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 80,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sympy__sympy-15875",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 80,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sympy__sympy-15976",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 37,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sympy__sympy-18211",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 54,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sympy__sympy-18698",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 147,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sympy__sympy-21379",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 91,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "gold_pre",
+  "task_id": "sympy__sympy-23950",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 4,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.0_mini-v1.17.1_glm-4.6_smoke-20261027b",
+  "task_id": "psf__requests-1766",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 6,
+  "f2p_fail": 0,
+  "p2p_pass": 79,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_django__django-14376",
+  "task_id": "django__django-14376",
+  "resolved": 0,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 2,
+  "p2p_pass": 6,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_psf__requests-1766",
+  "task_id": "psf__requests-1766",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 6,
+  "f2p_fail": 0,
+  "p2p_pass": 79,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_pylint-dev__pylint-6386",
+  "task_id": "pylint-dev__pylint-6386",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 7,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_pytest-dev__pytest-7324",
+  "task_id": "pytest-dev__pytest-7324",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 3,
+  "f2p_fail": 0,
+  "p2p_pass": 58,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r0_sympy__sympy-23950",
+  "task_id": "sympy__sympy-23950",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 4,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_django__django-14376",
+  "task_id": "django__django-14376",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 3,
+  "f2p_fail": 0,
+  "p2p_pass": 6,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_psf__requests-1766",
+  "task_id": "psf__requests-1766",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 6,
+  "f2p_fail": 0,
+  "p2p_pass": 79,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pylint-dev__pylint-6386",
+  "task_id": "pylint-dev__pylint-6386",
+  "resolved": 0,
+  "patch_applied": 1,
+  "f2p_pass": 0,
+  "f2p_fail": 1,
+  "p2p_pass": 7,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_pytest-dev__pytest-7324",
+  "task_id": "pytest-dev__pytest-7324",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 3,
+  "f2p_fail": 0,
+  "p2p_pass": 58,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r1_sympy__sympy-23950",
+  "task_id": "sympy__sympy-23950",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 4,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_django__django-14376",
+  "task_id": "django__django-14376",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 3,
+  "f2p_fail": 0,
+  "p2p_pass": 6,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_psf__requests-1766",
+  "task_id": "psf__requests-1766",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 6,
+  "f2p_fail": 0,
+  "p2p_pass": 79,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pylint-dev__pylint-6386",
+  "task_id": "pylint-dev__pylint-6386",
+  "resolved": 0,
+  "patch_applied": 1,
+  "f2p_pass": 0,
+  "f2p_fail": 1,
+  "p2p_pass": 7,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_pytest-dev__pytest-7324",
+  "task_id": "pytest-dev__pytest-7324",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 3,
+  "f2p_fail": 0,
+  "p2p_pass": 58,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.1_mini-v1.17.1_glm-4.6_pilot_r2_sympy__sympy-23950",
+  "task_id": "sympy__sympy-23950",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 4,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-11433",
+  "task_id": "django__django-11433",
+  "resolved": 0,
+  "patch_applied": 1,
+  "f2p_pass": 0,
+  "f2p_fail": 1,
+  "p2p_pass": 141,
+  "p2p_fail": 1
+ },
+ {
+  "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-13568",
+  "task_id": "django__django-13568",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 13,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-14140",
+  "task_id": "django__django-14140",
+  "resolved": 0,
+  "patch_applied": 1,
+  "f2p_pass": 2,
+  "f2p_fail": 2,
+  "p2p_pass": 199,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15128",
+  "task_id": "django__django-15128",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 282,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15554",
+  "task_id": "django__django-15554",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 41,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_django__django-15563",
+  "task_id": "django__django-15563",
+  "resolved": 0,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 1,
+  "p2p_pass": 29,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_sympy__sympy-13877",
+  "task_id": "sympy__sympy-13877",
+  "resolved": 1,
+  "patch_applied": 1,
+  "f2p_pass": 1,
+  "f2p_fail": 0,
+  "p2p_pass": 110,
+  "p2p_fail": 0
+ },
+ {
+  "run_id": "own-v1.2_mini-v1.17.1_glm-4.6_main_r0_sympy__sympy-15875",
+  "task_id": "sympy__sympy-15875",
+  "resolved": 0,
+  "patch_applied": 1,
+  "f2p_pass": 0,
+  "f2p_fail": 1,
+  "p2p_pass": 80,
+  "p2p_fail": 0
+ }
+]
