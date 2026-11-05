@@ -3,19 +3,23 @@
   python -m src.e10_check_outcomes checks        -> data/interim/e10/commands.parquet (every executed command of the
                                                     leaderboard population and of the KTH attempts with a patch;
                                                     checks with their parsed outcome)
-  python -m src.e10_check_outcomes parser-check  -> reports/E10_parser_check.md (15 checks per category)
+  python -m src.e10_check_outcomes parser-check  -> reports/E10_parser_check.md (round 4: 8 checks per changed rule;
+                                                    data/interim/e10/commands_r3.parquet, the round-3 build, for the
+                                                    comparison)
 
 Sources: leaderboard = data/interim/swebench_bashonly/trajectories.jsonl.gz (E0 adapter, full tool outputs; checked
 byte for byte against 5 local .traj.json, data/interim/e10/source_check.json); KTH = data/raw/agentic_evals via
 src.adapters.agentic_evals (E8). Non-zero return codes are a "returncode: N" prefix of the tool output in both.
 A check = a command with a demo_lib 'verify' event or a test-runner invocation (a self-made script that writes the
-repository is not a check); its outcome is parsed from the full output of the command (protocol, sections 3-4, with
-the fixes of rounds 1-3 in reports/E10_parser_check.md). Categories: pass / fail / error_env / error_code / unknown for
-project tests, script_ok / script_fail instead of pass / fail for self-made scripts.
+repository is not a check); its outcome is parsed from the full output of the command (protocol, sections 3-4 and 11,
+with the fixes of rounds 1-4 in reports/E10_parser_check.md). Categories: pass / fail / error_env / error_code / unknown
+for project tests, script_ok / script_fail instead of pass / fail for self-made scripts. Round 4 also records, per
+command, the first segment that edits the project's code (protocol 11.5).
 """
 from __future__ import annotations
 
 import json
+import posixpath
 import re
 import sys
 import time
@@ -30,7 +34,7 @@ from src.common import INTERIM, REPORTS, ROOT, SEED, get_logger, read_jsonl_gz, 
 
 sys.path.insert(0, str(ROOT))
 from demo_lib.phases import (_PLACEHOLDER_RE, _QUOTED_RE, _SPLIT_RE, _cut_heredocs, _edit_target,  # noqa: E402
-                             _is_python, _norm_path, _words, classify_segment)
+                             _is_code_target, _is_python, _norm_path, _words, classify_segment)
 
 log = get_logger("e10")
 OUT_DIR = INTERIM / "e10"
@@ -145,6 +149,133 @@ def _script_of(seg: str, docs: list[dict], files: dict[str, str]) -> tuple[str, 
     return code, path
 
 
+# ---- round 4: paths from the current directory (item C) and files the agent created in the run (item D)
+REPO_DIR = "/testbed"  # the repository in both corpora; every command starts there (no shell state between commands)
+_UNKNOWN_DIR = "/?"  # `cd -`, `cd $VAR`, `cd ~`: a directory outside the repository
+
+
+def _abs(path: str, cwd: str) -> str:
+    p = path.strip("'\"")
+    if not p.startswith("/"):
+        if p.startswith(("~", "$")) or cwd == _UNKNOWN_DIR:
+            return _UNKNOWN_DIR
+        p = posixpath.join(cwd, p)
+    return posixpath.normpath(p)
+
+
+def _rel(path: str) -> str:
+    """Repository-relative form of an absolute path; paths outside the repository stay absolute."""
+    if path == REPO_DIR:
+        return "."
+    return path[len(REPO_DIR) + 1:] if path.startswith(REPO_DIR + "/") else path
+
+
+def _resolve(path: str, cwd: str) -> str:
+    return _rel(_abs(path, cwd))
+
+
+def _cd_target(seg: str) -> str | None:
+    w = _words(seg.strip().lstrip("("))
+    if w and w[0] in ("cd", "pushd"):
+        return w[1].strip("'\"") if len(w) > 1 else "~"
+    return None
+
+
+_CREATE_REDIR_RE = re.compile(r"(?<![0-9&<>])>(?!>)\s*(?!&)([^\s|&;<>]+)")  # `> file`, not `>>`, `2>`, `>&`
+_TEE_ARGS_RE = re.compile(r"\btee\s+((?:-\S+\s+)*)([^\s|&;<>-][^\s|&;<>]*)")
+_OPEN_CREATE_RE = re.compile(r"\bopen\(\s*(?P<arg>[^,()]+?)\s*,\s*(?:mode\s*=\s*)?[rbfu]*['\"][wx]")
+
+
+def _py_code(seg: str, docs: list[dict]) -> str:
+    w = _words(_PLACEHOLDER_RE.sub(" ", _QUOTED_RE.sub("''", seg)))
+    if not w or not _is_python(w[0]):
+        return ""
+    ph = _PLACEHOLDER_RE.search(seg)
+    return docs[int(ph.group(1))]["body"] if ph else (" ".join(_QUOTED_RE.findall(seg)) if "-c" in w[1:] else "")
+
+
+def _py_reads(arg: str, code: str) -> bool:
+    a = re.escape(arg.strip())
+    return re.search(rf"open\(\s*{a}\s*(?:\)|,\s*(?:mode\s*=\s*)?[rbfu]*['\"]r(?!\+))|{a}\s*\)?\.read_(?:text|bytes)\(",
+                     code) is not None
+
+
+def created_files(seg: str, docs: list[dict], cwd: str) -> list[str]:
+    """Files a segment creates (item D): `> file` of a code file (cat >, echo >, printf >), `tee file` without
+    -a, python open(file, 'w'|'x') / .write_text of a literal path the same code does not read first (a file read and
+    written back is modified, not created)."""
+    plain = _PLACEHOLDER_RE.sub(" ", _QUOTED_RE.sub("''", seg))
+    out = [m.group(1) for m in _CREATE_REDIR_RE.finditer(plain) if _is_code_target(m.group(1))]
+    m = _TEE_ARGS_RE.search(plain)
+    if m and "-a" not in m.group(1).split() and _is_code_target(m.group(2)):
+        out.append(m.group(2))
+    code = _py_code(seg, docs)
+    if code:
+        args = [m.group("arg") for m in _OPEN_CREATE_RE.finditer(code)]
+        args += [m.group("lit") or m.group("var") for m in _WRITE_TEXT_RE.finditer(code)]
+        for a in args:
+            p = _resolve_path(a, code)
+            if p is not None and not re.search(r"[{}]", p) and not _py_reads(a, code):
+                out.append(p)
+    return [_resolve(p, cwd) for p in out]
+
+
+def reverted_files(seg: str, cwd: str) -> list[str]:
+    """Files a segment restores from git (`git checkout [--] path`, `git restore path`): no longer the agent's."""
+    w = _words(_QUOTED_RE.sub(lambda m: m.group(0).strip("'\""), seg))
+    if len(w) < 3 or w[0] != "git" or w[1] not in ("checkout", "restore"):
+        return []
+    args = w[w.index("--") + 1:] if "--" in w else [a for a in w[2:] if not a.startswith("-") and ("/" in a or "." in a)]
+    return [_resolve(a, cwd) for a in args if a not in (".", "HEAD")]
+
+
+def edit_targets(seg: str, docs: list[dict], cwd: str, files: dict[str, str] | None = None) -> list[str]:
+    """Files a segment writes, resolved from the current directory (item F: edits of project code): `>` / `>>`,
+    tee, sed / perl -i, python writes (code of a heredoc, of `-c`, or of a script file written earlier in the run and
+    run now, e.g. `python /tmp/patch.py`); '*' for `git apply` / `patch` (a diff of the repository)."""
+    plain = _PLACEHOLDER_RE.sub(" ", _QUOTED_RE.sub("''", seg))
+    w = _words(plain)
+    out = []
+    for m in re.finditer(r"(?<![0-9&<>])>{1,2}\s*(?!&)([^\s|&;<>]+)", plain):
+        if _is_code_target(m.group(1)):
+            out.append(m.group(1))
+    m = _TEE_ARGS_RE.search(plain)
+    if m and _is_code_target(m.group(2)):
+        out.append(m.group(2))
+    if w and w[0] in ("sed", "perl") and any(re.match(r"^-[a-zA-Z]*i", t) or t.startswith("--in-place")
+                                             for t in w[1:]) and not w[-1].startswith("-") and w[-1] != "''":
+        out.append(w[-1])
+    code = _py_code(seg, docs) or (_script_of(seg, docs, files)[0] if files else "")
+    if code:
+        for t in [m.group("arg") for m in _OPEN_W_RE.finditer(code)] + \
+                 [m.group("lit") or m.group("var") for m in _WRITE_TEXT_RE.finditer(code)]:
+            p = _resolve_path(t, code)
+            if p is not None:
+                out.append(p)
+    res = [_resolve(p, cwd) for p in out]
+    if w and ((w[0] == "git" and w[1:2] == ["apply"]) or w[0] == "patch"):
+        res.append("*")
+    return res
+
+
+_TESTFILE_RE = re.compile(r"(^|/)(tests?|testing)/|(^|/)(test_[^/]*|[^/]*_tests?\.py|conftest\.py)$")
+
+
+def is_code_file(path: str, repo: str) -> bool:
+    """A source file of the repository that is not a test file (item F); '*' (a diff applied) counts."""
+    return path == "*" or (_is_project_file(path, repo) and not _TESTFILE_RE.search(path))
+
+
+def _label_files(label: str, base: str) -> list[str]:
+    """Candidate files of a dotted test label run from directory `base` (a module, or a module + class / method)."""
+    parts = label.split(".")
+    out = []
+    for i in range(len(parts), 0, -1):
+        stem = "/".join(parts[:i])
+        out += [_resolve(stem + ".py", base), _resolve(stem + "/__init__.py", base)]
+    return out
+
+
 def runner_of(seg: str) -> tuple[str, list[str]] | None:
     """(runner name, its arguments) if the segment invokes a test runner in command position, else None."""
     w = _words(_QUOTED_RE.sub(lambda m: m.group(0).replace(" ", "_"), seg))
@@ -186,24 +317,40 @@ def runner_of(seg: str) -> tuple[str, list[str]] | None:
     return None
 
 
-def is_project_run(runner: str, args: list[str]) -> bool:
+def is_project_run(runner: str, args: list[str], cwd: str = REPO_DIR, base: str | None = None,
+                   created: frozenset[str] = frozenset()) -> bool:
+    """Project tests (protocol, section 3). Round 4: a path is resolved from the current directory (`cd` earlier in
+    the command, item C) when that directory is inside the repository; from outside it (`cd /root`, `cd /tmp`) a
+    relative path is read as written, i.e. from the repository root: the agent meant the repository's file and is in
+    the wrong directory (such runs end with `file or directory not found`). A label is resolved from `base` (the
+    directory of runtests.py, else the current one). A run whose every target is a file the agent created earlier in
+    the run is the agent's own script (item D)."""
+    targets = [a.strip("'\"") for a in args if not a.startswith("-")]
+    inside = not _resolve(".", cwd).startswith("/")
+    tg = []  # (in the project's tests, created by the agent)
+    for a in targets:
+        if "/" in a or a.endswith(".py") or "::" in a:
+            path = a.split("::")[0]
+            p = _resolve(path, cwd if inside else REPO_DIR)
+            tg.append((not p.startswith(("/", "..")) and _PATH_TESTS_RE.search(p) is not None,
+                       _resolve(path, cwd) in created))
+        elif _LABEL_RE.match(a):
+            tg.append((a.startswith("tests.") or ".tests." in a,
+                       any(f in created for f in _label_files(a, base or cwd))))
+    if tg and all(own for _, own in tg):
+        return False
     if runner in _PROJECT_RUNNERS:
         return True
-    targets = [a.strip("'\"") for a in args if not a.startswith("-")]
-    paths = [a for a in targets if "/" in a or a.endswith(".py") or "::" in a]
-    labels = [a for a in targets if _LABEL_RE.match(a)]
-    if any(_PATH_TESTS_RE.search(p.split("::")[0]) for p in paths):
+    if any(proj and not own for proj, own in tg):
         return True
-    if any(lb.startswith("tests.") or ".tests." in lb for lb in labels):
-        return True
-    return not paths and not labels  # no target: the runner collects the project's tests
+    return not tg and inside  # no target: the runner collects the tests of the current directory
 
 
 # ------------------------------------------------------------------------------------------ outcome parser
 
 _PYTEST_RE = re.compile(r"^[=\s!*-]*(?P<body>(?:\d+ (?:failed|passed|errors?|skipped|xfailed|xpassed|deselected|"
                         r"warnings?|rerun)(?:,\s*)?)+|no tests ran)\s+in\s+[\d.]+\s*(?:s|sec|seconds)\b", re.M)
-_RAN_RE = re.compile(r"^Ran (\d+) tests? in [\d.]+s", re.M)
+_RAN_RE = re.compile(r"^Ran (\d+) tests? in ([\d.]+)s", re.M)
 _UT_STATUS_RE = re.compile(r"^(OK\b.*|FAILED \((?P<det>[^)]*)\))", re.M)
 # round 3: a unittest status line without its "Ran N tests" line (the agent filtered the output, e.g. `| grep FAILED`)
 _UT_ALONE_RE = re.compile(r"^(?:OK(?: \((?:skipped|expected failures|unexpected successes)=[^)]*\))?|"
@@ -218,7 +365,6 @@ _SYMPY_RE = re.compile(r"tests finished:(?P<body>[^\n]*(?:\n[^\n]*)?)in [\d.]+ s
 _ANSI_RE = re.compile(r"\x1b\[[0-9;?]*[ -/]*[@-~]")
 _INFO_FLAGS = {"--version", "-V", "--help", "-h", "--collect-only", "--co", "--fixtures", "--markers"}
 _IGNORABLE = {"cd", "source", "export", "echo", "head", "tail", "grep", "set"}
-_TRACE_RE = re.compile(r"Traceback \(most recent call last\)|\bAssertionError\b")
 _PIPE_RE = re.compile(r"\|\s*(head|tail|grep)\b")
 _LONG_RE = re.compile(r"too long|characters elided|output truncated", re.I)
 _TIMEOUT_RE = re.compile(r"timed out|TimeoutExpired", re.I)
@@ -264,8 +410,8 @@ _CANNOT_IMPORT_RE = re.compile(r"cannot import name '?(?P<n>\w+)'?(?: from (?:pa
                                r"'?(?P<m>[\w.]+)'?)?")
 _SYNTAX_RE = re.compile(r"^(?:E\s+)?(?:SyntaxError|IndentationError|TabError)\b", re.M)
 _NOATTR_RE = re.compile(r"(?:module|type object) '(?P<m>[\w.]+)' has no attribute '(?P<a>\w+)'")
-_FAILEDTEST_RE = re.compile(r"(?P<a>[\w.]+) \(unittest\.loader\._FailedTest(?:\.[\w.]+)?\)|"
-                            r"Failed to import test module: (?P<b>[\w.]+)")
+_FAILEDTEST_RE = re.compile(r"(?P<a>[\w./-]+) \(unittest\.loader\._FailedTest(?:\.[\w./-]+)?\)|"
+                            r"Failed to import test module: (?P<b>[\w./-]+)")  # a path given as label: '/tmp/t'
 _COLLECT_RE = re.compile(r"errors? during collection|ImportError while importing test module|^_* ?ERROR collecting",
                          re.M)
 _FRAME_RE = re.compile(r'File "(?P<a>[^"]+)", line \d+|^(?:E\s+)?(?P<b>[^\s:"]+\.py|<frozen [^>]+>):\d+: in ', re.M)
@@ -282,8 +428,9 @@ def repo_of(task_id: str) -> str:
     return task_id.split("__", 1)[1].rsplit("-", 1)[0] if "__" in task_id else ""
 
 
-def _is_project_file(path: str | None, repo: str) -> bool:
-    """A file of the repository under test: /testbed/<source dir>/… or the same path relative to /testbed."""
+def _is_project_file(path: str | None, repo: str, own: frozenset[str] = frozenset()) -> bool:
+    """A file of the repository under test: /testbed/<source dir>/… or the same path relative to /testbed; not a file
+    the agent created earlier in the run (`own`, round 4, item D)."""
     if not path:
         return False
     p = path.strip()
@@ -292,7 +439,7 @@ def _is_project_file(path: str | None, repo: str) -> bool:
     elif p.startswith(("/", "<")):
         return False
     p = re.sub(r"^(\./)+", "", p)
-    return "/" in p and p.split("/", 1)[0] in _PROJECT.get(repo, (set(), set()))[1]
+    return "/" in p and p.split("/", 1)[0] in _PROJECT.get(repo, (set(), set()))[1] and p not in own
 
 
 def _frame_before(output: str, pos: int) -> str | None:
@@ -321,7 +468,8 @@ def labels_of_runs(runners: list[tuple[str, list[str]]]) -> list[str]:
     return out
 
 
-def error_kind(output: str, labels: list[str], repo: str, crash: bool = True) -> tuple[str, str] | None:
+def error_kind(output: str, labels: list[str], repo: str, crash: bool = True,
+               own: frozenset[str] = frozenset()) -> tuple[str, str] | None:
     """(kind, matched text) of an error outcome, None if the output has no such evidence.
 
     1. an explicit message that the check could not be run (_ENV_RULES) -> env-…;
@@ -338,7 +486,11 @@ def error_kind(output: str, labels: list[str], repo: str, crash: bool = True) ->
        - raised while a module of the repository was being loaded (from the innermost `<module>` frame down to the
          exception, every frame is a repository file) -> code-traceback;
        - raised in a repository file at run time -> ?-runtime (no evidence that the code is broken);
-       - raised elsewhere -> env-traceback."""
+       - raised elsewhere -> env-traceback.
+    A file the agent created in the run (`own`) is not a repository file (round 4, item D)."""
+    def proj(p):
+        return _is_project_file(p, repo, own)
+
     for why, rx in _ENV_RULES:
         m = rx.search(output)
         if m:
@@ -354,17 +506,17 @@ def error_kind(output: str, labels: list[str], repo: str, crash: bool = True) ->
         elif "." not in name:  # the repository's own top-level package: the interpreter does not see the project
             kind = "env-project-not-importable"
         else:
-            kind = "code-import" if _is_project_file(_frame_before(output, m.start()), repo) else "env-script-import"
+            kind = "code-import" if proj(_frame_before(output, m.start())) else "env-script-import"
         hits.append((m.start(), kind, m.group(0)))
     for m in _CANNOT_IMPORT_RE.finditer(output):
         mod = m.group("m")
         if mod and mod.split(".")[0] not in pkgs:
             kind = "env-module-outside"
         else:
-            kind = "code-import" if _is_project_file(_frame_before(output, m.start()), repo) else "env-script-import"
+            kind = "code-import" if proj(_frame_before(output, m.start())) else "env-script-import"
         hits.append((m.start(), kind, m.group(0)))
     for m in _SYNTAX_RE.finditer(output):
-        kind = "code-syntax" if _is_project_file(_frame_before(output, m.start()), repo) else "env-script-syntax"
+        kind = "code-syntax" if proj(_frame_before(output, m.start())) else "env-script-syntax"
         hits.append((m.start(), kind, m.group(0).strip()))
     for m in _NOATTR_RE.finditer(output):
         name = f"{m.group('m')}.{m.group('a')}"
@@ -384,13 +536,13 @@ def error_kind(output: str, labels: list[str], repo: str, crash: bool = True) ->
         for exc in _EXC_LINE_RE.finditer(output):
             pass
         if exc is not None:
-            if not _is_project_file(_frame_before(output, exc.start()), repo):
+            if not proj(_frame_before(output, exc.start())):
                 return "env-traceback", exc.group(0).strip()
             start = max(output.rfind("Traceback", 0, exc.start()), 0)
             frames = [(m.group("a") or m.group("b"), m.group("fa") or m.group("fb"))
                       for m in _FRAME_FN_RE.finditer(output, start, exc.start())]
             mods = [i for i, (_, fn) in enumerate(frames) if fn == "<module>"]
-            if mods and all(_is_project_file(p, repo) for p, _ in frames[mods[-1]:]):
+            if mods and all(proj(p) for p, _ in frames[mods[-1]:]):
                 return "code-traceback", exc.group(0).strip()
             return "?-runtime", exc.group(0).strip()
     return None
@@ -400,12 +552,17 @@ def _n(body: str, word: str) -> int:
     return sum(int(x) for x in re.findall(rf"(\d+) {word}", body))
 
 
-def _ut_outcome(n_ran: int | None, det: str | None, output: str, labels: list[str],
-                repo: str) -> tuple[str, str | None, int]:
+_REAL_ERROR_RE = re.compile(r"^ERROR: \S+ \((?![^)\n]*_FailedTest)", re.M)  # an error inside a test that ran
+
+
+def _ut_outcome(n_ran: int | None, det: str | None, output: str, labels: list[str], repo: str,
+                own: frozenset[str] = frozenset(), secs: float | None = None) -> tuple[str, str | None, int]:
     """(category, error kind if fixed by the summary, n_failed) of a unittest status line. `FAILED` with errors only
     is `error` when the errors are tests that could not be loaded: as many `_FailedTest` as errors, or every test
     that ran is an error and the output shows why it could not run (error_kind without the crash rule, e.g.
-    `No module named '<label>'` when `| tail` cut off the `_FailedTest` line); otherwise `fail` (round 3, item 2)."""
+    `No module named '<label>'` when `| tail` cut off the `_FailedTest` line); otherwise `fail` (round 3, item 2).
+    Round 4, item E: every test that ran is an error, in 0.000 s, and no error of a test that ran is visible (the
+    agent's grep or tail removed the lines) -> `error` too, kind not determined (?-not-loaded)."""
     if n_ran == 0:
         return "error", "env-nothing-ran", 0
     if det is None:  # OK
@@ -413,17 +570,163 @@ def _ut_outcome(n_ran: int | None, det: str | None, output: str, labels: list[st
     fl = int((re.search(r"failures=(\d+)", det) or [0, 0])[1])
     er = int((re.search(r"errors=(\d+)", det) or [0, 0])[1])
     names = {m.group("a") or m.group("b") for m in _FAILEDTEST_RE.finditer(output)}
-    if fl == 0 and er > 0 and (len(names) >= er or
-                               (er == n_ran and error_kind(output, labels, repo, crash=False) is not None)):
-        return "error", None, 0
+    if fl == 0 and er > 0:
+        if len(names) >= er or (er == n_ran and error_kind(output, labels, repo, crash=False, own=own) is not None):
+            return "error", None, 0
+        if er == n_ran and secs == 0 and not _REAL_ERROR_RE.search(output):
+            return "error", "?-not-loaded", 0
     return "fail", None, fl + er
 
 
+# ---- round 4, item A: failed tests named in an output without a summary line (filtered or truncated)
+_FAILED_TEST_RES = [re.compile(r"^FAILED (?P<t>\S+::\S+)", re.M),                 # pytest short test summary
+                    re.compile(r"^(?P<t>\S+::\S+) FAILED\b", re.M),               # pytest -v
+                    re.compile(r"^FAIL: (?P<t>test\w* \([^)\n]*\))", re.M),       # unittest / django
+                    re.compile(r"^ERROR: (?P<t>test\w* \((?![^)\n]*_FailedTest)[^)\n]*\))", re.M)]
+
+
+def _failed_tests(output: str) -> list[tuple[str, str, bool]]:
+    """[(test id, its line, is an error)] of the failed tests named in the output, in order, each test once; 'is an
+    error' — named only by unittest `ERROR: …` (an exception inside the test), not by FAILED / FAIL."""
+    seen = {}
+    for i, rx in enumerate(_FAILED_TEST_RES):
+        for m in rx.finditer(output):
+            t = m.group("t")
+            if t not in seen:
+                end = output.find("\n", m.start())
+                seen[t] = (m.start(), output[m.start(): end if end >= 0 else None].strip(), i == 3)
+    return [(t, ln, err) for t, (_, ln, err) in sorted(seen.items(), key=lambda x: x[1][0])]
+
+
+# ---- round 4, item B: outcome of a self-made script that crashed or reported a failure
+_TB_HEAD = "Traceback (most recent call last)"
+# the exception line closing a traceback: a (dotted) exception class name, then ": message" or nothing. stdout may be
+# interleaved with the traceback (mini-SWE-agent merges the streams), so other unindented lines are skipped
+_EXC_TAIL_RE = re.compile(r"^(?P<exc>(?:[A-Za-z_]\w*\.)*(?:[A-Z]\w*)?(?:Error|Exception|Exit|Interrupt|Warning|"
+                          r"Iteration|Failure|Failed|Fail|DoesNotExist|ObjectsReturned|Configured|NotReady|Skipped|"
+                          r"Timeout))(?::[ \t]?(?P<msg>.*))?$")
+_ASSERT_LINE_RE = re.compile(r"^\s*(?:E\s+)?AssertionError\b", re.M)
+_MARK_RE = re.compile(r"\bFAIL(?:ED|URE|S)?\b|[✗✘❌]|(?<!\b0 )\b[Ff]ailed\b")
+_NANO_RC_LINE_RE = re.compile(r"^command failed with exit code -?\d+\. Error output:[ \t]*$")  # KTH wrapper
+_WARNING_LINE_RE = re.compile(r":\d+: \w*Warning: ")
+
+
+def _drop_ignored(output: str) -> str:
+    """The output without the tracebacks Python prints for exceptions it ignores (`Exception ignored in: …`, e.g. in
+    __del__ at interpreter shutdown): they do not end the script."""
+    if "Exception ignored in" not in output:
+        return output
+    out, skip = [], 0  # skip: 0 no, 1 header expected, 2 inside the traceback
+    for ln in output.split("\n"):
+        if ln.startswith("Exception ignored in"):
+            skip = 1
+            continue
+        if skip == 1 and ln.startswith(_TB_HEAD):
+            skip = 2
+            continue
+        if skip == 2:
+            if not ln.strip() or ln[0] in " \t":
+                continue
+            skip = 0
+            if _EXC_TAIL_RE.match(ln.rstrip()):
+                continue
+        skip = 0
+        out.append(ln)
+    return "\n".join(out)
+
+
+def _mark_text(output: str) -> str:
+    """Lines where failure markers count: not the KTH wrapper line, not Python warnings (and their source line), not
+    the frames and code lines of a traceback (its exception line stays)."""
+    out, in_tb, after_warn = [], False, False
+    for ln in output.split("\n"):
+        indented = bool(ln) and ln[0] in " \t"
+        if after_warn and indented:
+            after_warn = False
+            continue
+        after_warn = False
+        if _NANO_RC_LINE_RE.match(ln) or ln.startswith(_TB_HEAD):
+            in_tb = ln.startswith(_TB_HEAD)
+            continue
+        if _WARNING_LINE_RE.search(ln):
+            after_warn = True
+            continue
+        if in_tb and (indented or not ln.strip()):
+            continue
+        if in_tb and _EXC_TAIL_RE.match(ln.rstrip()):
+            in_tb = False
+        out.append(ln)
+    return "\n".join(out)
+
+
+def _last_exception(output: str) -> tuple[str | None, str, list[tuple[str, str]]] | None:
+    """(exception, its line, frames [(file, function)]) of the last traceback in the output; None if there is no
+    traceback; exception None and line '' if its exception line is not in the output (cut off)."""
+    i = output.rfind(_TB_HEAD)
+    if i < 0:
+        return None
+    pos = output.find("\n", i)
+    while 0 <= pos < len(output):
+        nxt = output.find("\n", pos + 1)
+        ln = output[pos + 1: nxt if nxt >= 0 else len(output)]
+        if ln.strip() and ln[0] not in " \t":
+            m = _EXC_TAIL_RE.match(ln.rstrip())
+            if m:
+                frames = [(f.group("a") or f.group("b"), f.group("fa") or f.group("fb"))
+                          for f in _FRAME_FN_RE.finditer(output, i, pos + 1)]
+                return m.group("exc"), ln.strip(), frames
+        if nxt < 0:
+            break
+        pos = nxt
+    return None, "", [(f.group("a") or f.group("b"), f.group("fa") or f.group("fb"))
+                      for f in _FRAME_FN_RE.finditer(output, i)]
+
+
+def _script_outcome(output: str, repo: str, own: frozenset[str], rc_fail: bool):
+    """Round 4, item B. A self-made script failed (`fail`, later script_fail) only on evidence about the project: an
+    AssertionError, an exception with a frame in a repository file, or explicit failure markers (FAIL, ✗, failed)
+    with a non-zero return code of the check. A crash for any other reason is the check's own error (error_env):
+    printing a non-ASCII character to an ASCII terminal (env-script-encoding), an exception raised in an installed
+    library or the standard library with no repository frame (env-script-library), an exception of the script's own
+    code (env-script-exception). SyntaxError / ImportError of the script are rule 2 (env-script-syntax / -import).
+    A traceback whose exception line is cut off counts by its frames: a repository frame -> fail, else markers, else
+    unknown. Tracebacks of exceptions Python ignores (`Exception ignored in`) are dropped first. Markers are searched
+    outside traceback frames, Python warnings and the KTH wrapper line.
+    Returns (category, rule, kind, line, n_failed) or None."""
+    output = _drop_ignored(output)
+    mk = _MARK_RE.search(_mark_text(output)) if rc_fail else None
+    le = _last_exception(output)
+    if le is not None:
+        exc, line, frames = le
+        name = (exc or "").rsplit(".", 1)[-1]
+        in_proj = any(_is_project_file(p, repo, own) for p, _ in frames)
+        if name in ("UnicodeEncodeError", "UnicodeDecodeError") and not (frames and
+                                                                         _is_project_file(frames[-1][0], repo, own)):
+            return "error", "3-script-error", "env-script-encoding", line, 0
+        if name == "AssertionError":
+            return "fail", "3-script-assert", "", line, 1
+        if in_proj:
+            return "fail", "3-script-project-frame", "", line or _TB_HEAD, 1
+        if mk:
+            return "fail", "3-script-marker", "", mk.group(0), 1
+        if exc is None:  # exception line cut off, no repository frame among the visible ones
+            return "unknown", "3-script-traceback-cut", "", _TB_HEAD, 0
+        lib = bool(frames) and re.search(r"site-packages|/lib/python\d|^<frozen", frames[-1][0] or "") is not None
+        return "error", "3-script-error", "env-script-library" if lib else "env-script-exception", line, 0
+    m = _ASSERT_LINE_RE.search(output)
+    if m:
+        return "fail", "3-script-assert", "", m.group(0).strip(), 1
+    if mk:
+        return "fail", "3-script-marker", "", mk.group(0), 1
+    return None
+
+
 def parse_outcome(output: str, command: str, is_runner: bool, labels: list[str] | None = None, repo: str = "",
-                  rc_ok: bool = True) -> tuple[str, str, str, str, int]:
+                  rc_ok: bool = True, own: frozenset[str] = frozenset()) -> tuple[str, str, str, str, int]:
     """(category, rule, error kind, matched line, number of failed tests) of one check — protocol, section 4, with
-    the fixes of rounds 1–3 (reports/E10_parser_check.md). Category here is pass / fail / error / unknown; the split
-    into error_env / error_code and script_ok / script_fail is final_category()."""
+    the fixes of rounds 1–4 (reports/E10_parser_check.md). Category here is pass / fail / error / unknown; the split
+    into error_env / error_code and script_ok / script_fail is final_category(). `own` — files the agent created
+    earlier in the run (round 4, item D)."""
     labels = labels or []
     cands = []
     for m in _PYTEST_RE.finditer(output):
@@ -441,12 +744,12 @@ def parse_outcome(output: str, command: str, is_runner: bool, labels: list[str] 
             continue
         ran = True
         det = None if st.group(0).startswith("OK") else (st.group("det") or "")
-        cat, kind, nf = _ut_outcome(int(m.group(1)), det, output, labels, repo)
+        cat, kind, nf = _ut_outcome(int(m.group(1)), det, output, labels, repo, own, float(m.group(2).rstrip(".")))
         cands.append((m.start(), cat, "1-unittest", kind, f"{m.group(0).strip()} / {st.group(0).strip()}", nf))
     if is_runner and not ran:
         for st in _UT_ALONE_RE.finditer(output):
             det = st.group("det") if st.group(0).startswith("FAILED") else None
-            cat, kind, nf = _ut_outcome(None, det, output, labels, repo)
+            cat, kind, nf = _ut_outcome(None, det, output, labels, repo, own)
             cands.append((st.start(), cat, "1-unittest-status", kind, st.group(0).strip(), nf))
     for m in _SYMPY_RE.finditer(output):
         body = m.group("body")
@@ -457,18 +760,28 @@ def parse_outcome(output: str, command: str, is_runner: bool, labels: list[str] 
     if cands:  # rule 1: the last summary line decides, whatever else the output contains
         _, cat, rule, kind, line, nf = max(cands, key=lambda c: c[0])
         if cat == "error" and kind is None:
-            kind = (error_kind(output, labels, repo) or ("?-summary", ""))[0]
+            kind = (error_kind(output, labels, repo, own=own) or ("?-summary", ""))[0]
         return cat, rule, kind or "", line, nf
+    # rule 1b (round 4, item A): no summary line, but the output names failed tests -> fail; their absence is no pass.
+    # FAILED / FAIL (an assertion failed) before rule 2; unittest `ERROR: test_…` (an exception inside the test)
+    # after it: with the cause shown (`No module named '<label>'`, settings) every test errors for one reason, which
+    # the summary rule (round 3, item 2) also calls an error
+    failed = _failed_tests(output) if is_runner else []
+    if any(not err for _, _, err in failed):
+        return "fail", "1b-failed-tests", "", next(ln for _, ln, err in failed if not err), len(failed)
     # rule 2: explicit error of the check, before the truncation rules (round 3, item 1)
-    ek = error_kind(output, labels, repo, crash=False)
+    ek = error_kind(output, labels, repo, crash=False, own=own)
     if ek is None and is_runner and _COLLECT_RE.search(output):
-        ek = error_kind(output, labels, repo) or ("?-collect", _COLLECT_RE.search(output).group(0))
+        ek = error_kind(output, labels, repo, own=own) or ("?-collect", _COLLECT_RE.search(output).group(0))
     if ek is not None and (is_runner or not ek[0].startswith("?")):
         return "error", "2-error", ek[0], ek[1], 0
-    if not is_runner:
-        m = _TRACE_RE.search(output)
-        if m:
-            return "fail", "3-script-traceback", "", m.group(0), 1
+    if failed:
+        return "fail", "1b-failed-tests", "", failed[0][1], len(failed)
+    rc = _RC_RE.match(output)
+    if not is_runner:  # rule 3 (round 4, item B)
+        r = _script_outcome(output, repo, own, rc is not None and rc_ok)
+        if r is not None:
+            return r
     if _PIPE_RE.search(command):
         return "unknown", "4-agent-pipe", "", _PIPE_RE.search(command).group(0), 0
     m = _LONG_RE.search(output)
@@ -478,9 +791,8 @@ def parse_outcome(output: str, command: str, is_runner: bool, labels: list[str] 
     if m:
         return "unknown", "4-timeout", "", m.group(0), 0
     if is_runner and "Traceback (most recent call last)" in output:  # untruncated, no summary: crashed before tests
-        kind, line = error_kind(output, labels, repo) or ("?-crash", "Traceback (most recent call last)")
+        kind, line = error_kind(output, labels, repo, own=own) or ("?-crash", "Traceback (most recent call last)")
         return "error", "4b-runner-crash", kind, line, 0
-    rc = _RC_RE.match(output)
     if not rc_ok:  # round 3, item 5: the return code is not the check's -> rules 5 and 6 do not use it
         return "unknown", "6-rc-not-informative", "", "", 0
     if not is_runner and rc is None:
@@ -504,14 +816,28 @@ def final_category(cat: str, kind: str, is_project: bool) -> str:
 
 # ------------------------------------------------------------------------------------------ commands of a run
 
+def _runner_base(seg: str, cwd: str) -> str:
+    """Directory test labels are resolved from: that of runtests.py (it puts itself on sys.path), else the current."""
+    for w in _words(_QUOTED_RE.sub("''", seg)):
+        if re.fullmatch(r"runtests(\.py)?", w.rsplit("/", 1)[-1]):
+            return posixpath.dirname(_abs(w, cwd))
+    return cwd
+
+
 def command_rows(rec: dict, corpus: str, group: str) -> list[dict]:
-    """Every executed command of a run in order, with edit / check flags and the parsed outcome of checks."""
+    """Every executed command of a run in order, with edit / check flags and the parsed outcome of checks.
+    Round 4: the current directory is followed through `cd` inside a command (item C); files the agent creates are
+    remembered for the rest of the run (item D); `code_edit_seg` — first segment that edits a source file of the
+    repository (item F), `check_seg` — last segment of the check. Flags of the round-4 spot check: `c_flag` — the
+    current directory changed project / script; `d_flag` — files created by the agent changed project / script or the
+    error kind."""
     outs: dict[int, list[str]] = {}
     for s in rec["steps"]:
         if s["role"] == "tool":
             outs.setdefault(s["step_idx"], []).append(s["text"])
     repo = repo_of(rec.get("task_id", ""))
     files: dict[str, str] = {}
+    created: set[str] = set()
     rows, pos = [], 0
     for s in rec["steps"]:
         if s["role"] != "assistant":
@@ -521,21 +847,31 @@ def command_rows(rec: dict, corpus: str, group: str) -> list[dict]:
         paired = len(o) == len(cmds)
         for i, cmd in enumerate(cmds):
             segops, docs = _segments_ops(cmd)
-            kinds, runners, scripts, edit_targets = set(), [], [], []
+            kinds, runners, scripts, edit_targets_ = set(), [], [], []
+            cwd, code_edit_seg = REPO_DIR, -1
             for j, (seg, _) in enumerate(segops):
                 if not seg.strip():
                     continue
+                cd = _cd_target(seg)
+                if cd is not None:
+                    cwd = _abs(cd, cwd) if not cd.startswith(("~", "$", "-")) else _UNKNOWN_DIR
                 kind = classify_segment(seg, docs, files)  # = demo_lib.command_events: same split, same order
                 kinds.add(kind)
                 if kind == "edit":
-                    edit_targets.append(_norm_path(_edit_target(seg, docs)))
+                    edit_targets_.append(_norm_path(_edit_target(seg, docs)))
                 elif kind == "verify":
                     scripts.append((j,) + _script_of(seg, docs, files))
+                if code_edit_seg < 0 and any(is_code_file(t, repo) for t in edit_targets(seg, docs, cwd, files)):
+                    code_edit_seg = j
                 r = runner_of(seg)
                 if r:
-                    runners.append((j, r))
-            info = [(j, r) for j, r in runners if _INFO_FLAGS & set(r[1])]
-            runners = [(j, r) for j, r in runners if (j, r) not in info]
+                    runners.append((j, r, cwd, _runner_base(seg, cwd), frozenset(created)))
+                # a source file of the project rewritten by `cat >` is an edit of the project's code, not the agent's
+                # own file; a file restored from git is the project's again
+                created.update(f for f in created_files(seg, docs, cwd) if not is_code_file(f, repo))
+                created.difference_update(reverted_files(seg, cwd))
+            info = [x for x in runners if _INFO_FLAGS & set(x[1][1])]
+            runners = [x for x in runners if x not in info]
             main = [seg for seg, _ in segops if seg.strip() and (_words(seg) or [""])[0] not in _IGNORABLE]
             info_only = bool(info) and not runners and len(main) == len(info)
             is_check = ("verify" in kinds or bool(runners)) and not info_only
@@ -544,23 +880,31 @@ def command_rows(rec: dict, corpus: str, group: str) -> list[dict]:
                 own = {_norm_path(p) for _, _, p in scripts if p}
                 if any(_writes_repo(code) for _, code, _ in scripts):
                     excl = "script-writes"
-                elif any(t not in own and not t.startswith("/") for t in edit_targets):  # '?' = unknown target
+                elif any(t not in own and not t.startswith("/") for t in edit_targets_):  # '?' = unknown target
                     excl = "script-edits"
                 is_check = not excl
-                created_here = is_check and any(t in own for t in edit_targets)  # the script is written, then run
+                created_here = is_check and any(t in own for t in edit_targets_)  # the script is written, then run
             row = {"corpus": corpus, "group": group, "run_id": rec["run_id"], "step_idx": s["step_idx"], "pos": pos,
                    "is_edit": "edit" in kinds, "is_check": is_check, "excl": excl, "created_here": created_here,
                    "is_runner": bool(runners), "runner": runners[0][1][0] if runners else "", "is_project": False,
                    "rc_ok": True, "base": "", "category": "", "rule": "", "kind": "", "line": "", "n_failed": 0,
+                   "c_flag": False, "d_flag": False, "d_proj": False, "code_edit_seg": code_edit_seg, "check_seg": -1,
                    "command": cmd, "out_tail": ""}
             if is_check:
-                row["is_project"] = any(is_project_run(r, a) for _, (r, a) in runners)
-                k = max([j for j, _ in runners] + [j for j, _, _ in scripts])
+                row["is_project"] = any(is_project_run(r, a, c, b, cr) for _, (r, a), c, b, cr in runners)
+                no_own = any(is_project_run(r, a, c) for _, (r, a), c, _, _ in runners)
+                row["c_flag"] = no_own != any(is_project_run(r, a) for _, (r, a), _, _, _ in runners)
+                row["d_flag"] = row["d_proj"] = row["is_project"] != no_own
+                k = max([x[0] for x in runners] + [j for j, _, _ in scripts])
+                row["check_seg"] = k
                 row["rc_ok"] = _rc_informative(segops, k)
                 if paired:
                     out = _ANSI_RE.sub("", o[i])
-                    cat, rule, kind, line, nf = parse_outcome(out, cmd, bool(runners), labels_of_runs(
-                        [r for _, r in runners]), repo, row["rc_ok"])
+                    own = frozenset(created)
+                    args = (out, cmd, bool(runners), labels_of_runs([x[1] for x in runners]), repo, row["rc_ok"])
+                    cat, rule, kind, line, nf = parse_outcome(*args, own=own)
+                    if own and not row["d_flag"] and any(p in out for p in own if not p.startswith("/")):
+                        row["d_flag"] = parse_outcome(*args)[:3] != (cat, rule, kind)
                     row["out_tail"] = "\n".join(out.rstrip("\n").split("\n")[-15:])
                 else:
                     cat, rule, kind, line, nf = ("unknown", "unpaired_output", "",
@@ -865,33 +1209,203 @@ FIXES3 = [  # round 3: the author's review of the seed-44 sample (numbers: build
 ]
 
 
+FIXES4 = [  # round 4: the author's review of the seed-45 sample (numbers: build of 2026-11-05)
+    "### Раунд 4: проверка автора (выборка seed 45)", "",
+    "Автор принял решения 1–5 раунда 3. Решение 5 — с уточнением: объединённые категории (pass ∪ script_ok и т. д.) — "
+    "дополнительный набор признаков для проверки устойчивости, критерии К1–К4 проверяются по отдельным категориям "
+    "(записано в протокол, раздел 11.4). Исправления A–E меняют разбор, F — признаки (протокол, раздел 11.5). "
+    "Проверка по указанию автора точечная: по 8 случаев на каждое изменённое правило, seed 46 (ниже), и пересчёт "
+    "таблиц. Перед выборкой я просмотрел по 10 случайных проверок каждого правила и нашёл ещё семь систематических "
+    "ошибок; они исправлены (п. G).", "",
+    "**Названные автором случаи seed 45 — категория в раунде 4:**", "",
+    "| № | раунд 3 | раунд 4 | правило | вид ошибки |", "|---|---|---|---|---|",
+    "| 26 | fail | error_env | `1-unittest` | `?-not-loaded` (E) |",
+    "| 33 | error_env | error_env | `1-unittest` | `env-label` |",
+    "| 52 | error_code | error_env | `1-unittest` | `env-script-import` (D) |",
+    "| 69 | script_ok | pass | `1-pytest` | — (C) |",
+    "| 76 | script_fail | script_fail | `3-script-project-frame` | — (см. B) |",
+    "| 78, 89, 90 | script_fail | error_env | `3-script-error` | `env-script-encoding` (B) |",
+    "| 81, 83, 84, 86 | script_fail | script_fail | `1-pytest` | — (F — признаки, не разбор) |",
+    "| 91, 98 | unknown | fail | `1b-failed-tests` | — (A) |", "",
+    "**A. Упавшие тесты в выводе без итоговой строки.** Новое правило `1b-failed-tests`: итоговой строки нет, но вывод "
+    "тестовой программы называет упавший тест → `fail`. Отсутствие таких строк по-прежнему не означает `pass`.",
+    "- Строки: `FAILED путь::тест` (сводка pytest), `путь::тест FAILED` (pytest -v), `FAIL: test_… (…)` (unittest), "
+    "`ERROR: test_… (…)` без `_FailedTest` в скобках. **Решение:** строки pytest -v в списке автора нет; это то же "
+    "свидетельство (1 071 из 1 765 срабатываний).",
+    "- Порядок: `FAILED` / `FAIL:` — до явных ошибок (правило 2), `ERROR: test_…` — после. `ERROR:` у unittest — "
+    "исключение внутри теста. Если вывод показывает причину (`No module named 'messages_tests'` при неверной метке, "
+    "django не настроен), все тесты падают по одной причине, и правило итоговой строки (раунд 3, п. 2) тоже дало бы "
+    "ошибку.",
+    "- Число упавших — число разных названных тестов (нижняя граница: вывод отфильтрован).",
+    "- Сработало: лидерборд 334, KTH 1 431. Было `unknown` — 1 747, `error_env` — 18 (строки pytest `FAILED` при "
+    "случайном упоминании `No module named …` в выводе упавшего теста).", "",
+    "**B. Падение самодельного скрипта.** Правило 3 для самодельных скриптов переписано. Берётся последняя "
+    "трассировка вывода и её строка исключения; по порядку:",
+    "1. `UnicodeEncodeError` / `UnicodeDecodeError` не в файле репозитория → `error_env` (`env-script-encoding`): "
+    "лидерборд 290, KTH 681;",
+    "2. `AssertionError` → `script_fail`: 852 и 1 052;",
+    "3. кадр в файле репозитория → `script_fail`: 554 и 568;",
+    "4. явные маркеры провала при коде возврата ≠ 0, который принадлежит проверке → `script_fail` "
+    "(`3-script-marker`; то же без трассировки): 71 и 60. Маркеры — `FAIL`, `FAILED`, `FAILURE`, `✗`, `✘`, `❌`, "
+    "`failed` / `Failed`, кроме `0 failed`; ищутся вне кадров трассировки, предупреждений Python и служебной строки "
+    "KTH `command failed with exit code N`;",
+    "5. последний кадр — установленная или стандартная библиотека, кадров репозитория нет → `error_env` "
+    "(`env-script-library`): 23 и 21;",
+    "6. иначе исключение в собственном коде скрипта → `error_env` (`env-script-exception`): 196 и 315. **Решение** "
+    "по пункту 4 автора («применить последовательно»): `NameError`, `AttributeError`, `TypeError` в коде самого "
+    "скрипта — ошибка скрипта, а не проекта. Если скрипт при этом печатает маркер провала и код возврата ≠ 0, "
+    "срабатывает п. 4 (так в правиле автора).",
+    "- SyntaxError / ImportError самого скрипта — по-прежнему правило 2 (`env-script-syntax`, `env-script-import`).",
+    "- Строка исключения не видна (вывод обрезан): кадр репозитория среди видимых → `script_fail`, иначе маркеры, "
+    "иначе `unknown` (`3-script-traceback-cut`, 23).",
+    "- `AssertionError` без трассировки считается только в начале строки. Раньше считалась подстрока: «✓ PASS: "
+    "correctly raised AssertionError» давало `script_fail` (44 проверки, теперь `script_ok`).",
+    "- Итог для `script_fail` раунда 3 (5 248): остались `script_fail` 3 643, стали `error_env` 1 528, `script_ok` "
+    "44, `unknown` 26, `fail` 7 (C).",
+    "- **№76 остаётся `script_fail`.** В его трассировке есть кадр файла репозитория "
+    "`/testbed/xarray/backends/zarr.py`: код xarray обращается к `zarr_array.compressor`, установленный zarr 3 "
+    "бросает `TypeError`. По правилу автора `script_fail` — «исключение с кадром в /testbed», а условие `error_env` — "
+    "«нет кадров из /testbed». Чтобы №76 стал `error_env`, правило должно смотреть только на последний кадр. Тогда в "
+    "`error_env` ушли бы и случаи, где код проекта неверно вызывает библиотеку (а это может быть ошибка исправления). "
+    "Я этого не делал — **нужно решение автора**.",
+    "- **Ограничение.** Маркеры считаются только при коде возврата ≠ 0. `script_ok` с маркером провала в последних "
+    "15 строках вывода: 203 из 14 390 (скрипт напечатал «✗ FAIL», но завершился с кодом 0).", "",
+    "**C. Пути от текущего каталога.** Путь в аргументах тестовой программы разрешается от каталога, в который "
+    "команда перешла через `cd`, если этот каталог внутри репозитория: `cd ./sklearn/ensemble/tests && pytest "
+    "test_iforest.py` — тест проекта (№69).",
+    "- Из каталога вне репозитория (`cd /root`, `cd /tmp`) относительный путь читается как написан, от корня "
+    "репозитория: агент имел в виду файл репозитория, но стоит не в том каталоге (п. G).",
+    "- pytest без целей вне репозитория (`cd /tmp/test_repro && pytest`) собирает файлы агента — скрипт. Абсолютный "
+    "путь вне `/testbed` (копия тестов в site-packages) — скрипт.",
+    "- Изменилось: скрипт → тесты проекта — лидерборд 30, KTH 195; тесты проекта → скрипт — 43 и 70 (все — `cd` в "
+    "каталог агента вне репозитория).", "",
+    "**D. Файлы, созданные агентом.** Отслеживание по ходу прогона:",
+    "- создание — `> файл` (не `>>`), `tee` без `-a`, python `open(…, 'w'|'x')` / `.write_text` с литеральным "
+    "путём, если тот же код этот файл не читает (прочитать и записать обратно — правка, а не создание);",
+    "- не отслеживаются исходники проекта: `cat > django/…/client.py` — так агенты правят код (п. G);",
+    "- файл, восстановленный `git checkout -- …` / `git restore …`, снова считается файлом проекта.",
+    "",
+    "Последствия:",
+    "- тестовая программа, у которой **все** цели (пути; метки, сведённые к файлам от каталога runtests.py или "
+    "текущего) — файлы агента, — самодельный скрипт;",
+    "- кадр трассировки в файле агента — не кадр репозитория (№52: ImportError в `test_key_in2.py` → "
+    "`env-script-import`).",
+    "",
+    "Числа:",
+    "- тесты проекта → скрипт: лидерборд 751, KTH 260. Это 2,4% и 0,9% запусков тестовых программ по тестам проекта. "
+    "Из них `pass` → `script_ok` 422, `fail` → `script_fail` 266, `error_code` → `error_env` 17 (ошибка в файле "
+    "агента);",
+    "- изменился только вид ошибки: 5;",
+    "- **надёжность:** перезапись существующего файла тестов проекта через `cat >` тоже делает его файлом агента — "
+    "так в определении автора; отменяется только явным `git checkout`. Создание другими способами (`cp`, `mv`, "
+    "путь, собранный в python из переменных) не видно. Проверка — 8 случаев D ниже.", "",
+    "**E. unittest: `Ran N tests in 0.000s` и errors = N.** Если ни одна строка `ERROR:` теста, который запускался, "
+    "не видна (вывод отфильтрован `grep` / `tail`), это ошибка загрузки → `error`, вид не определён "
+    "(`?-not-loaded` → `error_env`). Сработало: лидерборд 23, KTH 29 (№26).", "",
+    "**F. Признаки.** Записано в протокол (раздел 11.5) с причиной. `o_n_fail`, `o_share_fail`, `o_unresolved_fail` — "
+    "только по проверкам после первой правки кода проекта.",
+    "- Правка кода проекта — запись в файл исходников репозитория, не тестов.",
+    "- Правкой считается и запуск скрипта-«патчера», записанного раньше: `cat > /tmp/patch.py` с `open('django/…', "
+    "'w')`, затем `python /tmp/patch.py` (п. G).",
+    "- Правка найдена в 98,0% прогонов лидерборда и 91,8% прогонов KTH. Остальные правили только документацию или "
+    "тесты либо путь не виден.",
+    "- №84 и №86 стоят до первой правки кода и в эти признаки не входят. №81 и №83 — после неё. В №83 агент поправил "
+    "`src/_pytest/python.py` второй командой, а затем запустил тест, который падает по замыслу (`assert 0`: "
+    "проверялся заголовок отчёта pytest). **Ограничение:** такой ожидаемый провал после правки по выводу не отличить "
+    "от неудачного исправления.", "",
+    "**G. Найдено при моём просмотре перед выборкой** (по 10 случайных проверок каждого правила) и исправлено:",
+    "- C: 2 435 проверок (KTH 2 387) с `cd /root` / `cd /tmp` и путём `tests/…` ушли из тестов проекта в скрипты; "
+    "2 338 из них — `error_env` (файл не найден). Это попытки запустить тесты проекта не из того каталога; "
+    "разрешение путей теперь только внутри репозитория;",
+    "- B: stdout вклинивался внутрь трассировки (mini-SWE-agent сливает потоки), и строка исключения не находилась: "
+    "163 проверки `3-script-traceback-cut`, стало 23. Теперь строка исключения ищется по имени класса исключения, "
+    "посторонние строки пропускаются;",
+    "- B: трассировки `Exception ignored in: …` (исключение в `__del__` при завершении интерпретатора) считались "
+    "падением скрипта, напечатавшего «ALL TESTS PASSED»; теперь не учитываются;",
+    "- B: «failed» из предупреждения numpy (`FutureWarning: elementwise comparison failed`) срабатывал как маркер; "
+    "предупреждения и кадры трассировки из поиска маркеров исключены;",
+    "- D: исходник проекта, переписанный целиком через `cat >`, становился «файлом агента», и SyntaxError в нём "
+    "дал бы `env-script-syntax` вместо `code-syntax`; исходники больше не отслеживаются, `git checkout` отменяет "
+    "отслеживание;",
+    "- F: правка через скрипт-«патчер» не находилась — правка кода была найдена только в 73% прогонов лидерборда, "
+    "теперь 98%;",
+    "- A: `ERROR: test_…` при показанной причине (неверная метка) давало `fail`; теперь — после правила 2.",
+    "",
+    "При разборе первой версии точечной выборки нашлась ещё одна неточность. Имя `_FailedTest` с путём "
+    "(`/tmp/test_check (unittest.loader._FailedTest./tmp/test_check)`, агент передал путь как метку unittest) не "
+    "распознавалось, и срабатывало правило E. Категория была верной (`error_env`), неверной была только метка вида "
+    "ошибки: `?-not-loaded` вместо `?-failedtest`, 6 проверок. Шаблон исправлен, выборка построена заново. Изменились "
+    "только случаи E; их я просмотрел ещё раз.", "",
+    "**Итог раунда 4.**",
+    "- `error_code` — 397 проверок: `code-syntax` 292, `code-import` 57, `code-traceback` 48.",
+    "- Вид ошибки не определён у 924 из 24 640 ошибок (3,7%), они относятся к `error_env`.",
+    "- Доля `unknown`: лидерборд 6,8% (в раунде 3 — 7,7%), KTH 16,5% (19,9%).", "",
+]
+
+
 def _md_table(head: list[str], rows: list[list]) -> list[str]:
     return ["| " + " | ".join(head) + " |", "|" + "---|" * len(head)] + \
            ["| " + " | ".join(str(x) for x in r) + " |" for r in rows]
 
 
-def parser_check(seed: int = 45, per_cat: int = 15, per_lb: int = 8) -> Path:
+# round 4: the spot check — 8 checks for every changed rule (A, B, C, D, E of the author's review of seed 45)
+SPOT = [("A", "упавшие тесты названы в выводе без итоговой строки → fail (правило `1b-failed-tests`)",
+         lambda c: c.rule == "1b-failed-tests"),
+        ("B1", "падение самодельного скрипта не из-за проекта → error_env (правило `3-script-error`)",
+         lambda c: c.rule == "3-script-error"),
+        ("B2", "маркеры провала при коде возврата ≠ 0 → script_fail (правило `3-script-marker`)",
+         lambda c: c.rule == "3-script-marker"),
+        ("C", "путь от текущего каталога изменил «тесты проекта / скрипт»", lambda c: c.c_flag),
+        ("D", "файл, созданный агентом, изменил «тесты проекта / скрипт» или вид ошибки", lambda c: c.d_flag),
+        ("E", "unittest: `Ran N tests in 0.000s`, errors = N, причина не видна → error_env (`?-not-loaded`)",
+         lambda c: c.kind == "?-not-loaded")]
+R3_PATH = OUT_DIR / "commands_r3.parquet"  # the round-3 build (commit f712e4e), for the comparison
+
+
+def parser_check(seed: int = 46, per_rule: int = 8, per_lb: int = 4) -> Path:
     df = pd.read_parquet(OUT_DIR / "commands.parquet")
+    key = ["corpus", "run_id", "pos"]
+    r3 = pd.read_parquet(R3_PATH, columns=key + ["is_check", "category", "is_project"]) if R3_PATH.exists() else None
+    if r3 is not None:
+        df = df.merge(r3.rename(columns={"is_check": "is_check_r3", "category": "category_r3",
+                                         "is_project": "is_project_r3"}), on=key, how="left")
     chk = df[df.is_check].reset_index(drop=True)
     rng = np.random.default_rng(seed)
     picks = []
-    for cat in CATS:
-        lb = chk.index[(chk.category == cat) & (chk.corpus == "leaderboard")].to_numpy()
-        kt = chk.index[(chk.category == cat) & (chk.corpus == "kth")].to_numpy()
+    for code, _, sel in SPOT:
+        m = sel(chk)
+        lb = chk.index[m & (chk.corpus == "leaderboard")].to_numpy()
+        kt = chk.index[m & (chk.corpus == "kth")].to_numpy()
         n_lb = min(per_lb, len(lb))
-        n_kt = min(per_cat - n_lb, len(kt))
-        n_lb = min(per_cat - n_kt, len(lb))
-        picks += list(rng.choice(lb, n_lb, replace=False)) + list(rng.choice(kt, n_kt, replace=False))
+        n_kt = min(per_rule - n_lb, len(kt))
+        n_lb = min(per_rule - n_kt, len(lb))
+        picks += [(code, j) for j in list(rng.choice(lb, n_lb, replace=False)) + list(rng.choice(kt, n_kt,
+                                                                                               replace=False))]
     corpora = ["leaderboard", "kth"]
     counts = chk.groupby(["corpus", "category"]).size().unstack(fill_value=0)
     rules = chk.groupby(["category", "rule", "kind", "corpus"]).size().unstack(fill_value=0)
     L = ["# E10 — проверка разбора исходов проверок агента", "",
-         f"Построено `python -m src.e10_check_outcomes parser-check` (seed {seed}): по {per_cat} случайных проверок "
-         f"на каждую из {len(CATS)} категорий, из них до {per_lb} с лидерборда, остальные из KTH. Правила разбора — "
-         "`reports/E10_PROTOCOL.md`, раздел 4, с исправлениями ниже. Для каждой проверки: корпус, связка или "
-         "настройка, прогон и шаг, тесты проекта или самодельный скрипт, программа запуска, категория, сработавшее "
-         "правило, вид ошибки и строка, команда, последние 15 строк вывода (вывод полный, из источников раздела 2 "
-         "протокола; ANSI-коды сняты).", "", "## Исправления разбора", ""]
+         f"Построено `python -m src.e10_check_outcomes parser-check` (seed {seed}). Раунд 4 — точечная проверка: по "
+         f"{per_rule} случайных проверок на каждое изменённое правило (A, B, C, D, E замечаний автора к выборке "
+         f"seed 45; B — два правила, B1 и B2), до {per_lb} с лидерборда, остальные из KTH. Выборки прошлых раундов — "
+         "в истории git (seed 45 — коммит f712e4e). Правила разбора — `reports/E10_PROTOCOL.md`, раздел 4, с "
+         "исправлениями ниже. Для каждой проверки: корпус, связка или настройка, прогон и шаг, тесты проекта или "
+         "самодельный скрипт, категория в раундах 3 и 4, сработавшее правило, вид ошибки и строка, команда, последние "
+         "15 строк вывода (вывод полный, из источников раздела 2 протокола; ANSI-коды сняты).", "",
+         "## Исправления разбора", ""]
+    L += FIXES4 + [""]
+    if r3 is not None:
+        both = df[df.is_check | df.is_check_r3.fillna(False)]
+        old = np.where(both.is_check_r3.fillna(False), both.category_r3, "не проверка")
+        new = np.where(both.is_check, both.category, "не проверка")
+        ct = pd.crosstab(pd.Series(old, name="r3"), pd.Series(new, name="r4"))
+        cols = list(ct.columns)
+        L += ["**Изменение категорий по сравнению с раундом 3** (все команды, которые были проверкой хотя бы в одном "
+              "раунде; строки — раунд 3, столбцы — раунд 4):", ""]
+        L += _md_table(["раунд 3 \\ раунд 4"] + cols + ["всего"],
+                       [[i] + [int(ct.loc[i, c]) for c in cols] + [int(ct.loc[i].sum())] for i in ct.index] +
+                       [["всего"] + [int(ct[c].sum()) for c in cols] + [int(ct.values.sum())]])
+        L += [""]
     L += FIXES3 + [""] + FIXES + [""]
     L += ["## Все проверки: число по корпусам и категориям", ""]
     L += _md_table(["корпус"] + list(CATS) + ["всего"],
@@ -928,19 +1442,46 @@ def parser_check(seed: int = 45, per_cat: int = 15, per_lb: int = 8) -> Path:
                     "байт (.traj.json / jsonl)", "выводов с обрезкой mini-SWE-agent"],
                    [[f"`{s['run_id']}`", f"{s['n_raw']} / {s['n_jsonl']}", s["same_as_is"], s["same_after_adapter"],
                      f"{s['bytes_raw']} / {s['bytes_jsonl']}", s["raw_elided"]] for s in src])
+    L += ["", "## Правила раунда 4: сколько проверок затронуто", ""]
+    L += _md_table(["", "правило", "лидерборд", "KTH"],
+                   [[code, what] + [int((sel(chk) & (chk.corpus == c)).sum()) for c in corpora]
+                    for code, what, sel in SPOT])
+    d = chk[chk.d_flag]
+    runs = df.groupby(["corpus", "run_id"]).code_edit_seg.max().ge(0).groupby(level=0)
+    L += ["", "D: доля проверок, у которых все цели — файлы агента (тестовая программа запускала только их), среди "
+          "тестовых программ, запускавших файлы или метки `tests/`; F: доля прогонов с найденной правкой кода проекта "
+          "(протокол, 11.5) и доля проверок до неё.", ""]
+    first = df[df.code_edit_seg >= 0].groupby(["corpus", "run_id"])[["pos", "code_edit_seg"]].first()
+    cf = chk.merge(first.rename(columns={"pos": "p0", "code_edit_seg": "s0"}).reset_index(),
+                   on=["corpus", "run_id"], how="left")
+    before = cf.p0.isna() | (cf.pos < cf.p0) | ((cf.pos == cf.p0) & (cf.check_seg <= cf.s0))
+    L += _md_table(["", "лидерборд", "KTH"],
+                   [["D: проверок «тесты проекта → скрипт агента»"] +
+                    [int(((d.corpus == c) & d.d_proj).sum()) for c in corpora],
+                    ["D: проверок, где файл агента изменил только вид ошибки"] +
+                    [int(((d.corpus == c) & ~d.d_proj).sum()) for c in corpora],
+                    ["тестовых программ всего"] + [int(((chk.corpus == c) & chk.is_runner).sum()) for c in corpora],
+                    ["F: прогонов с найденной правкой кода проекта"] +
+                    [f"{runs.sum()[c]} из {runs.size()[c]} ({runs.mean()[c]:.1%})" for c in corpora],
+                    ["F: проверок до первой правки кода (или без правки)"] +
+                    [f"{int((before & (cf.corpus == c)).sum())} из {int((cf.corpus == c).sum())}" for c in corpora]])
     L += [""]
-    for i, j in enumerate(picks, 1):
+    for i, (code, j) in enumerate(picks, 1):
         r = chk.loc[j]
         cmd = r.command if len(r.command) <= 600 else r.command[:600] + " …[команда усечена в отчёте]"
         what = "тесты проекта" if r.is_project else "самодельный скрипт"
         if r.created_here:
             what += " (создан и запущен в этой команде)"
-        L += [f"## {i}. {r.category} — {r.corpus}", "",
+        was = ""
+        if r3 is not None:
+            was = (f"; в раунде 3: {r.category_r3}, " +
+                   ("тесты проекта" if r.is_project_r3 else "самодельный скрипт"))
+        L += [f"## {i}. {code}: {r.category} — {r.corpus}", "",
               f"- группа: {r.group}", f"- прогон: `{r.run_id}`, шаг {r.step_idx}",
               f"- {what}; программа: {r.runner or '—'}" +
               ("" if r.is_runner else f"; код возврата {'от проверки' if r.rc_ok else 'не от проверки'}"),
               f"- категория **{r.category}**, правило `{r.rule}`" + (f", вид ошибки `{r.kind}`" if r.kind else "") +
-              f", строка: `{r.line or '—'}`; упавших: {r.n_failed}",
+              f", строка: `{r.line or '—'}`; упавших: {r.n_failed}{was}",
               "", "Команда:", ""] + _fence(cmd) + ["", "Последние 15 строк вывода:", ""] + _fence(r.out_tail) + [""]
     path = REPORTS / "E10_parser_check.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")

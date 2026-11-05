@@ -1,8 +1,102 @@
 # E10 — проверка разбора исходов проверок агента
 
-Построено `python -m src.e10_check_outcomes parser-check` (seed 45): по 15 случайных проверок на каждую из 7 категорий, из них до 8 с лидерборда, остальные из KTH. Правила разбора — `reports/E10_PROTOCOL.md`, раздел 4, с исправлениями ниже. Для каждой проверки: корпус, связка или настройка, прогон и шаг, тесты проекта или самодельный скрипт, программа запуска, категория, сработавшее правило, вид ошибки и строка, команда, последние 15 строк вывода (вывод полный, из источников раздела 2 протокола; ANSI-коды сняты).
+Построено `python -m src.e10_check_outcomes parser-check` (seed 46). Раунд 4 — точечная проверка: по 8 случайных проверок на каждое изменённое правило (A, B, C, D, E замечаний автора к выборке seed 45; B — два правила, B1 и B2), до 4 с лидерборда, остальные из KTH. Выборки прошлых раундов — в истории git (seed 45 — коммит f712e4e). Правила разбора — `reports/E10_PROTOCOL.md`, раздел 4, с исправлениями ниже. Для каждой проверки: корпус, связка или настройка, прогон и шаг, тесты проекта или самодельный скрипт, категория в раундах 3 и 4, сработавшее правило, вид ошибки и строка, команда, последние 15 строк вывода (вывод полный, из источников раздела 2 протокола; ANSI-коды сняты).
 
 ## Исправления разбора
+
+### Раунд 4: проверка автора (выборка seed 45)
+
+Автор принял решения 1–5 раунда 3. Решение 5 — с уточнением: объединённые категории (pass ∪ script_ok и т. д.) — дополнительный набор признаков для проверки устойчивости, критерии К1–К4 проверяются по отдельным категориям (записано в протокол, раздел 11.4). Исправления A–E меняют разбор, F — признаки (протокол, раздел 11.5). Проверка по указанию автора точечная: по 8 случаев на каждое изменённое правило, seed 46 (ниже), и пересчёт таблиц. Перед выборкой я просмотрел по 10 случайных проверок каждого правила и нашёл ещё семь систематических ошибок; они исправлены (п. G).
+
+**Названные автором случаи seed 45 — категория в раунде 4:**
+
+| № | раунд 3 | раунд 4 | правило | вид ошибки |
+|---|---|---|---|---|
+| 26 | fail | error_env | `1-unittest` | `?-not-loaded` (E) |
+| 33 | error_env | error_env | `1-unittest` | `env-label` |
+| 52 | error_code | error_env | `1-unittest` | `env-script-import` (D) |
+| 69 | script_ok | pass | `1-pytest` | — (C) |
+| 76 | script_fail | script_fail | `3-script-project-frame` | — (см. B) |
+| 78, 89, 90 | script_fail | error_env | `3-script-error` | `env-script-encoding` (B) |
+| 81, 83, 84, 86 | script_fail | script_fail | `1-pytest` | — (F — признаки, не разбор) |
+| 91, 98 | unknown | fail | `1b-failed-tests` | — (A) |
+
+**A. Упавшие тесты в выводе без итоговой строки.** Новое правило `1b-failed-tests`: итоговой строки нет, но вывод тестовой программы называет упавший тест → `fail`. Отсутствие таких строк по-прежнему не означает `pass`.
+- Строки: `FAILED путь::тест` (сводка pytest), `путь::тест FAILED` (pytest -v), `FAIL: test_… (…)` (unittest), `ERROR: test_… (…)` без `_FailedTest` в скобках. **Решение:** строки pytest -v в списке автора нет; это то же свидетельство (1 071 из 1 765 срабатываний).
+- Порядок: `FAILED` / `FAIL:` — до явных ошибок (правило 2), `ERROR: test_…` — после. `ERROR:` у unittest — исключение внутри теста. Если вывод показывает причину (`No module named 'messages_tests'` при неверной метке, django не настроен), все тесты падают по одной причине, и правило итоговой строки (раунд 3, п. 2) тоже дало бы ошибку.
+- Число упавших — число разных названных тестов (нижняя граница: вывод отфильтрован).
+- Сработало: лидерборд 334, KTH 1 431. Было `unknown` — 1 747, `error_env` — 18 (строки pytest `FAILED` при случайном упоминании `No module named …` в выводе упавшего теста).
+
+**B. Падение самодельного скрипта.** Правило 3 для самодельных скриптов переписано. Берётся последняя трассировка вывода и её строка исключения; по порядку:
+1. `UnicodeEncodeError` / `UnicodeDecodeError` не в файле репозитория → `error_env` (`env-script-encoding`): лидерборд 290, KTH 681;
+2. `AssertionError` → `script_fail`: 852 и 1 052;
+3. кадр в файле репозитория → `script_fail`: 554 и 568;
+4. явные маркеры провала при коде возврата ≠ 0, который принадлежит проверке → `script_fail` (`3-script-marker`; то же без трассировки): 71 и 60. Маркеры — `FAIL`, `FAILED`, `FAILURE`, `✗`, `✘`, `❌`, `failed` / `Failed`, кроме `0 failed`; ищутся вне кадров трассировки, предупреждений Python и служебной строки KTH `command failed with exit code N`;
+5. последний кадр — установленная или стандартная библиотека, кадров репозитория нет → `error_env` (`env-script-library`): 23 и 21;
+6. иначе исключение в собственном коде скрипта → `error_env` (`env-script-exception`): 196 и 315. **Решение** по пункту 4 автора («применить последовательно»): `NameError`, `AttributeError`, `TypeError` в коде самого скрипта — ошибка скрипта, а не проекта. Если скрипт при этом печатает маркер провала и код возврата ≠ 0, срабатывает п. 4 (так в правиле автора).
+- SyntaxError / ImportError самого скрипта — по-прежнему правило 2 (`env-script-syntax`, `env-script-import`).
+- Строка исключения не видна (вывод обрезан): кадр репозитория среди видимых → `script_fail`, иначе маркеры, иначе `unknown` (`3-script-traceback-cut`, 23).
+- `AssertionError` без трассировки считается только в начале строки. Раньше считалась подстрока: «✓ PASS: correctly raised AssertionError» давало `script_fail` (44 проверки, теперь `script_ok`).
+- Итог для `script_fail` раунда 3 (5 248): остались `script_fail` 3 643, стали `error_env` 1 528, `script_ok` 44, `unknown` 26, `fail` 7 (C).
+- **№76 остаётся `script_fail`.** В его трассировке есть кадр файла репозитория `/testbed/xarray/backends/zarr.py`: код xarray обращается к `zarr_array.compressor`, установленный zarr 3 бросает `TypeError`. По правилу автора `script_fail` — «исключение с кадром в /testbed», а условие `error_env` — «нет кадров из /testbed». Чтобы №76 стал `error_env`, правило должно смотреть только на последний кадр. Тогда в `error_env` ушли бы и случаи, где код проекта неверно вызывает библиотеку (а это может быть ошибка исправления). Я этого не делал — **нужно решение автора**.
+- **Ограничение.** Маркеры считаются только при коде возврата ≠ 0. `script_ok` с маркером провала в последних 15 строках вывода: 203 из 14 390 (скрипт напечатал «✗ FAIL», но завершился с кодом 0).
+
+**C. Пути от текущего каталога.** Путь в аргументах тестовой программы разрешается от каталога, в который команда перешла через `cd`, если этот каталог внутри репозитория: `cd ./sklearn/ensemble/tests && pytest test_iforest.py` — тест проекта (№69).
+- Из каталога вне репозитория (`cd /root`, `cd /tmp`) относительный путь читается как написан, от корня репозитория: агент имел в виду файл репозитория, но стоит не в том каталоге (п. G).
+- pytest без целей вне репозитория (`cd /tmp/test_repro && pytest`) собирает файлы агента — скрипт. Абсолютный путь вне `/testbed` (копия тестов в site-packages) — скрипт.
+- Изменилось: скрипт → тесты проекта — лидерборд 30, KTH 195; тесты проекта → скрипт — 43 и 70 (все — `cd` в каталог агента вне репозитория).
+
+**D. Файлы, созданные агентом.** Отслеживание по ходу прогона:
+- создание — `> файл` (не `>>`), `tee` без `-a`, python `open(…, 'w'|'x')` / `.write_text` с литеральным путём, если тот же код этот файл не читает (прочитать и записать обратно — правка, а не создание);
+- не отслеживаются исходники проекта: `cat > django/…/client.py` — так агенты правят код (п. G);
+- файл, восстановленный `git checkout -- …` / `git restore …`, снова считается файлом проекта.
+
+Последствия:
+- тестовая программа, у которой **все** цели (пути; метки, сведённые к файлам от каталога runtests.py или текущего) — файлы агента, — самодельный скрипт;
+- кадр трассировки в файле агента — не кадр репозитория (№52: ImportError в `test_key_in2.py` → `env-script-import`).
+
+Числа:
+- тесты проекта → скрипт: лидерборд 751, KTH 260. Это 2,4% и 0,9% запусков тестовых программ по тестам проекта. Из них `pass` → `script_ok` 422, `fail` → `script_fail` 266, `error_code` → `error_env` 17 (ошибка в файле агента);
+- изменился только вид ошибки: 5;
+- **надёжность:** перезапись существующего файла тестов проекта через `cat >` тоже делает его файлом агента — так в определении автора; отменяется только явным `git checkout`. Создание другими способами (`cp`, `mv`, путь, собранный в python из переменных) не видно. Проверка — 8 случаев D ниже.
+
+**E. unittest: `Ran N tests in 0.000s` и errors = N.** Если ни одна строка `ERROR:` теста, который запускался, не видна (вывод отфильтрован `grep` / `tail`), это ошибка загрузки → `error`, вид не определён (`?-not-loaded` → `error_env`). Сработало: лидерборд 23, KTH 29 (№26).
+
+**F. Признаки.** Записано в протокол (раздел 11.5) с причиной. `o_n_fail`, `o_share_fail`, `o_unresolved_fail` — только по проверкам после первой правки кода проекта.
+- Правка кода проекта — запись в файл исходников репозитория, не тестов.
+- Правкой считается и запуск скрипта-«патчера», записанного раньше: `cat > /tmp/patch.py` с `open('django/…', 'w')`, затем `python /tmp/patch.py` (п. G).
+- Правка найдена в 98,0% прогонов лидерборда и 91,8% прогонов KTH. Остальные правили только документацию или тесты либо путь не виден.
+- №84 и №86 стоят до первой правки кода и в эти признаки не входят. №81 и №83 — после неё. В №83 агент поправил `src/_pytest/python.py` второй командой, а затем запустил тест, который падает по замыслу (`assert 0`: проверялся заголовок отчёта pytest). **Ограничение:** такой ожидаемый провал после правки по выводу не отличить от неудачного исправления.
+
+**G. Найдено при моём просмотре перед выборкой** (по 10 случайных проверок каждого правила) и исправлено:
+- C: 2 435 проверок (KTH 2 387) с `cd /root` / `cd /tmp` и путём `tests/…` ушли из тестов проекта в скрипты; 2 338 из них — `error_env` (файл не найден). Это попытки запустить тесты проекта не из того каталога; разрешение путей теперь только внутри репозитория;
+- B: stdout вклинивался внутрь трассировки (mini-SWE-agent сливает потоки), и строка исключения не находилась: 163 проверки `3-script-traceback-cut`, стало 23. Теперь строка исключения ищется по имени класса исключения, посторонние строки пропускаются;
+- B: трассировки `Exception ignored in: …` (исключение в `__del__` при завершении интерпретатора) считались падением скрипта, напечатавшего «ALL TESTS PASSED»; теперь не учитываются;
+- B: «failed» из предупреждения numpy (`FutureWarning: elementwise comparison failed`) срабатывал как маркер; предупреждения и кадры трассировки из поиска маркеров исключены;
+- D: исходник проекта, переписанный целиком через `cat >`, становился «файлом агента», и SyntaxError в нём дал бы `env-script-syntax` вместо `code-syntax`; исходники больше не отслеживаются, `git checkout` отменяет отслеживание;
+- F: правка через скрипт-«патчер» не находилась — правка кода была найдена только в 73% прогонов лидерборда, теперь 98%;
+- A: `ERROR: test_…` при показанной причине (неверная метка) давало `fail`; теперь — после правила 2.
+
+При разборе первой версии точечной выборки нашлась ещё одна неточность. Имя `_FailedTest` с путём (`/tmp/test_check (unittest.loader._FailedTest./tmp/test_check)`, агент передал путь как метку unittest) не распознавалось, и срабатывало правило E. Категория была верной (`error_env`), неверной была только метка вида ошибки: `?-not-loaded` вместо `?-failedtest`, 6 проверок. Шаблон исправлен, выборка построена заново. Изменились только случаи E; их я просмотрел ещё раз.
+
+**Итог раунда 4.**
+- `error_code` — 397 проверок: `code-syntax` 292, `code-import` 57, `code-traceback` 48.
+- Вид ошибки не определён у 924 из 24 640 ошибок (3,7%), они относятся к `error_env`.
+- Доля `unknown`: лидерборд 6,8% (в раунде 3 — 7,7%), KTH 16,5% (19,9%).
+
+
+**Изменение категорий по сравнению с раундом 3** (все команды, которые были проверкой хотя бы в одном раунде; строки — раунд 3, столбцы — раунд 4):
+
+| раунд 3 \ раунд 4 | error_code | error_env | fail | pass | script_fail | script_ok | unknown | всего |
+|---|---|---|---|---|---|---|---|---|
+| error_code | 397 | 21 | 0 | 0 | 0 | 0 | 0 | 418 |
+| error_env | 0 | 22638 | 18 | 0 | 0 | 0 | 0 | 22656 |
+| fail | 0 | 56 | 5363 | 0 | 277 | 0 | 0 | 5696 |
+| pass | 0 | 0 | 0 | 23650 | 0 | 503 | 0 | 24153 |
+| script_fail | 0 | 1528 | 7 | 0 | 3643 | 44 | 26 | 5248 |
+| script_ok | 0 | 0 | 0 | 123 | 0 | 13843 | 0 | 13966 |
+| unknown | 0 | 0 | 1605 | 0 | 247 | 0 | 9803 | 11655 |
+| всего | 397 | 24243 | 6993 | 23773 | 4167 | 14390 | 9829 | 83792 |
 
 ### Раунд 3: проверка автора (выборка seed 44)
 
@@ -145,8 +239,8 @@
 
 | корпус | pass | fail | error_env | error_code | script_ok | script_fail | unknown | всего |
 |---|---|---|---|---|---|---|---|---|
-| leaderboard | 13338 | 3781 | 12162 | 286 | 6102 | 2319 | 3171 | 41159 |
-| kth | 10815 | 1915 | 10494 | 132 | 7864 | 2929 | 8484 | 42633 |
+| leaderboard | 12974 | 3842 | 12712 | 270 | 6494 | 2080 | 2787 | 41159 |
+| kth | 10799 | 3151 | 11531 | 127 | 7896 | 2087 | 7042 | 42633 |
 
 ## Разбивка по правилам
 
@@ -154,14 +248,14 @@
 
 | категория | правило | kind | лидерборд | KTH |
 |---|---|---|---|---|
-| error_code | `1-pytest` | `code-import` | 8 | 7 |
-| error_code | `1-pytest` | `code-syntax` | 52 | 12 |
-| error_code | `1-pytest` | `code-traceback` | 9 | 12 |
-| error_code | `1-unittest` | `code-import` | 15 | 7 |
+| error_code | `1-pytest` | `code-import` | 7 | 6 |
+| error_code | `1-pytest` | `code-syntax` | 51 | 12 |
+| error_code | `1-pytest` | `code-traceback` | 8 | 12 |
+| error_code | `1-unittest` | `code-import` | 7 | 7 |
 | error_code | `1-unittest` | `code-syntax` | 5 | 2 |
-| error_code | `2-error` | `code-import` | 25 | 7 |
-| error_code | `2-error` | `code-syntax` | 153 | 73 |
-| error_code | `4b-runner-crash` | `code-traceback` | 19 | 12 |
+| error_code | `2-error` | `code-import` | 25 | 5 |
+| error_code | `2-error` | `code-syntax` | 150 | 72 |
+| error_code | `4b-runner-crash` | `code-traceback` | 17 | 11 |
 | error_env | `1-pytest` | `?-runtime` | 72 | 2 |
 | error_env | `1-pytest` | `?-summary` | 337 | 97 |
 | error_env | `1-pytest` | `env-build` | 1 | 0 |
@@ -169,11 +263,12 @@
 | error_env | `1-pytest` | `env-nothing-ran` | 703 | 2186 |
 | error_env | `1-pytest` | `env-path` | 7 | 7 |
 | error_env | `1-pytest` | `env-runner-missing` | 1 | 0 |
-| error_env | `1-pytest` | `env-script-import` | 6 | 2 |
-| error_env | `1-pytest` | `env-script-syntax` | 2 | 14 |
+| error_env | `1-pytest` | `env-script-import` | 7 | 3 |
+| error_env | `1-pytest` | `env-script-syntax` | 3 | 14 |
 | error_env | `1-pytest` | `env-settings` | 182 | 0 |
-| error_env | `1-pytest` | `env-traceback` | 96 | 61 |
-| error_env | `1-unittest` | `?-failedtest` | 26 | 53 |
+| error_env | `1-pytest` | `env-traceback` | 97 | 61 |
+| error_env | `1-unittest` | `?-failedtest` | 32 | 53 |
+| error_env | `1-unittest` | `?-not-loaded` | 23 | 29 |
 | error_env | `1-unittest` | `env-build` | 2 | 0 |
 | error_env | `1-unittest` | `env-invocation` | 0 | 3 |
 | error_env | `1-unittest` | `env-label` | 1093 | 984 |
@@ -181,50 +276,61 @@
 | error_env | `1-unittest` | `env-nothing-ran` | 214 | 115 |
 | error_env | `1-unittest` | `env-project-not-importable` | 6 | 14 |
 | error_env | `1-unittest` | `env-runner-missing` | 3 | 0 |
-| error_env | `1-unittest` | `env-script-import` | 4 | 0 |
+| error_env | `1-unittest` | `env-script-import` | 12 | 0 |
 | error_env | `1-unittest` | `env-script-syntax` | 0 | 1 |
 | error_env | `1-unittest` | `env-settings` | 19 | 6 |
 | error_env | `1-unittest-status` | `?-failedtest` | 5 | 39 |
 | error_env | `1-unittest-status` | `env-label` | 2 | 1 |
 | error_env | `1-unittest-status` | `env-module-outside` | 1 | 0 |
-| error_env | `2-error` | `?-collect` | 25 | 34 |
+| error_env | `2-error` | `?-collect` | 25 | 33 |
 | error_env | `2-error` | `?-failedtest` | 10 | 6 |
-| error_env | `2-error` | `?-runtime` | 1 | 0 |
 | error_env | `2-error` | `env-build` | 48 | 0 |
 | error_env | `2-error` | `env-invocation` | 5 | 2 |
 | error_env | `2-error` | `env-label` | 54 | 15 |
-| error_env | `2-error` | `env-module-outside` | 1147 | 603 |
+| error_env | `2-error` | `env-module-outside` | 1145 | 594 |
 | error_env | `2-error` | `env-nothing-ran` | 3 | 85 |
 | error_env | `2-error` | `env-path` | 289 | 1344 |
 | error_env | `2-error` | `env-project-not-importable` | 1170 | 24 |
 | error_env | `2-error` | `env-runner-missing` | 4160 | 2892 |
-| error_env | `2-error` | `env-script-import` | 806 | 331 |
-| error_env | `2-error` | `env-script-syntax` | 56 | 73 |
+| error_env | `2-error` | `env-script-import` | 806 | 333 |
+| error_env | `2-error` | `env-script-syntax` | 59 | 74 |
 | error_env | `2-error` | `env-settings` | 836 | 1210 |
-| error_env | `2-error` | `env-traceback` | 3 | 0 |
-| error_env | `2-error` | `env-usage` | 216 | 43 |
+| error_env | `2-error` | `env-traceback` | 2 | 0 |
+| error_env | `2-error` | `env-usage` | 216 | 39 |
+| error_env | `3-script-error` | `env-script-encoding` | 290 | 681 |
+| error_env | `3-script-error` | `env-script-exception` | 196 | 315 |
+| error_env | `3-script-error` | `env-script-library` | 23 | 21 |
 | error_env | `4b-runner-crash` | `?-crash` | 22 | 24 |
-| error_env | `4b-runner-crash` | `?-runtime` | 111 | 2 |
-| error_env | `4b-runner-crash` | `env-traceback` | 136 | 45 |
-| fail | `1-pytest` | — | 2331 | 909 |
-| fail | `1-sympy` | — | 142 | 0 |
-| fail | `1-unittest` | — | 1232 | 942 |
-| fail | `1-unittest-status` | — | 76 | 64 |
-| pass | `1-pytest` | — | 5093 | 5479 |
-| pass | `1-sympy` | — | 349 | 0 |
-| pass | `1-unittest` | — | 7583 | 4867 |
-| pass | `1-unittest-status` | — | 313 | 469 |
-| script_fail | `1-pytest` | — | 350 | 240 |
-| script_fail | `1-unittest` | — | 9 | 1 |
-| script_fail | `3-script-traceback` | — | 1960 | 2688 |
-| script_ok | `1-pytest` | — | 509 | 770 |
-| script_ok | `1-unittest` | — | 18 | 2 |
-| script_ok | `5-script-rc0` | — | 5575 | 7092 |
+| error_env | `4b-runner-crash` | `?-runtime` | 113 | 2 |
+| error_env | `4b-runner-crash` | `env-traceback` | 136 | 46 |
+| fail | `1-pytest` | — | 2281 | 895 |
+| fail | `1-sympy` | — | 140 | 0 |
+| fail | `1-unittest` | — | 1038 | 882 |
+| fail | `1-unittest-status` | — | 70 | 64 |
+| fail | `1b-failed-tests` | — | 313 | 1310 |
+| pass | `1-pytest` | — | 5009 | 5522 |
+| pass | `1-sympy` | — | 340 | 0 |
+| pass | `1-unittest` | — | 7315 | 4808 |
+| pass | `1-unittest-status` | — | 310 | 469 |
+| script_fail | `1-pytest` | — | 400 | 254 |
+| script_fail | `1-sympy` | — | 2 | 0 |
+| script_fail | `1-unittest` | — | 174 | 32 |
+| script_fail | `1-unittest-status` | — | 6 | 0 |
+| script_fail | `1b-failed-tests` | — | 21 | 121 |
+| script_fail | `3-script-assert` | — | 852 | 1052 |
+| script_fail | `3-script-marker` | — | 71 | 60 |
+| script_fail | `3-script-project-frame` | — | 554 | 568 |
+| script_ok | `1-pytest` | — | 593 | 727 |
+| script_ok | `1-sympy` | — | 9 | 0 |
+| script_ok | `1-unittest` | — | 286 | 61 |
+| script_ok | `1-unittest-status` | — | 3 | 0 |
+| script_ok | `5-script-rc0` | — | 5603 | 7108 |
 | unknown | `1-pytest-no-outcome` | — | 324 | 316 |
-| unknown | `4-agent-pipe` | — | 2566 | 4385 |
-| unknown | `4-timeout` | — | 18 | 34 |
-| unknown | `4-truncated` | — | 36 | 3458 |
-| unknown | `6-other` | — | 147 | 260 |
+| unknown | `3-script-traceback-cut` | — | 3 | 20 |
+| unknown | `4-agent-pipe` | — | 2237 | 3687 |
+| unknown | `4-timeout` | — | 17 | 34 |
+| unknown | `4-truncated` | — | 33 | 2743 |
+| unknown | `6-other` | — | 93 | 211 |
 | unknown | `6-rc-not-informative` | — | 16 | 31 |
 | unknown | `unpaired_output` | — | 64 | 0 |
 
@@ -256,2244 +362,718 @@
 | `20260217_mini-v2.0.0_gemini-3-flash-high/pydata__xarray-4356` | 53 / 53 | 0 | 53 | 39187 / 36885 | 0 |
 | `20260217_mini-v2.0.0_minimax-2-5-high/scikit-learn__scikit-learn-13135` | 31 / 31 | 0 | 31 | 35683 / 34231 | 1 |
 
-## 1. pass — leaderboard
+## Правила раунда 4: сколько проверок затронуто
 
-- группа: claude-haiku-4-5-20251001@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_claude-4-5-haiku-high/django__django-14349`, шаг 40
-- тесты проекта; программа: runtests
-- категория **pass**, правило `1-unittest`, строка: `Ran 19 tests in 0.096s / OK`; упавших: 0
+|  | правило | лидерборд | KTH |
+|---|---|---|---|
+| A | упавшие тесты названы в выводе без итоговой строки → fail (правило `1b-failed-tests`) | 334 | 1431 |
+| B1 | падение самодельного скрипта не из-за проекта → error_env (правило `3-script-error`) | 509 | 1017 |
+| B2 | маркеры провала при коде возврата ≠ 0 → script_fail (правило `3-script-marker`) | 71 | 60 |
+| C | путь от текущего каталога изменил «тесты проекта / скрипт» | 73 | 287 |
+| D | файл, созданный агентом, изменил «тесты проекта / скрипт» или вид ошибки | 756 | 260 |
+| E | unittest: `Ran N tests in 0.000s`, errors = N, причина не видна → error_env (`?-not-loaded`) | 23 | 29 |
 
-Команда:
+D: доля проверок, у которых все цели — файлы агента (тестовая программа запускала только их), среди тестовых программ, запускавших файлы или метки `tests/`; F: доля прогонов с найденной правкой кода проекта (протокол, 11.5) и доля проверок до неё.
 
-```text
-cd /testbed && python tests/runtests.py validators 2>&1 | tail -30
-```
+|  | лидерборд | KTH |
+|---|---|---|
+| D: проверок «тесты проекта → скрипт агента» | 751 | 260 |
+| D: проверок, где файл агента изменил только вид ошибки | 5 | 0 |
+| тестовых программ всего | 32562 | 31966 |
+| F: прогонов с найденной правкой кода проекта | 7703 из 7864 (98.0%) | 12673 из 13803 (91.8%) |
+| F: проверок до первой правки кода (или без правки) | 2916 из 41159 | 1425 из 42633 |
 
-Последние 15 строк вывода:
-
-```text
-Testing against Django installed in '/testbed/django' with up to 32 processes
-Found 19 tests.
-System check identified no issues (0 silenced).
-...................
-----------------------------------------------------------------------
-Ran 19 tests in 0.096s
-
-OK
-```
-
-## 2. pass — leaderboard
-
-- группа: glm-5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_glm-5-high/django__django-16661`, шаг 53
-- тесты проекта; программа: runtests
-- категория **pass**, правило `1-unittest`, строка: `Ran 155 tests in 0.713s / OK (skipped=8)`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py admin_filters.tests admin_changelist.tests admin_ordering.tests admin_registration.tests 2>&1 | grep -A 5 "Ran.*tests"
-```
-
-Последние 15 строк вывода:
-
-```text
-Ran 155 tests in 0.713s
-
-OK (skipped=8)
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-```
-
-## 3. pass — leaderboard
+## 1. A: fail — leaderboard
 
 - группа: claude-sonnet-4-5-20250929@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_claude-4-5-sonnet-high/django__django-13128`, шаг 36
-- тесты проекта; программа: runtests
-- категория **pass**, правило `1-unittest`, строка: `Ran 9 tests in 0.065s / OK`; упавших: 0
+- прогон: `20260217_mini-v2.0.0_claude-4-5-sonnet-high/sphinx-doc__sphinx-8721`, шаг 45
+- тесты проекта; программа: pytest
+- категория **fail**, правило `1b-failed-tests`, строка: `tests/test_ext_viewcode.py::test_viewcode FAILED# testroot: root`; упавших: 1; в раунде 3: unknown, тесты проекта
 
 Команда:
 
 ```text
-cd /testbed && python tests/runtests.py model_fields.test_durationfield -v 2 2>&1 | tail -50
+cd /testbed && python -m pytest tests/test_ext_viewcode.py -xvs 2>&1 | head -150
 ```
 
 Последние 15 строк вывода:
 
 ```text
-test_gt (model_fields.test_durationfield.TestQuerying.test_gt) ... ok
-test_create_empty (model_fields.test_durationfield.TestSaveLoad.test_create_empty) ... ok
-test_fractional_seconds (model_fields.test_durationfield.TestSaveLoad.test_fractional_seconds) ... ok
-test_simple_roundtrip (model_fields.test_durationfield.TestSaveLoad.test_simple_roundtrip) ... ok
 
-----------------------------------------------------------------------
-Ran 9 tests in 0.065s
+sphinx/directives/patches.py:14
+  /testbed/sphinx/directives/patches.py:14: DeprecationWarning: The `docutils.parsers.rst.directive.html` module will be removed in Docutils 2.0. Since Docutils 0.18, the "Meta" node is defined in `docutils.parsers.rst.directives.misc`.
+    from docutils.parsers.rst.directives import html, images, tables
 
-OK
-Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+tests/test_ext_viewcode.py::test_viewcode
+  /testbed/sphinx/util/images.py:12: DeprecationWarning: 'imghdr' is deprecated and slated for removal in Python 3.13
+    import imghdr
+
+tests/test_ext_viewcode.py::test_viewcode
+tests/test_ext_viewcode.py::test_viewcode
+  /testbed/sphinx/transforms/__init__.py:210: DeprecationWarning: nodes.Node.traverse() is obsoleted by Node.findall().
+    for node in self.document.traverse():  # type: Node
+
+tests/test_ext_viewcode.py::test_viewcode
 ```
 
-## 4. pass — leaderboard
+## 2. A: script_fail — leaderboard
 
-- группа: minimax-m2.5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_minimax-2-5-high/django__django-16661`, шаг 21
-- тесты проекта; программа: runtests
-- категория **pass**, правило `1-unittest`, строка: `Ran 36 tests in 0.178s / OK`; упавших: 0
+- группа: minimax-m2 | 1.17.0
+- прогон: `20251124_mini-v1.17.0_minimax-m2/pytest-dev__pytest-10081`, шаг 39
+- самодельный скрипт; программа: pytest
+- категория **script_fail**, правило `1b-failed-tests`, строка: `test_pdb_functionality.py::TestPDBFunctionality::test_normal_with_pdb FAILED [100%]`; упавших: 1; в раунде 3: unknown, самодельный скрипт
 
 Команда:
 
 ```text
-cd /testbed && python tests/runtests.py modeladmin.tests -v 2 2>&1 | head -100
+cd /testbed && python -m pytest test_pdb_functionality.py --pdb -v 2>&1 | head -30
 ```
 
 Последние 15 строк вывода:
 
 ```text
-test_modeladmin_str (modeladmin.tests.ModelAdminTests.test_modeladmin_str) ... ok
-test_overriding_get_exclude (modeladmin.tests.ModelAdminTests.test_overriding_get_exclude) ... ok
-test_queryset_override (modeladmin.tests.ModelAdminTests.test_queryset_override) ... ok
-test_raw_id_fields_widget_override (modeladmin.tests.ModelAdminTests.test_raw_id_fields_widget_override)
-The autocomplete_fields, raw_id_fields, and radio_fields widgets may ... ok
-test_regression_for_ticket_15820 (modeladmin.tests.ModelAdminTests.test_regression_for_ticket_15820)
-`obj` is passed from `InlineModelAdmin.get_fieldsets()` to ... ok
+    def test_normal_with_pdb(self):
+        """This test should trigger PDB when --pdb is used, and tearDown should be postponed"""
+        # Force an assertion error to trigger PDB
+>       assert False, "This should trigger PDB"
+E       AssertionError: This should trigger PDB
+E       assert False
 
-----------------------------------------------------------------------
-Ran 36 tests in 0.178s
+test_pdb_functionality.py:10: AssertionError
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> entering PDB >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-OK
-Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+>>>>>>>>>>>>>>>>>> PDB post_mortem (IO-capturing turned off) >>>>>>>>>>>>>>>>>>>
+> /testbed/test_pdb_functionality.py(10)test_normal_with_pdb()
+-> assert False, "This should trigger PDB"
+(Pdb) 
+tearDown called
 ```
 
-## 5. pass — leaderboard
-
-- группа: minimax-m2.5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_minimax-2-5-high/django__django-11820`, шаг 27
-- тесты проекта; программа: runtests
-- категория **pass**, правило `1-unittest`, строка: `Ran 63 tests in 0.076s / OK (skipped=2)`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py invalid_models_tests.test_models -v 2 2>&1 | tail -20
-```
-
-Последние 15 строк вывода:
-
-```text
-test_ordering_pointing_to_non_related_field (invalid_models_tests.test_models.OtherModelTests.test_ordering_pointing_to_non_related_field) ... ok
-test_ordering_pointing_to_two_related_model_field (invalid_models_tests.test_models.OtherModelTests.test_ordering_pointing_to_two_related_model_field) ... ok
-test_ordering_with_order_with_respect_to (invalid_models_tests.test_models.OtherModelTests.test_ordering_with_order_with_respect_to) ... ok
-test_property_and_related_field_accessor_clash (invalid_models_tests.test_models.OtherModelTests.test_property_and_related_field_accessor_clash) ... ok
-test_single_primary_key (invalid_models_tests.test_models.OtherModelTests.test_single_primary_key) ... ok
-test_swappable_missing_app (invalid_models_tests.test_models.OtherModelTests.test_swappable_missing_app) ... ok
-test_swappable_missing_app_name (invalid_models_tests.test_models.OtherModelTests.test_swappable_missing_app_name) ... ok
-test_two_m2m_through_same_model_with_different_through_fields (invalid_models_tests.test_models.OtherModelTests.test_two_m2m_through_same_model_with_different_through_fields) ... ok
-test_two_m2m_through_same_relationship (invalid_models_tests.test_models.OtherModelTests.test_two_m2m_through_same_relationship) ... ok
-test_unique_primary_key (invalid_models_tests.test_models.OtherModelTests.test_unique_primary_key) ... ok
-
-----------------------------------------------------------------------
-Ran 63 tests in 0.076s
-
-OK (skipped=2)
-```
-
-## 6. pass — leaderboard
-
-- группа: minimax-m2.5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_minimax-2-5-high/django__django-14007`, шаг 45
-- тесты проекта; программа: runtests
-- категория **pass**, правило `1-unittest`, строка: `Ran 30 tests in 0.071s / OK (skipped=6)`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py bulk_create -v 1 2>&1 | tail -30
-```
-
-Последние 15 строк вывода:
-
-```text
-Creating test database for alias 'default'...
-Testing against Django installed in '/testbed/django' with up to 32 processes
-System check identified no issues (0 silenced).
-.........s...........s.sss...s
-----------------------------------------------------------------------
-Ran 30 tests in 0.071s
-
-OK (skipped=6)
-Destroying test database for alias 'default'...
-```
-
-## 7. pass — leaderboard
+## 3. A: fail — leaderboard
 
 - группа: glm-5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_glm-5-high/django__django-13346`, шаг 108
-- тесты проекта; программа: runtests
-- категория **pass**, правило `1-unittest`, строка: `Ran 399 tests in 0.123s / OK (skipped=56)`; упавших: 0
+- прогон: `20260217_mini-v2.0.0_glm-5-high/sympy__sympy-12419`, шаг 136
+- тесты проекта; программа: pytest
+- категория **fail**, правило `1b-failed-tests`, строка: `sympy/concrete/tests/test_sums_products.py::test_Sum_doit FAILED         [ 47%]`; упавших: 1; в раунде 3: unknown, тесты проекта
 
 Команда:
 
 ```text
-cd /testbed && python tests/runtests.py model_fields -v1 2>&1 | grep -E "(OK|FAILED|ERROR|Ran)"
+cd /testbed && python3 -m pytest sympy/concrete/tests/test_sums_products.py -v 2>&1 | grep -E "PASSED|FAILED|ERROR" | head -30
 ```
 
 Последние 15 строк вывода:
 
 ```text
-Ran 399 tests in 0.123s
-OK (skipped=56)
+sympy/concrete/tests/test_sums_products.py::test_evalf_symbolic PASSED   [ 29%]
+sympy/concrete/tests/test_sums_products.py::test_evalf_issue_3273 PASSED [ 30%]
+sympy/concrete/tests/test_sums_products.py::test_simple_products PASSED  [ 32%]
+sympy/concrete/tests/test_sums_products.py::test_rational_products PASSED [ 34%]
+sympy/concrete/tests/test_sums_products.py::test_wallis_product PASSED   [ 36%]
+sympy/concrete/tests/test_sums_products.py::test_telescopic_sums PASSED  [ 38%]
+sympy/concrete/tests/test_sums_products.py::test_sum_reconstruct PASSED  [ 40%]
+sympy/concrete/tests/test_sums_products.py::test_limit_subs PASSED       [ 41%]
+sympy/concrete/tests/test_sums_products.py::test_function_subs PASSED    [ 43%]
+sympy/concrete/tests/test_sums_products.py::test_equality PASSED         [ 45%]
+sympy/concrete/tests/test_sums_products.py::test_Sum_doit FAILED         [ 47%]
+sympy/concrete/tests/test_sums_products.py::test_Product_doit PASSED     [ 49%]
+sympy/concrete/tests/test_sums_products.py::test_Sum_interface PASSED    [ 50%]
+sympy/concrete/tests/test_sums_products.py::test_eval_diff PASSED        [ 52%]
+sympy/concrete/tests/test_sums_products.py::test_hypersum PASSED         [ 54%]
 ```
 
-## 8. pass — leaderboard
+## 4. A: fail — leaderboard
 
-- группа: glm-5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_glm-5-high/django__django-13516`, шаг 37
-- тесты проекта; программа: runtests
-- категория **pass**, правило `1-unittest`, строка: `Ran 99 tests in 0.494s / OK`; упавших: 0
+- группа: devstral-small-2512 | 1.17.2
+- прогон: `20251209_mini-v1.17.2_devstral-small-2512/sphinx-doc__sphinx-7440`, шаг 48
+- тесты проекта; программа: pytest
+- категория **fail**, правило `1b-failed-tests`, строка: `FAILED tests/test_domain_std.py::test_productionlist - assert 3 == 2`; упавших: 1; в раунде 3: unknown, тесты проекта
 
 Команда:
 
 ```text
-cd /testbed && python3 tests/runtests.py migrations.test_commands --verbosity=1 2>&1 | grep -E "(OK|FAIL|ERROR|Ran)"
+sed -i '308s/termtext/termtext.lower()/' /testbed/sphinx/domains/std.py
+cd /testbed && python -m pytest tests/test_domain_std.py::test_productionlist -xvs 2>&1 | grep -E "assert|FAILED|PASSED"
 ```
 
 Последние 15 строк вывода:
 
 ```text
-Ran 99 tests in 0.494s
-OK
+tests/test_domain_std.py::test_productionlist FAILED# testroot: root
+>       assert len(warnings) == 2
+E       assert 3 == 2
+FAILED tests/test_domain_std.py::test_productionlist - assert 3 == 2
 ```
 
-## 9. pass — kth
+## 5. A: fail — kth
 
 - группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_6/pylint-dev__pylint-7277`, шаг 61
+- прогон: `nano-agent-mistral_devstral-2512/run_8/astropy__astropy-14365`, шаг 34
 - тесты проекта; программа: pytest
-- категория **pass**, правило `1-pytest`, строка: `====================== 3 passed, 123 deselected in 4.02s`; упавших: 0
+- категория **fail**, правило `1b-failed-tests`, строка: `astropy/io/ascii/tests/test_qdp.py::test_roundtrip_example_comma FAILED  [100%]`; упавших: 1; в раунде 3: unknown, тесты проекта
 
 Команда:
 
 ```text
-python3 -m pytest tests/test_self.py -k "modify_sys_path or do_not_import" -xvs
+cd /testbed && python -m pytest astropy/io/ascii/tests/test_qdp.py::test_roundtrip_example_comma -v --tb=short
 ```
 
 Последние 15 строк вывода:
 
 ```text
-============================= test session starts ==============================
-platform linux -- Python 3.9.21, pytest-7.4.4, pluggy-1.5.0 -- /root/.venv/bin/python3
-cachedir: .pytest_cache
-benchmark: 4.0.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
 rootdir: /testbed
 configfile: setup.cfg
-plugins: profiling-1.8.1, benchmark-4.0.0, xdist-2.5.0, timeout-2.3.1, cov-3.0.0, forked-1.6.0
-collecting ... collected 126 items / 123 deselected / 3 selected
-
-tests/test_self.py::TestRunTC::test_modify_sys_path PASSED
-tests/test_self.py::TestRunTC::test_do_not_import_files_from_local_directory[args0] PASSED
-tests/test_self.py::TestRunTC::test_do_not_import_files_from_local_directory[args1] PASSED
-
-====================== 3 passed, 123 deselected in 4.02s =======================
-```
-
-## 10. pass — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_2/pydata__xarray-3993`, шаг 57
-- тесты проекта; программа: pytest
-- категория **pass**, правило `1-pytest`, строка: `11 passed, 6 skipped, 13229 deselected, 33 warnings in 7.67s`; упавших: 0
-
-Команда:
-
-```text
-python -m pytest xarray/tests/ -k "integrate" -q 2>&1 | tail -20
-```
-
-Последние 15 строк вывода:
-
-```text
-    @pytest.mark.skipif(LooseVersion(dask.__version__) < "2.0", reason="needs meta")
-
-xarray/tests/test_units.py::TestDataArray::test_computation[float64-method_integrate-data]
-xarray/tests/test_units.py::TestDataArray::test_computation[float64-method_integrate-data]
-xarray/tests/test_units.py::TestDataArray::test_computation[float64-method_integrate-coords]
-xarray/tests/test_units.py::TestDataArray::test_computation[float64-method_integrate-coords]
-xarray/tests/test_units.py::TestDataArray::test_computation[int64-method_integrate-data]
-xarray/tests/test_units.py::TestDataArray::test_computation[int64-method_integrate-data]
-xarray/tests/test_units.py::TestDataArray::test_computation[int64-method_integrate-coords]
-xarray/tests/test_units.py::TestDataArray::test_computation[int64-method_integrate-coords]
-  /testbed/xarray/tests/test_units.py:321: FutureWarning: DataArray.integrate(dim=...) has been deprecated. Use DataArray.integrate(coord=...) instead.
-    return func(*all_args, **all_kwargs)
-
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-11 passed, 6 skipped, 13229 deselected, 33 warnings in 7.67s
-```
-
-## 11. pass — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_5/django__django-13023`, шаг 38
-- тесты проекта; программа: runtests
-- категория **pass**, правило `1-unittest-status`, строка: `OK (skipped=5)`; упавших: 0
-
-Команда:
-
-```text
-cd . && python tests/runtests.py model_fields 2>&1 | grep -E "^(OK|FAILED|ERROR)" | tail -5
-```
-
-Последние 15 строк вывода:
-
-```text
-OK (skipped=5)
-```
-
-## 12. pass — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_3/scikit-learn__scikit-learn-13496`, шаг 58
-- тесты проекта; программа: pytest
-- категория **pass**, правило `1-pytest`, строка: `================ 2 passed, 19 deselected, 15 warnings in 0.56s`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -m pytest sklearn/ensemble/tests/test_iforest.py -k "warm_start" -v
-```
-
-Последние 15 строк вывода:
-
-```text
-============================= test session starts ==============================
-platform linux -- Python 3.6.13, pytest-6.2.4, py-1.11.0, pluggy-0.13.1 -- /root/.venv/bin/python
-cachedir: .pytest_cache
-rootdir: /testbed, configfile: setup.cfg
-collecting ... collected 21 items / 19 deselected / 2 selected
-
-sklearn/ensemble/tests/test_iforest.py::test_iforest_warm_start PASSED   [ 50%]
-sklearn/ensemble/tests/test_iforest.py::test_iforest_warm_start_edge_cases PASSED [100%]
-
-================ 2 passed, 19 deselected, 15 warnings in 0.56s =================
-```
-
-## 13. pass — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_5/scikit-learn__scikit-learn-14983`, шаг 51
-- тесты проекта; программа: pytest
-- категория **pass**, правило `1-pytest`, строка: `====================== 105 passed, 122 warnings in 1.55s`; упавших: 0
-
-Команда:
-
-```text
-python -m pytest sklearn/model_selection/tests/test_split.py -x --tb=short
-```
-
-Последние 15 строк вывода:
-
-```text
-============================= test session starts ==============================
-platform linux -- Python 3.6.13, pytest-6.2.4, py-1.11.0, pluggy-0.13.1
-rootdir: /testbed, configfile: setup.cfg
-collected 105 items
-
-sklearn/model_selection/tests/test_split.py ............................ [ 26%]
-........................................................................ [ 95%]
-.....                                                                    [100%]
-
-====================== 105 passed, 122 warnings in 1.55s =======================
-```
-
-## 14. pass — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_6/django__django-13109`, шаг 46
-- тесты проекта; программа: runtests
-- категория **pass**, правило `1-unittest`, строка: `Ran 52 tests in 0.154s / OK`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py validation 2>&1 | tail -30
-```
-
-Последние 15 строк вывода:
-
-```text
-....................................................
-----------------------------------------------------------------------
-Ran 52 tests in 0.154s
-
-OK
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-```
-
-## 15. pass — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_4/sphinx-doc__sphinx-8551`, шаг 92
-- тесты проекта; программа: pytest
-- категория **pass**, правило `1-pytest`, строка: `====================== 32 passed, 1221 warnings in 1.04s`; упавших: 0
-
-Команда:
-
-```text
-cd . && python -m pytest tests/test_domain_py.py -v 2>&1 | grep -E "passed|failed|error" | tail -5
-```
-
-Последние 15 строк вывода:
-
-```text
-====================== 32 passed, 1221 warnings in 1.04s =======================
-```
-
-## 16. fail — leaderboard
-
-- группа: deepseek-v3.2@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_deepseek-3-2-high/django__django-14500`, шаг 164
-- тесты проекта; программа: runtests
-- категория **fail**, правило `1-unittest`, строка: `Ran 1 test in 0.024s / FAILED (failures=1)`; упавших: 1
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py migrations.test_executor_debug 2>&1 | tail -30
-```
-
-Последние 15 строк вывода:
-
-```text
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "/testbed/django/test/utils.py", line 430, in inner
-    return func(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/testbed/tests/migrations/test_executor_debug.py", line 55, in test_unapply_squashed_bug
-    self.assertNotIn(("migrations", "0001_squashed_0002"), applied)
-AssertionError: ('migrations', '0001_squashed_0002') unexpectedly found in {('migrations', '0001_initial'): <Migration: Migration 0001_initial for migrations>, ('migrations', '0002_second'): <Migration: Migration 0002_second for migrations>, ('migrations', '0001_squashed_0002'): <Migration: Migration 0001_squashed_0002 for migrations>}
-
-----------------------------------------------------------------------
-Ran 1 test in 0.024s
-
-FAILED (failures=1)
-Destroying test database for alias 'default'...
-Destroying test database for alias 'other'...
-```
-
-## 17. fail — leaderboard
-
-- группа: claude-sonnet-4-5-20250929@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_claude-4-5-sonnet-high/pytest-dev__pytest-8399`, шаг 37
-- тесты проекта; программа: pytest
-- категория **fail**, правило `1-pytest`, строка: `============================== 1 failed in 0.09s`; упавших: 1
-
-Команда:
-
-```text
-cd /testbed && python -m pytest testing/test_unittest.py -xvs --assert=plain 2>&1 | head -100
-```
-
-Последние 15 строк вывода:
-
-```text
-                continue
-            if not inamepart or inamepart in rep.nodeid.split("::"):
-                values.append(rep)
-        if not values:
->           raise ValueError(
-                "could not find test report matching %r: "
-                "no test reports at all!" % (inamepart,)
-            )
-E           ValueError: could not find test report matching 'testpassing': no test reports at all!
-
-/testbed/src/_pytest/pytester.py:350: ValueError
-=========================== short test summary info ============================
-FAILED testing/test_unittest.py::test_simple_unittest - ValueError: could not...
-!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
-============================== 1 failed in 0.09s ===============================
-```
-
-## 18. fail — leaderboard
-
-- группа: minimax-m2.5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_minimax-2-5-high/pydata__xarray-4356`, шаг 54
-- тесты проекта; программа: pytest
-- категория **fail**, правило `1-pytest`, строка: `======================== 1 failed, 11 warnings in 0.58s`; упавших: 1
-
-Команда:
-
-```text
-cd /testbed && git stash && python -m pytest xarray/tests/test_duck_array_ops.py::test_min_count[x-sum-False-float-2] -v 2>&1 | tail -30
-```
-
-Последние 15 строк вывода:
-
-```text
-  /testbed/xarray/core/dask_array_compat.py:186: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-    if LooseVersion(dask_version) > LooseVersion("2.9.0"):
-
-xarray/core/pdcompat.py:45
-  /testbed/xarray/core/pdcompat.py:45: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-    if LooseVersion(pd.__version__) < "0.25.0":
-
-../opt/miniconda3/lib/python3.11/site-packages/setuptools/_distutils/version.py:345
-  /opt/miniconda3/lib/python3.11/site-packages/setuptools/_distutils/version.py:345: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-    other = LooseVersion(other)
-
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-=========================== short test summary info ============================
-FAILED xarray/tests/test_duck_array_ops.py::test_min_count[x-sum-False-float-2]
-======================== 1 failed, 11 warnings in 0.58s ========================
-```
-
-## 19. fail — leaderboard
-
-- группа: claude-haiku-4-5-20251001@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_claude-4-5-haiku-high/pytest-dev__pytest-10051`, шаг 19
-- тесты проекта; программа: pytest
-- категория **fail**, правило `1-pytest`, строка: `========================= 1 failed, 14 passed in 0.29s`; упавших: 1
-
-Команда:
-
-```text
-cd /testbed && python -m pytest testing/logging/test_fixture.py -v
-```
-
-Последние 15 строк вывода:
-
-```text
-E         At index 0 diff: 'a_call_log' != 'a_setup_log'
-E         Full diff:
-E         - ['a_setup_log']
-E         + ['a_call_log']
-
-testing/logging/test_fixture.py:169: AssertionError
------------------------------- Captured log setup ------------------------------
-INFO     test_fixture:test_fixture.py:157 a_setup_log
------------------------------- Captured log call -------------------------------
-INFO     test_fixture:test_fixture.py:166 a_call_log
----------------------------- Captured log teardown -----------------------------
-INFO     test_fixture:test_fixture.py:159 a_teardown_log
-=========================== short test summary info ============================
-FAILED testing/logging/test_fixture.py::test_caplog_captures_for_all_stages
-========================= 1 failed, 14 passed in 0.29s =========================
-```
-
-## 20. fail — leaderboard
-
-- группа: glm-5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_glm-5-high/django__django-15022`, шаг 32
-- тесты проекта; программа: runtests
-- категория **fail**, правило `1-unittest`, строка: `Ran 1 test in 0.027s / FAILED (failures=1)`; упавших: 1
-
-Команда:
-
-```text
-cd /testbed && ./tests/runtests.py admin_changelist.tests.ChangeListTests.test_multiple_search_fields 2>&1 | tail -30
-```
-
-Последние 15 строк вывода:
-
-```text
-F
-======================================================================
-FAIL: test_multiple_search_fields (admin_changelist.tests.ChangeListTests.test_multiple_search_fields) (search_string='Mary Jonathan Duo')
-All rows containing each of the searched words are returned, where each
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "/testbed/tests/admin_changelist/tests.py", line 565, in test_multiple_search_fields
-    self.assertEqual(group_changelist.queryset.count(), result_count)
-AssertionError: 0 != 1
-
-----------------------------------------------------------------------
-Ran 1 test in 0.027s
-
-FAILED (failures=1)
-Destroying test database for alias 'default'...
-```
-
-## 21. fail — leaderboard
-
-- группа: minimax-m2.5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_minimax-2-5-high/sympy__sympy-13615`, шаг 55
-- тесты проекта; программа: pytest
-- категория **fail**, правило `1-pytest`, строка: `========================= 1 failed, 41 passed in 3.67s`; упавших: 1
-
-Команда:
-
-```text
-cd /testbed && python3 -m pytest sympy/sets/tests/test_sets.py -v -x 2>&1 | head -200
-```
-
-Последние 15 строк вывода:
-
-```text
-    def wrapper():
-        try:
-            func()
-        except Exception as e:
-            message = str(e)
-            if message != "Timeout":
->               raise XFail(get_function_name(func))
-E               sympy.utilities.pytest.XFail: test_image_Intersection
-
-sympy/utilities/pytest.py:121: XFail
-                                DO *NOT* COMMIT!                                
-=========================== short test summary info ============================
-FAILED sympy/sets/tests/test_sets.py::test_image_Intersection - sympy.utiliti...
-!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
-========================= 1 failed, 41 passed in 3.67s =========================
-```
-
-## 22. fail — leaderboard
-
-- группа: gemini-3-pro-preview@high | 2.0.0
-- прогон: `20260226_mini-v2.0.0_gemini-3-pro-high/django__django-15569`, шаг 14
-- тесты проекта; программа: runtests
-- категория **fail**, правило `1-unittest`, строка: `Ran 1 test in 0.012s / FAILED (errors=1)`; упавших: 1
-
-Команда:
-
-```text
-PYTHONPATH=. python3 tests/runtests.py schema.tests.SchemaTests.test_func_unique_constraint_lookups
-```
-
-Последние 15 строк вывода:
-
-```text
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/testbed/django/db/models/sql/query.py", line 1835, in transform
-    raise last_field_exception
-  File "/testbed/django/db/models/sql/query.py", line 1808, in setup_joins
-    path, final_field, targets, rest = self.names_to_path(
-                                       ^^^^^^^^^^^^^^^^^^^
-  File "/testbed/django/db/models/sql/query.py", line 1746, in names_to_path
-    raise FieldError(
-django.core.exceptions.FieldError: Cannot resolve keyword 'lower' into field. Join on 'name' not permitted.
-
-----------------------------------------------------------------------
-Ran 1 test in 0.012s
-
-FAILED (errors=1)
-Destroying test database for alias 'default'...
-```
-
-## 23. fail — leaderboard
-
-- группа: deepseek-v3.2@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_deepseek-3-2-high/mwaskom__seaborn-3069`, шаг 87
-- тесты проекта; программа: pytest
-- категория **fail**, правило `1-pytest`, строка: `=================== 1 failed, 16 passed, 5 warnings in 0.63s`; упавших: 1
-
-Команда:
-
-```text
-cd /testbed && python -m pytest tests/_core/test_plot.py -x 2>&1 | head -150
-```
-
-Последние 15 строк вывода:
-
-```text
-tests/_core/test_plot.py::TestLayerAddition::test_without_data
-tests/_core/test_plot.py::TestLayerAddition::test_without_data
-  /testbed/seaborn/_core/data.py:101: Pandas4Warning: The copy keyword is deprecated and will be removed in a future version. Copy-on-Write is active in pandas since 3.0 which utilizes a lazy copy mechanism that defers copies until necessary. Use .copy() to make an eager copy if necessary.
-    frame = pd.concat(parts, axis=1, sort=False, copy=False)
-
-tests/_core/test_plot.py::TestLayerAddition::test_without_data
-tests/_core/test_plot.py::TestLayerAddition::test_without_data
-  /testbed/seaborn/_core/rules.py:66: Pandas4Warning: is_categorical_dtype is deprecated and will be removed in a future version. Use isinstance(dtype, pd.CategoricalDtype) instead
-    if pd.api.types.is_categorical_dtype(vector):
-
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-=========================== short test summary info ============================
-FAILED tests/_core/test_plot.py::TestLayerAddition::test_without_data - panda...
-!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
-=================== 1 failed, 16 passed, 5 warnings in 0.63s ===================
-```
-
-## 24. fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_3/sphinx-doc__sphinx-8120`, шаг 48
-- тесты проекта; программа: pytest
-- категория **fail**, правило `1-pytest`, строка: `========== 1 failed, 41 passed, 2 deselected, 7187 warnings in 3.26s`; упавших: 1
-
-Команда:
-
-```text
-cd /testbed && python -m pytest tests/test_intl.py -k "not test_html_meta and not test_xml_label_targets" -x 2>&1 | tail -5
-```
-
-Последние 15 строк вывода:
-
-```text
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-=========================== short test summary info ============================
-FAILED tests/test_intl.py::test_additional_targets_should_not_be_translated
-!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
-========== 1 failed, 41 passed, 2 deselected, 7187 warnings in 3.26s ===========
-```
-
-## 25. fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_7/django__django-10999`, шаг 37
-- тесты проекта; программа: runtests
-- категория **fail**, правило `1-unittest-status`, строка: `FAILED (errors=1, skipped=23)`; упавших: 1
-
-Команда:
-
-```text
-python ./tests/runtests.py utils_tests 2>&1 | grep -E "(OK|FAILED|ERROR)" | tail -5
-```
-
-Последние 15 строк вывода:
-
-```text
-ERROR: test_strip_tags_files (utils_tests.test_html.TestUtilsHtml) [<object object at 0x7c6ebe584b40>] (filename='strip_tags1.html')
-FAILED (errors=1, skipped=23)
-```
-
-## 26. fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_1/django__django-11790`, шаг 62
-- тесты проекта; программа: runtests
-- категория **fail**, правило `1-unittest`, строка: `Ran 1 test in 0.000s / FAILED (errors=1)`; упавших: 1
-
-Команда:
-
-```text
-cd tests && ./runtests.py forms 2>&1 | grep -E "(Ran|OK|FAILED)"
-```
-
-Последние 15 строк вывода:
-
-```text
-Ran 1 test in 0.000s
-FAILED (errors=1)
-```
-
-## 27. fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_3/sphinx-doc__sphinx-8638`, шаг 106
-- тесты проекта; программа: pytest
-- категория **fail**, правило `1-pytest`, строка: `======================== 1 failed, 42 warnings in 0.35s`; упавших: 1
-
-Команда:
-
-```text
-python -m pytest tests/test_ext_autodoc.py::test_autodoc -x 2>&1 | grep -A5 "FAILED\|PASSED"
-```
-
-Последние 15 строк вывода:
-
-```text
-FAILED tests/test_ext_autodoc.py::test_autodoc - AssertionError: assert '\x1b...
-!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
-======================== 1 failed, 42 warnings in 0.35s ========================
-```
-
-## 28. fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_0/django__django-15525`, шаг 79
-- тесты проекта; программа: runtests
-- категория **fail**, правило `1-unittest`, строка: `Ran 1 test in 0.004s / FAILED (errors=1)`; упавших: 1
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py serializers.test_natural.NaturalKeyMultiDBTests.test_natural_key_with_non_default_database 2>&1 | tail -60
-```
-
-Последние 15 строк вывода:
-
-```text
-
-Traceback (most recent call last):
-  File "/testbed/tests/serializers/test_natural.py", line 47, in test_natural_key_with_non_default_database
-    obj_list = list(serializers.deserialize("json", serialized_data))
-  File "/testbed/django/core/serializers/json.py", line 70, in Deserializer
-    yield from PythonDeserializer(objects, **options)
-  File "/testbed/django/core/serializers/python.py", line 158, in Deserializer
-    raise base.DeserializationError.WithData(
-django.core.serializers.base.DeserializationError: NaturalKeyAnchor matching query does not exist.: (serializers.book:pk=None) field_value was '['test_author']'
-
-----------------------------------------------------------------------
-Ran 1 test in 0.004s
-
-FAILED (errors=1)
-Destroying test dat... output truncated
-```
-
-## 29. fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_7/django__django-11292`, шаг 41
-- тесты проекта; программа: runtests
-- категория **fail**, правило `1-unittest`, строка: `Ran 24 tests in 0.053s / FAILED (failures=1)`; упавших: 1
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py user_commands.tests.CommandTests
-```
-
-Последние 15 строк вывода:
-
-```text
-System check identified no issues (0 silenced).
-
-F.......................
-======================================================================
-FAIL: test_call_command_no_checks (user_commands.tests.CommandTests)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "/testbed/tests/user_commands/tests.py", line 161, in test_call_command_no_checks
-    self.assertEqual(self.counter, 0)
-AssertionError: 1 != 0
-
-----------------------------------------------------------------------
-Ran 24 tests in 0.053s
-
-FAILED (failures=1)
-```
-
-## 30. fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_3/django__django-13109`, шаг 59
-- тесты проекта; программа: runtests
-- категория **fail**, правило `1-unittest`, строка: `Ran 1 test in 0.002s / FAILED (errors=1)`; упавших: 1
-
-Команда:
-
-```text
-python tests/runtests.py model_fields.test_foreignkey.ForeignKeyTests.test_validate_with_filtered_manager
-```
-
-Последние 15 строк вывода:
-
-```text
-  File "/testbed/django/test/utils.py", line 381, in inner
-    return func(*args, **kwargs)
-  File "/testbed/tests/model_fields/test_foreignkey.py", line 111, in test_validate_with_filtered_manager
-    archived_article = Article.all_objects.create(title="Old Article", archived=True)
-  File "/testbed/django/db/models/manager.py", line 85, in manager_method
-    return getattr(self.get_queryset(), name)(*args, **kwargs)
-  File "/testbed/django/db/models/query.py", line 445, in create
-    obj = self.model(**kwargs)
-TypeError: 'NoneType' object is not callable
-
-----------------------------------------------------------------------
-Ran 1 test in 0.002s
-
-FAILED (errors=1)
-Destroying test database for alias 'default'...
-```
-
-## 31. error_env — leaderboard
-
-- группа: glm-5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_glm-5-high/astropy__astropy-14598`, шаг 110
-- тесты проекта; программа: pytest
-- категория **error_env**, правило `2-error`, вид ошибки `env-runner-missing`, строка: `No module named pytest`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -m pytest astropy/io/fits/tests/test_card.py -v -x 2>&1 | head -100
-```
-
-Последние 15 строк вывода:
-
-```text
-/opt/miniconda3/bin/python: No module named pytest
-```
-
-## 32. error_env — leaderboard
-
-- группа: glm-4.6 | 1.17.1
-- прогон: `20251201_mini-v1.17.1_glm-4.6/sympy__sympy-13551`, шаг 35
-- тесты проекта; программа: pytest
-- категория **error_env**, правило `2-error`, вид ошибки `env-runner-missing`, строка: `No module named pytest`; упавших: 0
-
-Команда:
-
-```text
-python -m pytest ./sympy/concrete/tests/test_products.py -v
-```
-
-Последние 15 строк вывода:
-
-```text
-returncode: 1
-/opt/miniconda3/envs/testbed/bin/python: No module named pytest
-```
-
-## 33. error_env — leaderboard
-
-- группа: claude-sonnet-4-5-20250929@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_claude-4-5-sonnet-high/django__django-14915`, шаг 16
-- тесты проекта; программа: django test
-- категория **error_env**, правило `1-unittest`, вид ошибки `env-label`, строка: `Ran 1 test in 0.000s / FAILED (errors=1)`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -m django test model_forms.test_modelchoicefield --settings=tests.test_sqlite 2>&1 | tail -50
-```
-
-Последние 15 строк вывода:
-
-```text
-======================================================================
-ERROR: model_forms (unittest.loader._FailedTest.model_forms)
-----------------------------------------------------------------------
-ImportError: Failed to import test module: model_forms
-Traceback (most recent call last):
-  File "/opt/miniconda3/lib/python3.11/unittest/loader.py", line 154, in loadTestsFromName
-    module = __import__(module_name)
-             ^^^^^^^^^^^^^^^^^^^^^^^
-ModuleNotFoundError: No module named 'model_forms'
-
-
-----------------------------------------------------------------------
-Ran 1 test in 0.000s
-
-FAILED (errors=1)
-```
-
-## 34. error_env — leaderboard
-
-- группа: minimax-m2.5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_minimax-2-5-high/django__django-15731`, шаг 17
-- тесты проекта; программа: pytest
-- категория **error_env**, правило `2-error`, вид ошибки `env-runner-missing`, строка: `No module named pytest`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -m pytest tests/custom_managers/ -v --no-header 2>&1 | head -40
-```
-
-Последние 15 строк вывода:
-
-```text
-/opt/miniconda3/bin/python: No module named pytest
-```
-
-## 35. error_env — leaderboard
-
-- группа: minimax-m2 | 1.17.0
-- прогон: `20251124_mini-v1.17.0_minimax-m2/django__django-16877`, шаг 22
-- тесты проекта; программа: django test
-- категория **error_env**, правило `2-error`, вид ошибки `env-settings`, строка: `django.core.exceptions.ImproperlyConfigured:`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -m django test tests.template_tests.filter_tests.test_escapeseq --verbosity=2
-```
-
-Последние 15 строк вывода:
-
-```text
-    parser = self.create_parser(argv[0], argv[1])
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/testbed/django/core/management/base.py", line 367, in create_parser
-    self.add_arguments(parser)
-  File "/testbed/django/core/management/commands/test.py", line 54, in add_arguments
-    test_runner_class = get_runner(settings, self.test_runner)
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/testbed/django/test/utils.py", line 370, in get_runner
-    test_runner_class = test_runner_class or settings.TEST_RUNNER
-                                             ^^^^^^^^^^^^^^^^^^^^
-  File "/testbed/django/conf/__init__.py", line 84, in __getattr__
-    self._setup(name)
-  File "/testbed/django/conf/__init__.py", line 64, in _setup
-    raise ImproperlyConfigured(
-django.core.exceptions.ImproperlyConfigured: Requested setting TEST_RUNNER, but settings are not configured. You must either define the environment variable DJANGO_SETTINGS_MODULE or call settings.configure() before accessing settings.
-```
-
-## 36. error_env — leaderboard
-
-- группа: glm-4.6 | 1.17.1
-- прогон: `20251201_mini-v1.17.1_glm-4.6/pylint-dev__pylint-8898`, шаг 73
-- тесты проекта; программа: pytest
-- категория **error_env**, правило `1-pytest`, вид ошибки `env-nothing-ran`, строка: `============================ no tests ran in 0.01s`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -m pytest tests/functional/d/disallowed_name.py -v
-```
-
-Последние 15 строк вывода:
-
-```text
-      exec(line)
-    File "<string>", line 1, in <module>
-  ModuleNotFoundError: No module named '_distutils_hack'
-
-Remainder of file ignored
-============================= test session starts ==============================
-platform linux -- Python 3.9.20, pytest-7.4.4, pluggy-1.5.0 -- /opt/miniconda3/envs/testbed/bin/python
-cachedir: .pytest_cache
-benchmark: 4.0.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
-rootdir: /testbed
-configfile: pyproject.toml
-plugins: xdist-3.6.1, profiling-1.7.0, cov-4.1.0, benchmark-4.0.0, timeout-2.3.1
-collecting ... collected 0 items
-
-============================ no tests ran in 0.01s =============================
-```
-
-## 37. error_env — leaderboard
-
-- группа: devstral-small-2512 | 1.17.2
-- прогон: `20251209_mini-v1.17.2_devstral-small-2512/sympy__sympy-17139`, шаг 23
-- тесты проекта; программа: pytest
-- категория **error_env**, правило `2-error`, вид ошибки `env-runner-missing`, строка: `No module named pytest`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python3 -m pytest sympy/simplify/tests/test_fu.py -v
-```
-
-Последние 15 строк вывода:
-
-```text
-returncode: 1
-/opt/miniconda3/envs/testbed/bin/python3: No module named pytest
-```
-
-## 38. error_env — leaderboard
-
-- группа: minimax-m2 | 1.17.0
-- прогон: `20251124_mini-v1.17.0_minimax-m2/django__django-14122`, шаг 39
-- тесты проекта; программа: django test
-- категория **error_env**, правило `2-error`, вид ошибки `env-script-import`, строка: `No module named 'tests.sqlite'`; упавших: 0
-
-Команда:
-
-```text
-python -m django test tests.aggregation.tests.AggregationTests.test_aggregation_random_ordering --settings=tests.sqlite
-```
-
-Последние 15 строк вывода:
-
-```text
-    test_runner_class = get_runner(settings, self.test_runner)
-  File "/testbed/django/test/utils.py", line 360, in get_runner
-    test_runner_class = test_runner_class or settings.TEST_RUNNER
-  File "/testbed/django/conf/__init__.py", line 67, in __getattr__
-    self._setup(name)
-  File "/testbed/django/conf/__init__.py", line 54, in _setup
-    self._wrapped = Settings(settings_module)
-  File "/testbed/django/conf/__init__.py", line 141, in __init__
-    mod = importlib.import_module(self.SETTINGS_MODULE)
-  File "/opt/miniconda3/envs/testbed/lib/python3.8/importlib/__init__.py", line 127, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-  File "<frozen importlib._bootstrap>", line 1014, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 991, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 973, in _find_and_load_unlocked
-ModuleNotFoundError: No module named 'tests.sqlite'
-```
-
-## 39. error_env — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_4/pylint-dev__pylint-7277`, шаг 45
-- тесты проекта; программа: pytest
-- категория **error_env**, правило `1-pytest`, вид ошибки `env-module-outside`, строка: `=============================== 1 error in 1.41s`; упавших: 0
-
-Команда:
-
-```text
-cd . && python -m pytest tests/ -k "sys.path or modify_sys" --ignore=tests/primer/test_primer_external.py -x
-```
-
-Последние 15 строк вывода:
-
-```text
-Hint: make sure your test modules/packages have valid Python names.
-Traceback:
-/root/.venv/lib/python3.9/importlib/__init__.py:127: in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-tests/testutils/_primer/test_package_to_lint.py:5: in <module>
-    from pylint.testutils._primer import PRIMER_DIRECTORY_PATH, PackageToLint
-pylint/testutils/_primer/__init__.py:7: in <module>
-    from pylint.testutils._primer.package_to_lint import (
-pylint/testutils/_primer/package_to_lint.py:10: in <module>
-    import git
-E   ModuleNotFoundError: No module named 'git'
-=========================== short test summary info ============================
-ERROR tests/testutils/_primer/test_package_to_lint.py
-!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
-=============================== 1 error in 1.41s ===============================
-```
-
-## 40. error_env — kth
-
-- группа: nano-agent-agentica-org_DeepSWE-Preview
-- прогон: `nano-agent-agentica-org_DeepSWE-Preview/run_8/pydata__xarray-4094`, шаг 8
-- тесты проекта; программа: pytest
-- категория **error_env**, правило `2-error`, вид ошибки `?-collect`, строка: `_______________ ERROR collecting`; упавших: 0
-
-Команда:
-
-```text
-pytest xarray/tests/test_dataarray.py -k test_to_unstacked_dataset_single_dim_roundtrip
-```
-
-Последние 15 строк вывода:
-
-```text
-/opt/miniconda3/envs/testbed/lib/python3.10/site-packages/_pytest/python.py:528: in _getobj
-    return self._importtestmodule()
-/opt/miniconda3/envs/testbed/lib/python3.10/site-packages/_pytest/python.py:617: in _importtestmodule
-    mod = import_path(self.path, mode=importmode, root=self.config.rootpath)
-/opt/miniconda3/envs/testbed/lib/python3.10/site-packages/_pytest/pathlib.py:565: in import_path
-    importlib.import_module(module_name)
-/opt/miniconda3/envs/testbed/lib/python3.10/importlib/__init__.py:126: in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-<frozen importlib._bootstrap>:1050: in _gcd_import
-    ???
-<frozen importlib._bootstrap>:1027: in _find_and_load
-    ???
-<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
-    ???
-<frozen im... output truncated
-```
-
-## 41. error_env — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_1/django__django-16032`, шаг 11
-- тесты проекта; программа: pytest
-- категория **error_env**, правило `2-error`, вид ошибки `env-runner-missing`, строка: `No module named pytest`; упавших: 0
-
-Команда:
-
-```text
-cd /root && python -m pytest tests/annotations/tests.py::NonAggregateAnnotationTestCase::test_annotation_and_alias_filter_in_subquery -xvs
-```
-
-Последние 15 строк вывода:
-
-```text
-returncode: 1
-command failed with exit code 1. Error output:
-/root/.venv/bin/python: No module named pytest
-```
-
-## 42. error_env — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_0/django__django-11880`, шаг 31
-- тесты проекта; программа: django test
-- категория **error_env**, правило `2-error`, вид ошибки `env-settings`, строка: `doesn't declare an explicit app_label`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -m django test tests.forms_tests.tests.test_error_messages --settings=tests.test_sqlite 2>&1 | tail -20
-```
-
-Последние 15 строк вывода:
-
-```text
-  File "/testbed/django/core/management/commands/test.py", line 53, in handle
-    failures = test_runner.run_tests(test_labels)
-  File "/testbed/django/test/runner.py", line 682, in run_tests
-    suite = self.build_suite(test_labels, extra_tests)
-  File "/testbed/django/test/runner.py", line 540, in build_suite
-    tests = self.test_loader.loadTestsFromName(label)
-  File "/root/.venv/lib/python3.6/unittest/loader.py", line 153, in loadTestsFromName
-    module = __import__(module_name)
-  File "/testbed/tests/forms_tests/tests/test_error_messages.py", line 13, in <module>
-    from ..models import ChoiceModel
-  File "/testbed/tests/forms_tests/models.py", line 18, in <module>
-    class BoundaryModel(models.Model):
-  File "/testbed/django/db/models/base.py", line 115, in __new__
-    "INSTALLED_APPS." % (module, name)
-RuntimeError: Model class tests.forms_tests.models.BoundaryModel doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
-```
-
-## 43. error_env — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_9/django__django-16256`, шаг 55
-- тесты проекта; программа: runtests
-- категория **error_env**, правило `2-error`, вид ошибки `env-path`, строка: `can't open file`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python runtests.py async.test_async_queryset.AsyncQuerySetTest.test_acreate
-```
-
-Последние 15 строк вывода:
-
-```text
-returncode: 2
-command failed with exit code 2. Error output:
-python: can't open file '/testbed/runtests.py': [Errno 2] No such file or directory
-```
-
-## 44. error_env — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_7/django__django-13810`, шаг 23
-- тесты проекта; программа: pytest
-- категория **error_env**, правило `2-error`, вид ошибки `env-runner-missing`, строка: `No module named pytest`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -m pytest tests/middleware_exceptions/tests.py -xvs
-```
-
-Последние 15 строк вывода:
-
-```text
-returncode: 1
-command failed with exit code 1. Error output:
-/root/.venv/bin/python: No module named pytest
-```
-
-## 45. error_env — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_3/django__django-15629`, шаг 61
-- тесты проекта; программа: runtests
-- категория **error_env**, правило `2-error`, вид ошибки `env-module-outside`, строка: `No module named 'test_mysql'`; упавших: 0
-
-Команда:
-
-```text
-python tests/runtests.py schema.tests.SchemaTests.test_foreign_key_db_collation_propagation --settings=test_mysql 2>&1 | head -100
-```
-
-Последние 15 строк вывода:
-
-```text
-    test_modules, state = setup_collect_tests(
-  File "/testbed/tests/runtests.py", line 198, in setup_collect_tests
-    "INSTALLED_APPS": settings.INSTALLED_APPS,
-  File "/testbed/django/conf/__init__.py", line 92, in __getattr__
-    self._setup(name)
-  File "/testbed/django/conf/__init__.py", line 79, in _setup
-    self._wrapped = Settings(settings_module)
-  File "/testbed/django/conf/__init__.py", line 190, in __init__
-    mod = importlib.import_module(self.SETTINGS_MODULE)
-  File "/root/.venv/lib/python3.9/importlib/__init__.py", line 127, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-  File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 984, in _find_and_load_unlocked
-ModuleNotFoundError: No module named 'test_mysql'
-```
-
-## 46. error_code — leaderboard
-
-- группа: glm-5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_glm-5-high/django__django-11211`, шаг 190
-- тесты проекта; программа: runtests
-- категория **error_code**, правило `2-error`, вид ошибки `code-syntax`, строка: `SyntaxError`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && PYTHONPATH=/testbed python tests/runtests.py generic_relations.tests.GenericRelationsTests.test_create_after_prefetch -v2
-```
-
-Последние 15 строк вывода:
-
-```text
-  File "/opt/miniconda3/lib/python3.11/importlib/__init__.py", line 126, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
-  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
-  File "<frozen importlib._bootstrap_external>", line 1074, in get_code
-  File "<frozen importlib._bootstrap_external>", line 1004, in source_to_code
-  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
-  File "/testbed/tests/generic_relations/models.py", line 13
-    import uuid
-    ^^^^^^
-SyntaxError: invalid syntax
-```
-
-## 47. error_code — leaderboard
-
-- группа: glm-4.6 | 1.17.1
-- прогон: `20251201_mini-v1.17.1_glm-4.6/matplotlib__matplotlib-21568`, шаг 112
-- тесты проекта; программа: pytest
-- категория **error_code**, правило `1-pytest`, вид ошибки `code-syntax`, строка: `=============================== 1 error in 0.17s`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -m pytest lib/matplotlib/tests/test_dates.py::test_date_formatter_usetex -v
-```
-
-Последние 15 строк вывода:
-
-```text
-    ???
-<frozen importlib._bootstrap>:671: in _load_unlocked
-    ???
-/opt/miniconda3/envs/testbed/lib/python3.8/site-packages/_pytest/assertion/rewrite.py:184: in exec_module
-    exec(co, module.__dict__)
-lib/matplotlib/tests/test_dates.py:10: in <module>
-    import matplotlib.dates as mdates
-E     File "/testbed/lib/matplotlib/dates.py", line 600
-E       ret_text = "$\\mathdefault{"+ret_text.replace("-", "{-}")+"}$"
-E       ^
-E   SyntaxError: invalid syntax
-=========================== short test summary info ============================
-ERROR lib/matplotlib/tests/test_dates.py
-=============================== 1 error in 0.17s ===============================
-ERROR: found no collectors for /testbed/lib/matplotlib/tests/test_dates.py::test_date_formatter_usetex
-```
-
-## 48. error_code — leaderboard
-
-- группа: deepseek-v3.2@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_deepseek-3-2-high/django__django-16263`, шаг 111
-- тесты проекта; программа: pytest
-- категория **error_code**, правило `2-error`, вид ошибки `code-syntax`, строка: `E   SyntaxError`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -m pytest tests/aggregation_regress/tests.py::AggregateTestCase::test_empty_filter_count -xvs 2>&1 | head -50
-```
-
-Последние 15 строк вывода:
-
-```text
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-django/db/models/constraints.py:6: in <module>
-    from django.db.models.indexes import IndexExpression
-django/db/models/indexes.py:5: in <module>
-    from django.db.models.sql import Query
-django/db/models/sql/__init__.py:1: in <module>
-    from django.db.models.sql.query import *  # NOQA
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E     File "/testbed/django/db/models/sql/query.py", line 2154
-E       return field[1:], dirn[1]
-E       ^^^^^^^^^^^^^^^^^^^^^^^^^
-E   SyntaxError: 'return' outside function
-=========================== short test summary info ============================
-ERROR tests/aggregation_regress/tests.py
-!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
-```
-
-## 49. error_code — leaderboard
-
-- группа: deepseek-v3.2@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_deepseek-3-2-high/sympy__sympy-13615`, шаг 119
-- тесты проекта; программа: pytest
-- категория **error_code**, правило `2-error`, вид ошибки `code-syntax`, строка: `E   IndentationError`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python3.10 -m pytest sympy/sets/tests/test_sets.py::test_Complement -xvs 2>&1 | tail -30
-```
-
-Последние 15 строк вывода:
-
-```text
-ImportError while loading conftest '/testbed/sympy/conftest.py'.
-sympy/__init__.py:80: in <module>
-    from .plotting import plot, textplot, plot_backends, plot_implicit
-sympy/plotting/__init__.py:1: in <module>
-    from .plot import plot_backends
-E     File "/testbed/sympy/plotting/plot.py", line 32
-E       from collections.abc import Callable
-E       ^^^^
-E   IndentationError: expected an indented block after 'try' statement on line 31
-```
-
-## 50. error_code — leaderboard
-
-- группа: gemini-2.5-pro | 1.0.0
-- прогон: `20250726_mini-v1.0.0_gemini-2.5-pro/django__django-12663`, шаг 11
-- тесты проекта; программа: runtests
-- категория **error_code**, правило `2-error`, вид ошибки `code-import`, строка: `cannot import name 'unwrap'`; упавших: 0
-
-Команда:
-
-```text
-./tests/runtests.py lookup.test_lazy_object
-```
-
-Последние 15 строк вывода:
-
-```text
-  File "/testbed/django/core/serializers/__init__.py", line 23, in <module>
-    from django.core.serializers.base import SerializerDoesNotExist
-  File "/testbed/django/core/serializers/base.py", line 7, in <module>
-    from django.db import models
-  File "/testbed/django/db/models/__init__.py", line 3, in <module>
-    from django.db.models.aggregates import *  # NOQA
-  File "/testbed/django/db/models/aggregates.py", line 7, in <module>
-    from django.db.models.functions.mixins import (
-  File "/testbed/django/db/models/functions/__init__.py", line 2, in <module>
-    from .datetime import (
-  File "/testbed/django/db/models/functions/datetime.py", line 8, in <module>
-    from django.db.models.lookups import (
-  File "/testbed/django/db/models/lookups.py", line 5, in <module>
-    from django.utils.functional import unwrap
-ImportError: cannot import name 'unwrap'
-```
-
-## 51. error_code — leaderboard
-
-- группа: gemini-3-pro-preview | 1.15.0
-- прогон: `20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/pytest-dev__pytest-5787`, шаг 50
-- самодельный скрипт; программа: pytest
-- категория **error_code**, правило `2-error`, вид ошибки `code-syntax`, строка: `IndentationError`; упавших: 0
-
-Команда:
-
-```text
-pytest -n 2 reproduce_issue.py
-```
-
-Последние 15 строк вывода:
-
-```text
-returncode: 1
-Traceback (most recent call last):
-  File "/opt/miniconda3/envs/testbed/bin/pytest", line 5, in <module>
-    from pytest import main
-  File "/testbed/src/pytest.py", line 17, in <module>
-    from _pytest.main import ExitCode
-  File "/testbed/src/_pytest/main.py", line 18, in <module>
-    from _pytest.runner import collect_one_node
-  File "/testbed/src/_pytest/runner.py", line 9, in <module>
-    from .reports import CollectErrorRepr
-  File "/testbed/src/_pytest/reports.py", line 227
-    print(f"DEBUG: cls={cls!r}")
-IndentationError: unexpected indent
-```
-
-## 52. error_code — leaderboard
-
-- группа: deepseek-v3.2@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_deepseek-3-2-high/django__django-13346`, шаг 39
-- тесты проекта; программа: runtests
-- категория **error_code**, правило `1-unittest`, вид ошибки `code-import`, строка: `Ran 1 test in 0.000s / FAILED (errors=1)`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed/tests && python runtests.py model_fields.test_key_in2 --settings=test_sqlite 2>&1 | tail -20
-```
-
-Последние 15 строк вывода:
-
-```text
-Traceback (most recent call last):
-  File "/opt/miniconda3/lib/python3.11/unittest/loader.py", line 154, in loadTestsFromName
-    module = __import__(module_name)
-             ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/testbed/tests/model_fields/test_key_in2.py", line 6, in <module>
-    from django.test import TestCase, CaptureQueriesContext
-ImportError: cannot import name 'CaptureQueriesContext' from 'django.test' (/testbed/django/test/__init__.py)
-
-
-----------------------------------------------------------------------
-Ran 1 test in 0.000s
-
-FAILED (errors=1)
-Testing against Django installed in '/testbed/django' with up to 32 processes
-System check identified no issues (3 silenced).
-```
-
-## 53. error_code — leaderboard
-
-- группа: gemini-3-flash-preview@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_gemini-3-flash-high/matplotlib__matplotlib-21568`, шаг 100
-- тесты проекта; программа: pytest
-- категория **error_code**, правило `1-pytest`, вид ошибки `code-syntax`, строка: `========================= 1 warning, 1 error in 0.12s`; упавших: 0
-
-Команда:
-
-```text
-python -m pytest lib/matplotlib/tests/test_dates.py -k usetex
-```
-
-Последние 15 строк вывода:
-
-```text
-    import matplotlib.dates as mdates
-E     File "/testbed/lib/matplotlib/dates.py", line 601
-E       ret_text = '$\mathdefault{'+ret_text.replace('-', '{-}')+'}$'
-E                  ^^^^^^^^^^^^^^^^
-E   SyntaxError: invalid escape sequence '\m'
-=============================== warnings summary ===============================
-../opt/miniconda3/lib/python3.11/site-packages/pyparsing.py:108
-  /opt/miniconda3/lib/python3.11/site-packages/pyparsing.py:108: DeprecationWarning: module 'sre_constants' is deprecated
-    import sre_constants
-
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-=========================== short test summary info ============================
-ERROR lib/matplotlib/tests/test_dates.py
-!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
-========================= 1 warning, 1 error in 0.12s ==========================
-```
-
-## 54. error_code — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_3/django__django-11211`, шаг 92
-- тесты проекта; программа: runtests
-- категория **error_code**, правило `2-error`, вид ошибки `code-syntax`, строка: `IndentationError`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py generic_relations.tests.GenericRelationsTests.test_generic_foreign_key_with_uuid_direct_access generic_relations.tests.GenericRelationsTests.test_generic_foreign_key_with_uuid_multiple_objects
-```
-
-Последние 15 строк вывода:
-
-```text
-Traceback (most recent call last):
-  File "tests/runtests.py", line 503, in <module>
-    options.exclude_tags,
-  File "tests/runtests.py", line 290, in django_tests
-    extra_tests=extra_tests,
-  File "/testbed/django/test/runner.py", line 627, in run_tests
-    suite = self.build_suite(test_labels, extra_tests)
-  File "/testbed/django/test/runner.py", line 488, in build_suite
-    tests = self.test_loader.loadTestsFromName(label)
-  File "/root/.venv/lib/python3.6/unittest/loader.py", line 153, in loadTestsFromName
-    module = __import__(module_name)
-  File "/testbed/tests/generic_relations/tests.py", line 601
-    def test_generic_foreign_key_with_uuid_direct_access(self):
-      ^
-IndentationError: expected an indented block
-```
-
-## 55. error_code — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_1/sphinx-doc__sphinx-9258`, шаг 109
-- тесты проекта; программа: pytest
-- категория **error_code**, правило `2-error`, вид ошибки `code-syntax`, строка: `E   SyntaxError`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -m pytest tests/test_domain_py.py::test_info_field_list_with_union_type -xvs
-```
-
-Последние 15 строк вывода:
-
-```text
-<frozen importlib._bootstrap>:680: in _load_unlocked
-    ???
-/root/.venv/lib/python3.9/site-packages/_pytest/assertion/rewrite.py:175: in exec_module
-    source_stat, co = _rewrite_test(fn, self.config)
-/root/.venv/lib/python3.9/site-packages/_pytest/assertion/rewrite.py:355: in _rewrite_test
-    tree = ast.parse(source, filename=strfn)
-/root/.venv/lib/python3.9/ast.py:50: in parse
-    return compile(source, filename, mode, flags,
-E     File "/testbed/tests/test_domain_py.py", line 1013
-E       text = (".. py:function:: foo(text)
-E                                          ^
-E   SyntaxError: EOL while scanning string literal
-=============================== warnings summary ===============================
-sphinx/util/docutils.py:44
-  /testbed/sphinx/util/docutils.py:44: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version... output truncated
-```
-
-## 56. error_code — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_6/matplotlib__matplotlib-23476`, шаг 64
-- тесты проекта; программа: pytest
-- категория **error_code**, правило `1-pytest`, вид ошибки `code-traceback`, строка: `=============================== 1 error in 0.55s`; упавших: 0
-
-Команда:
-
-```text
-cd . && python -m pytest lib/matplotlib/tests/test_backend_bases.py -x 2>&1 | tail -20
-```
-
-Последние 15 строк вывода:
-
-```text
-plugins: timeout-2.3.1, xdist-3.6.1, rerunfailures-15.0, cov-6.0.0
-collected 0 items / 1 error
-
-==================================== ERRORS ====================================
-_________ ERROR collecting lib/matplotlib/tests/test_backend_bases.py __________
-lib/matplotlib/tests/test_backend_bases.py:8: in <module>
-    from matplotlib.testing._markers import needs_pgf_xelatex
-lib/matplotlib/testing/_markers.py:35: in <module>
-    "eps" not in matplotlib.testing.compare.converter,
-E   AttributeError: module 'matplotlib.testing' has no attribute 'compare'
-=========================== short test summary info ============================
-ERROR lib/matplotlib/tests/test_backend_bases.py - AttributeError: module 'ma...
-!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
-=============================== 1 error in 0.55s ===============================
-```
-
-## 57. error_code — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_3/django__django-12143`, шаг 26
-- тесты проекта; программа: runtests
-- категория **error_code**, правило `2-error`, вид ошибки `code-syntax`, строка: `SyntaxError`; упавших: 0
-
-Команда:
-
-```text
-python tests/runtests.py admin_changelist.tests.AdminChangelistTests.test_get_edited_object_ids_with_special_regex_chars
-```
-
-Последние 15 строк вывода:
-
-```text
-Traceback (most recent call last):
-  File "tests/runtests.py", line 566, in <module>
-    options.start_at, options.start_after, options.pdb,
-  File "tests/runtests.py", line 308, in django_tests
-    extra_tests=extra_tests,
-  File "/testbed/django/test/runner.py", line 682, in run_tests
-    suite = self.build_suite(test_labels, extra_tests)
-  File "/testbed/django/test/runner.py", line 540, in build_suite
-    tests = self.test_loader.loadTestsFromName(label)
-  File "/root/.venv/lib/python3.6/unittest/loader.py", line 153, in loadTestsFromName
-    module = __import__(module_name)
-  File "/testbed/tests/admin_changelist/tests.py", line 831
-    prefix_with_special_chars = 'form.test+'*'
-                                             ^
-SyntaxError: EOL while scanning string literal
-```
-
-## 58. error_code — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_9/django__django-13551`, шаг 42
-- тесты проекта; программа: runtests
-- категория **error_code**, правило `1-unittest`, вид ошибки `code-import`, строка: `Ran 1 test in 0.000s / FAILED (errors=1)`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py auth_tests.test_tokens 2>&1 | tail -50
-```
-
-Последние 15 строк вывода:
-
-```text
-ImportError: Failed to import test module: test_tokens
-Traceback (most recent call last):
-  File "/root/.venv/lib/python3.6/unittest/loader.py", line 153, in loadTestsFromName
-    module = __import__(module_name)
-  File "/testbed/tests/auth_tests/test_tokens.py", line 5, in <module>
-    from django.contrib.auth.tokens import PasswordResetTokenGenerator
-  File "/testbed/django/contrib/auth/tokens.py", line 5, in <module>
-    from django.contrib.auth.base_user import get_email_field_name
-ImportError: cannot import name 'get_email_field_name'
-
-
-----------------------------------------------------------------------
-Ran 1 test in 0.000s
-
-FAILED (errors=1)
-```
-
-## 59. error_code — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_2/django__django-15525`, шаг 104
-- тесты проекта; программа: runtests
-- категория **error_code**, правило `2-error`, вид ошибки `code-syntax`, строка: `SyntaxError`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py serializers.test_natural 2>&1 | tail -30
-```
-
-Последние 15 строк вывода:
-
-```text
-    failures = django_tests(
-  File "/testbed/tests/runtests.py", line 422, in django_tests
-    failures = test_runner.run_tests(test_labels)
-  File "/testbed/django/test/runner.py", line 1032, in run_tests
-    suite = self.build_suite(test_labels, extra_tests)
-  File "/testbed/django/test/runner.py", line 883, in build_suite
-    tests = self.load_tests_for_label(label, discover_kwargs)
-  File "/testbed/django/test/runner.py", line 834, in load_tests_for_label
-    tests = self.test_loader.loadTestsFromName(label)
-  File "/root/.venv/lib/python3.9/unittest/loader.py", line 154, in loadTestsFromName
-    module = __import__(module_name)
-  File "/testbed/tests/serializers/test_natural.py", line 277
-    NaturalKeySerializerTests,
-    ^
-SyntaxError: invalid syntax
-```
-
-## 60. error_code — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_7/django__django-15525`, шаг 54
-- тесты проекта; программа: runtests
-- категория **error_code**, правило `4b-runner-crash`, вид ошибки `code-traceback`, строка: `RuntimeError:`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py serializers.test_multidb_natural_key
-```
-
-Последние 15 строк вывода:
-
-```text
-  File "/testbed/django/test/runner.py", line 1032, in run_tests
-    suite = self.build_suite(test_labels, extra_tests)
-  File "/testbed/django/test/runner.py", line 883, in build_suite
-    tests = self.load_tests_for_label(label, discover_kwargs)
-  File "/testbed/django/test/runner.py", line 834, in load_tests_for_label
-    tests = self.test_loader.loadTestsFromName(label)
-  File "/root/.venv/lib/python3.9/unittest/loader.py", line 154, in loadTestsFromName
-    module = __import__(module_name)
-  File "/testbed/tests/serializers/test_multidb_natural_key.py", line 8, in <module>
-    class Author(models.Model):
-  File "/testbed/django/db/models/base.py", line 363, in __new__
-    new_class._meta.apps.register_model(new_class._meta.app_label, new_class)
-  File "/testbed/django/apps/registry.py", line 234, in register_model
-    raise RuntimeError(
-RuntimeError: Conflicting 'author' models in application 'serializers': <class 'serializers.models.base.Author'> and <class 'serializers.test_multidb_natural_key.Author'>.
-```
-
-## 61. script_ok — leaderboard
-
-- группа: kimi-k2.5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_kimi-k2-5-high/pytest-dev__pytest-8399`, шаг 48
-- самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_ok**, правило `5-script-rc0`, строка: `—`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python /tmp/test_fixture_visibility.py
-```
-
-Последние 15 строк вывода:
-
-```text
-PASS: unittest fixture hidden without -v
-PASS: unittest fixture visible with -v
-
-All tests passed!
-```
-
-## 62. script_ok — leaderboard
-
-- группа: deepseek-v3.2@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_deepseek-3-2-high/sympy__sympy-23413`, шаг 68
-- самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_ok**, правило `5-script-rc0`, строка: `—`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -c "
-import traceback
-from sympy import Matrix
-from sympy.polys.domains import ZZ, QQ
-from sympy.matrices.normalforms import hermite_normal_form
-from sympy.core.numbers import Integer
-
-print('Test 1')
-m = Matrix([[2, 7, 17, 29, 41], [3, 11, 19, 31, 43], [5, 13, 23, 37, 47]])
-hnf = Matrix([[1, 0, 0], [0, 2, 1], [0, 0, 1]])
-assert hermite_normal_form(m) == hnf
-print('passed')
-
-print('Test 2')
-tr_hnf = Matrix([[37, 0, 19], [222, -6, 113], [48, 0, 25], [0, 2, 1], [0, 0, 1]])
-assert hermite_normal_form(m.transpose()) == tr_hnf
-print('passed')
-
-print('Test 3')
-m = Matrix([[8, 2 …[команда усечена в отчёте]
-```
-
-Последние 15 строк вывода:
-
-```text
-Test 1
-passed
-Test 2
-passed
-Test 3
-passed
-passed D=8
-passed D=ZZ(8)
-passed D=Integer(8)
-Test 4
-passed
-Test 5
-passed
-All tests passed
-```
-
-## 63. script_ok — leaderboard
-
-- группа: devstral-small-2512 | 1.17.2
-- прогон: `20251209_mini-v1.17.2_devstral-small-2512/scikit-learn__scikit-learn-10908`, шаг 22
-- самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_ok**, правило `5-script-rc0`, строка: `—`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python test_comprehensive.py
-```
-
-Последние 15 строк вывода:
-
-```text
-============================================================
-Test 5: CountVectorizer with vocabulary as list with gaps
-============================================================
-Feature names from list: ['and', 'document', 'first', 'is', 'one', 'second', 'the', 'third', 'this']
-Test 5 passed
-
-============================================================
-Test 6: CountVectorizer with empty vocabulary - should fail
-============================================================
-Expected error: ValueError: empty vocabulary passed to fit
-Test 6 passed
-
-============================================================
-All tests passed!
-============================================================
-```
-
-## 64. script_ok — leaderboard
-
-- группа: gemini-3-flash-preview@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_gemini-3-flash-high/pytest-dev__pytest-6197`, шаг 46
-- самодельный скрипт; программа: pytest
-- категория **script_ok**, правило `1-pytest`, строка: `============================== 2 passed in 0.00s`; упавших: 0
-
-Команда:
-
-```text
-cd repro
-echo "import pytest
-@pytest.fixture(autouse=True)
-def package_fixture():
-    print('\nConftest fixture called')
-" > tests/conftest.py
-# Keep tests/__init__.py empty
-echo "" > tests/__init__.py
-pytest --assert=plain -c /dev/null -v -s .
-```
-
-Последние 15 строк вывода:
-
-```text
-============================= test session starts ==============================
-platform linux -- Python 3.11.5, pytest-5.2.4.dev7+g3ab00df44, py-1.11.0, pluggy-0.13.1 -- /opt/miniconda3/bin/python
-cachedir: .pytest_cache
-rootdir: /testbed/repro, inifile: /dev/null
-collecting ... Node chain: test_pass -> test_foo.py -> repro
-Node chain: test_in_package -> test_bar.py -> /testbed/repro/tests -> repro
-collected 2 items
-
-test_foo.py::test_pass PASSED
-tests/test_bar.py::test_in_package 
-Conftest fixture called
-PASSED
-
-============================== 2 passed in 0.00s ===============================
-```
-
-## 65. script_ok — leaderboard
-
-- группа: glm-5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_glm-5-high/pydata__xarray-4966`, шаг 22
-- самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
-- категория **script_ok**, правило `5-script-rc0`, строка: `—`; упавших: 0
-
-Команда:
-
-```text
-cat > /tmp/test_fillvalue.py << 'EOF'
-import numpy as np
-from xarray.coding.variables import UnsignedIntegerCoder
-from xarray import Variable
-import warnings
-
-def test_fillvalue_case():
-    """Test _Unsigned = 'false' with unsigned data and _FillValue"""
-    print('Test: _Unsigned = false with unsigned bytes and _FillValue')
-    # When _FillValue is 129 (unsigned), it should be interpreted as -127 (signed)
-    unsigned_data = np.array([0, 1, 127, 128, 129, 255], dtype='u1')
-    var = Variable(('x',), unsigned_data, {'_Unsigned': 'false', '_FillValue': 129})
-    coder = UnsignedIntegerCoder()
-  …[команда усечена в отчёте]
-```
-
-Последние 15 строк вывода:
-
-```text
-Test: _Unsigned = false with unsigned bytes and _FillValue
-Input dtype: uint8, data: [  0   1 127 128 129 255]
-Input _FillValue: 129
-Decoded dtype: int8, data: [   0    1  127 -128 -127   -1]
-Decoded _FillValue: -127
-PASS
-```
-
-## 66. script_ok — leaderboard
-
-- группа: minimax-m2.5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_minimax-2-5-high/django__django-14311`, шаг 40
-- самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_ok**, правило `5-script-rc0`, строка: `—`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python << 'EOF'
-# Let's test the edge cases again with the updated fix
-import sys
-from unittest import mock
-from django.utils import autoreload
-
-# Create a mock spec
-class FakeSpec:
-    def __init__(self, name, parent):
-        self.name = name
-        self.parent = parent
-
-print("Testing edge cases...")
-
-# Test case 1: Package with __main__.py (e.g., python -m django)
-with mock.patch('sys.argv', ['/path/to/django/__main__.py', 'runserver']):
-    with mock.patch('sys.warnoptions', []):
-        with mock.patch.dict(sys.modules, {'__main__': mock.MagicMock(__spec__=FakeSpec('djang …[команда усечена в отчёте]
-```
-
-Последние 15 строк вывода:
-
-```text
-  PASSED!
-Case 2 - Package (utils_tests.test_module.__main__): ['/opt/miniconda3/bin/python', '-m', 'utils_tests.test_module', 'runserver']
-  PASSED!
-Case 3 - Module (foo.bar.baz): ['/opt/miniconda3/bin/python', '-m', 'foo.bar.baz', 'runserver']
-  PASSED!
-Case 4 - Module deep (utils_tests.test_module.child_module.grandchild_module): ['/opt/miniconda3/bin/python', '-m', 'utils_tests.test_module.child_module.grandchild_module', 'runserver']
-  PASSED!
-Case 5 - Script run directly (spec.name='__main__'): ['/opt/miniconda3/bin/python', '/testbed/tests/utils_tests/test_autoreload.py', 'runserver']
-  PASSED!
-Case 6 - Simple module (simple_module): ['/opt/miniconda3/bin/python', '-m', 'simple_module', 'runserver']
-  PASSED!
-Case 7 - Simple module (simple_module, parent=None): ['/opt/miniconda3/bin/python', '-m', 'simple_module', 'runserver']
-  PASSED!
-
-All edge case tests passed!
-```
-
-## 67. script_ok — leaderboard
-
-- группа: claude-sonnet-4-5-20250929 | 1.13.3
-- прогон: `20250929_mini-v1.13.3_sonnet-4-5-20250929/sympy__sympy-15017`, шаг 44
-- самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_ok**, правило `5-script-rc0`, строка: `—`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python test_immutable_sparse.py
-```
-
-Последние 15 строк вывода:
-
-```text
-Testing ImmutableSparseNDimArray with rank-0:
-Array: 5
-Shape: ()
-Rank: 0
-len(a): 1
-list(a): [5]
-✓ PASS
-```
-
-## 68. script_ok — leaderboard
-
-- группа: claude-sonnet-4-5-20250929@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_claude-4-5-sonnet-high/pytest-dev__pytest-10051`, шаг 26
-- самодельный скрипт; программа: pytest
-- категория **script_ok**, правило `1-pytest`, строка: `============================== 1 passed in 0.00s`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -m pytest reproduce_issue.py -v
-```
-
-Последние 15 строк вывода:
-
-```text
-============================= test session starts ==============================
-platform linux -- Python 3.11.5, pytest-7.2.0.dev158+ge9c65fcea, pluggy-1.0.0 -- /opt/miniconda3/bin/python
-cachedir: .pytest_cache
-rootdir: /testbed, configfile: pyproject.toml
+plugins: filter-subpackage-0.1.2, astropy-header-0.2.2, remotedata-0.4.0, mock-3.11.1, hypothesis-6.82.6, doctestplus-1.0.0, cov-4.1.0, xdist-3.3.1, arraydiff-0.5.0, openfiles-0.5.0, astropy-0.10.0
 collecting ... collected 1 item
 
-reproduce_issue.py::test_caplog_clear_issue PASSED                       [100%]
+astropy/io/ascii/tests/test_qdp.py::test_roundtrip_example_comma FAILED  [100%]
 
-============================== 1 passed in 0.00s ===============================
+=================================== FAILURES ===================================
+_________________________ test_roundtrip_example_comma _________________________
+astropy/io/ascii/tests/test_qdp.py:188: in test_roundtrip_example_comma
+    t = Table.read(
+astropy/table/connect.py:62: in __call__
+    out = self.registry.read(cls, *args, **kwargs)
+astropy/io/registry/core.py:218: in read
+    data = reader(*args, **kwargs)... output truncated
 ```
 
-## 69. script_ok — kth
+## 6. A: fail — kth
 
 - группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_6/scikit-learn__scikit-learn-13496`, шаг 49
-- самодельный скрипт; программа: pytest
-- категория **script_ok**, правило `1-pytest`, строка: `======================== 3 passed, 16 warnings in 0.53s`; упавших: 0
+- прогон: `nano-agent-mistral_devstral-2512/run_1/django__django-11880`, шаг 43
+- тесты проекта; программа: runtests
+- категория **fail**, правило `1b-failed-tests`, строка: `ERROR: test_unicode_filename (forms_tests.tests.tests.FormsModelTestCase)`; упавших: 1; в раунде 3: unknown, тесты проекта
 
 Команда:
 
 ```text
-cd ./sklearn/ensemble/tests && python -m pytest test_iforest.py::test_warm_start test_iforest.py::test_warm_start_clear test_iforest.py::test_warm_start_smaller_n_estimators -v
+cd /testbed && python tests/runtests.py forms_tests.tests.tests.FormsModelTestCase.test_unicode_filename -v 2
 ```
 
 Последние 15 строк вывода:
 
 ```text
-============================= test session starts ==============================
-platform linux -- Python 3.6.13, pytest-6.2.4, py-1.11.0, pluggy-0.13.1 -- /root/.venv/bin/python
-cachedir: .pytest_cache
-rootdir: /testbed, configfile: setup.cfg
-collecting ... collected 3 items
+  Applying sites.0002_alter_domain_unique... OK
+System check identified no issues (0 silenced).
 
-test_iforest.py::test_warm_start PASSED                                  [ 33%]
-test_iforest.py::test_warm_start_clear PASSED                            [ 66%]
-test_iforest.py::test_warm_start_smaller_n_estimators PASSED             [100%]
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+test_unicode_filename (forms_tests.tests.tests.FormsModelTestCase) ... ERROR
 
-======================== 3 passed, 16 warnings in 0.53s ========================
+======================================================================
+ERROR: test_unicode_filename (forms_tests.tests.tests.FormsModelTestCase)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/testbed/tests/forms_tests/tests/tests.py", line 158, in test_unicode_filename
+    m = FileModel.objects.create(file=f.cleaned_data['file1'])
+  File "/testbed/django/db/models/manager.py", line 82, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "... output truncated
 ```
 
-## 70. script_ok — kth
+## 7. A: fail — kth
 
 - группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_9/matplotlib__matplotlib-24026`, шаг 73
-- самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_ok**, правило `5-script-rc0`, строка: `—`; упавших: 0
+- прогон: `nano-agent-mistral_devstral-2512/run_9/matplotlib__matplotlib-26342`, шаг 41
+- тесты проекта; программа: pytest
+- категория **fail**, правило `1b-failed-tests`, строка: `lib/matplotlib/tests/test_contour.py::test_contour_set_paths FAILED      [100%]`; упавших: 1; в раунде 3: unknown, тесты проекта
 
 Команда:
 
 ```text
-cd /tmp && python test_edge_cases.py
+cd . && python -m pytest lib/matplotlib/tests/test_contour.py::test_contour_set_paths -v
 ```
 
 Последние 15 строк вывода:
 
 ```text
-✓ Mixed colors work
-✓ Single color works
-✓ Hex colors work
-✓ RGB colors work
-
-✅ All edge case tests passed!
+                             for p in original_paths]
+    
+        # Test set_paths method
+        cs.set_paths(transformed_paths)
+        new_paths = cs.get_paths()
+    
+        # Verify paths were updated
+        assert len(new_paths) == original_count
+        for orig_path, new_path in zip(original_paths, new_paths):
+>           assert not np.array_equal(orig_path.vertices, new_path.vertices)
+E           assert not True
+E            +  where True = <function array_equal at 0x7618c07d3ef0>(array([], shape=(0, 2), dtype=float64), array([], shape=(0, 2), dtype=float64))
+E            +    where <function array_equal at 0x7618c07d3ef0> = np.array_equal
+E            +    and   array([], shape=(0, 2), dtype=float64) = Path(array([], shape=(0, 2), dtype=float64), None).vertices
+E            +    and   array([], shape=(0, 2), dtype=float64) = Path(array([], shape=(0, 2), dtype=float64), None).vertic... output truncated
 ```
 
-## 71. script_ok — kth
+## 8. A: fail — kth
 
 - группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_1/django__django-11292`, шаг 53
+- прогон: `nano-agent-mistral_devstral-2512/run_5/sphinx-doc__sphinx-8721`, шаг 95
+- тесты проекта; программа: pytest
+- категория **fail**, правило `1b-failed-tests`, строка: `FAILED tests/test_ext_viewcode.py::test_viewcode_epub_disabled - AssertionErr...`; упавших: 1; в раунде 3: unknown, тесты проекта
+
+Команда:
+
+```text
+cd /testbed && python -m pytest tests/test_ext_viewcode.py::test_viewcode_epub_disabled -xvs 2>&1 | grep -E "DEBUG|PASSED|FAILED|AssertionError"
+```
+
+Последние 15 строк вывода:
+
+```text
+tests/test_ext_viewcode.py::test_viewcode_epub_disabled DEBUG: Skipping module page generation for epub builder
+FAILED# testroot: root
+E       AssertionError: Module pages should not be created for epub when viewcode_enable_epub=False
+tests/test_ext_viewcode.py:114: AssertionError
+FAILED tests/test_ext_viewcode.py::test_viewcode_epub_disabled - AssertionErr...
+```
+
+## 9. B1: error_env — leaderboard
+
+- группа: devstral-small-2512 | 1.17.2
+- прогон: `20251209_mini-v1.17.2_devstral-small-2512/sympy__sympy-17630`, шаг 54
 - самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
-- категория **script_ok**, правило `5-script-rc0`, строка: `—`; упавших: 0
+- категория **error_env**, правило `3-script-error`, вид ошибки `env-script-exception`, строка: `TypeError: test_all_zeros() takes 0 positional arguments but 2 were given`; упавших: 0; в раунде 3: script_fail, самодельный скрипт
 
 Команда:
 
 ```text
-cat > /tmp/test_skip_checks.py << 'EOF'
+cat > /tmp/test_robustness.py << 'EOF'
+from sympy import *
+import traceback
+
+def test(description, func):
+    print(f"\n{description}")
+    try:
+        result = func()
+        print(f"✓ PASSED")
+        return True
+    except Exception as e:
+        print(f"✗ FAILED: {e}")
+        traceback.print_exc()
+        return False
+
+# Test 1: All zeros
+def test_all_zeros():
+    z = ZeroMatrix(2, 2)
+    b = BlockMatrix([[z, z], [z, z]])
+    result = b._blockmul(b)._blockmul(b)
+    assert hasattr(result.blocks[0, 0], 'rows')
+    assert hasattr(result.blocks[0, 0], 'cols')
+    return result
+
+# Test 2: Si …[команда усечена в отчёте]
+```
+
+Последние 15 строк вывода:
+
+```text
+returncode: 1
+Traceback (most recent call last):
+  File "/tmp/test_robustness.py", line 82, in <module>
+    passed = sum(1 for desc, test in tests if test(desc, test))
+  File "/tmp/test_robustness.py", line 82, in <genexpr>
+    passed = sum(1 for desc, test in tests if test(desc, test))
+TypeError: test_all_zeros() takes 0 positional arguments but 2 were given
+```
+
+## 10. B1: error_env — leaderboard
+
+- группа: devstral-2512 | 1.17.2
+- прогон: `20251209_mini-v1.17.2_devstral-2512/django__django-15629`, шаг 81
+- самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
+- категория **error_env**, правило `3-script-error`, вид ошибки `env-script-exception`, строка: `AttributeError: 'BigAutoField' object has no attribute 'db_collation'`; упавших: 0; в раунде 3: script_fail, самодельный скрипт
+
+Команда:
+
+```text
+cat <<'EOF' > /tmp/test_edge_cases.py
 import os
 import sys
 import django
-from io import StringIO
+from django.db import models
+from django.db import connection
 
 # Setup Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tests.user_commands.settings')
-sys.path.insert(0, '/root')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'test_settings')
+sys.path.insert(0, '/testbed')
 
-# Configure Django settings
-from django.conf import settings
-if not settings.configured:
-    settings.configure(
-        DEBUG=True,
-        DATABASES={
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': ':memory:',
-            }
-        },
-        INSTALLED_APPS=[
-            'django.contrib.contenttypes',
-            ' …[команда усечена в отчёте]
+# Create a minimal settings file
+settings_content = '''
+SECRET_KEY = 'test-secret-key'
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
+}
+
+INSTALLED_APPS = [
+    'django.contrib.contenttypes',
+    'django.contrib.auth',
+]
+
+USE_TZ = True
+'''
+
+with open('/tmp/test_settings.py', 'w') as f:
+ …[команда усечена в отчёте]
 ```
 
 Последние 15 строк вывода:
 
 ```text
-Command executed
-Test 1 - Programmatic call without skip_checks: counter=0 (expected: 0)
-Command executed
-Test 2 - Programmatic call with skip_checks=False: counter=1 (expected: 1)
-Command executed
-Test 3 - Programmatic call with skip_checks=True: counter=0 (expected: 0)
-All tests passed!
+returncode: 1
+Traceback (most recent call last):
+  File "/tmp/test_edge_cases.py", line 58, in <module>
+    print(f"   Account.id db_collation: {account_id.db_collation}")
+AttributeError: 'BigAutoField' object has no attribute 'db_collation'
+Testing edge case: target field without collation...
+
+1. Testing db_parameters:
 ```
 
-## 72. script_ok — kth
+## 11. B1: error_env — leaderboard
 
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_4/django__django-15731`, шаг 26
+- группа: minimax-m2 | 1.17.0
+- прогон: `20251124_mini-v1.17.0_minimax-m2/django__django-13346`, шаг 60
 - самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_ok**, правило `5-script-rc0`, строка: `—`; упавших: 0
+- категория **error_env**, правило `3-script-error`, вид ошибки `env-script-encoding`, строка: `UnicodeEncodeError: 'ascii' codec can't encode character '\U0001f4a5' in position 1: ordinal not in range(128)`; упавших: 0; в раунде 3: script_fail, самодельный скрипт
 
 Команда:
 
 ```text
-cd . && python -c "
-import sys
-import os
-
-# Test that the module can be imported
-from django.db.models import manager
-print('✓ manager module imports successfully')
-
-# Test that BaseManager is accessible
-from django.db.models.manager import BaseManager
-print('✓ BaseManager class is accessible')
-
-# Test that _get_queryset_methods exists
-assert hasattr(BaseManager, '_get_queryset_methods')
-print('✓ _get_queryset_methods method exists')
-
-# Test that functools is imported
-import django.db.models.manager as manager_module
-assert hasattr(manager_module, 'functools')
-print('✓ functools is imported in …[команда усечена в отчёте]
+python /testbed/test_keytransform_in.py
 ```
 
 Последние 15 строк вывода:
 
 ```text
-✓ manager module imports successfully
-✓ BaseManager class is accessible
-✓ _get_queryset_methods method exists
-✓ functools is imported in manager module
+Exact lookup (value__key=0): 1 results
+__in lookup (value__key__in=[0]): 1 results
+Traceback (most recent call last):
+  File "/testbed/test_keytransform_in.py", line 114, in <module>
+    test_keytransform_in_lookup()
+  File "/testbed/test_keytransform_in.py", line 66, in test_keytransform_in_lookup
+    print("\u2713 Single value __in lookup passed")
+UnicodeEncodeError: 'ascii' codec can't encode character '\u2713' in position 0: ordinal not in range(128)
 
-All import tests passed!
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/testbed/test_keytransform_in.py", line 120, in <module>
+    print(f"\n\U0001f4a5 ERROR: {e}")
+UnicodeEncodeError: 'ascii' codec can't encode character '\U0001f4a5' in position 1: ordinal not in range(128)
 ```
 
-## 73. script_ok — kth
+## 12. B1: error_env — leaderboard
 
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_8/astropy__astropy-8872`, шаг 77
-- самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_ok**, правило `5-script-rc0`, строка: `—`; упавших: 0
+- группа: devstral-small-2512 | 1.17.2
+- прогон: `20251209_mini-v1.17.2_devstral-small-2512/scikit-learn__scikit-learn-13328`, шаг 25
+- самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
+- категория **error_env**, правило `3-script-error`, вид ошибки `env-script-encoding`, строка: `UnicodeEncodeError: 'ascii' codec can't encode character '\u2713' in position 0: ordinal not in range(128)`; упавших: 0; в раунде 3: script_fail, самодельный скрипт
 
 Команда:
 
 ```text
-cd /testbed && python3 -c "
+cat > /tmp/test_boolean_fix.py << 'EOF'
+"""
+Test to verify that HuberRegressor now handles boolean arrays correctly.
+This test addresses the issue described in the PR where boolean arrays
+caused a TypeError due to the inability to negate boolean arrays in NumPy.
+"""
 import numpy as np
-import astropy.units as u
+from sklearn.datasets import make_regression
+from sklearn.linear_model import HuberRegressor
 
-print('Verifying the original issue is fixed...')
-print()
-
-# Original issue: float16 gets upgraded to float64
-print('Before fix, this would have been float64:')
-q = np.float16(1) * u.km
-print(f'(np.float16(1) * u.km).dtype = {q.dtype}')
-assert q.dtype == np.float16, 'FAILED: float16 was not preserved'
-
-print()
-print('Other float types should still work:')
-print(f'(np.float32(1) * u.km).dtype = {(np.float32(1) * u.km).dtype}')
-print(f'(np.float64(1) * u.km).dtype = {(np.float64(1) * u.km).dtype}')
-print(f'(np.float128(1)  …[команда усечена в отчёте]
+def test_boolean_array_support():
+    """Test that HuberRegressor works with boolean arrays."""
+    # Create test data
+    X, y, _ = make_regression(n_samples=200, n_features=2, noise=4.0,
+                              c …[команда усечена в отчёте]
 ```
 
 Последние 15 строк вывода:
 
 ```text
-Verifying the original issue is fixed...
-
-Before fix, this would have been float64:
-(np.float16(1) * u.km).dtype = float16
-
-Other float types should still work:
-(np.float32(1) * u.km).dtype = float32
-(np.float64(1) * u.km).dtype = float64
-(np.float128(1) * u.km).dtype = float128
-
-✓ Original issue is FIXED!
+returncode: 1
+Traceback (most recent call last):
+  File "/tmp/test_boolean_fix.py", line 57, in <module>
+    test_boolean_array_support()
+  File "/tmp/test_boolean_fix.py", line 31, in test_boolean_array_support
+    print("\u2713 Boolean array support test passed")
+UnicodeEncodeError: 'ascii' codec can't encode character '\u2713' in position 0: ordinal not in range(128)
 ```
 
-## 74. script_ok — kth
+## 13. B1: error_env — kth
 
 - группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_3/django__django-13343`, шаг 43
+- прогон: `nano-agent-mistral_devstral-2512/run_5/django__django-14140`, шаг 50
 - самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_ok**, правило `5-script-rc0`, строка: `—`; упавших: 0
+- категория **error_env**, правило `3-script-error`, вид ошибки `env-script-exception`, строка: `NameError: name 'Exists' is not defined`; упавших: 0; в раунде 3: script_fail, самодельный скрипт
 
 Команда:
 
 ```text
-cd /root && python << 'EOF'
-import sys
+cd /root && python -c "
 import os
+import sys
 import django
 from django.conf import settings
 
+settings.configure(
+    DEBUG=True,
+    DATABASES={'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': ':memory:'}},
+    INSTALLED_APPS=['django.contrib.auth', 'django.contrib.contenttypes'],
+    SECRET_KEY='test',
+)
+django.setup()
+
+from django.db.models import Q
+from django.contrib.auth import get_user_model
+
+print('Verifying the exact examples from the issue description:')
+print()
+
+# Example 1 from issue
+print('1. Q(x=1).deconstruct()')
+result = Q(x=1).deconstruct()
+print(f'   Result: {result …[команда усечена в отчёте]
+```
+
+Последние 15 строк вывода:
+
+```text
+1. Q(x=1).deconstruct()
+   Result: ('django.db.models.Q', (), {'x': 1})
+   Expected: ("django.db.models.Q", (), {"x": 1})
+   ✓ MATCHES
+
+2. Q(x=1, y=2).deconstruct()
+   Result: ('django.db.models.Q', (('x', 1), ('y', 2)), {})
+   Expected: ("django.db.models.Q", (("x", 1), ("y", 2)), {})
+   ✓ MATCHES
+
+3. Q(Exists(get_user_model().objects.filter(username="jim"))).deconstruct()
+
+Traceback (most recent call last):
+  File "<string>", line 43, in <module>
+NameError: name 'Exists' is not defined
+```
+
+## 14. B1: error_env — kth
+
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_8/pydata__xarray-6721`, шаг 28
+- самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
+- категория **error_env**, правило `3-script-error`, вид ошибки `env-script-exception`, строка: `TypeError: DataArray.__init__() got an unexpected keyword argument 'chunks'`; упавших: 0; в раунде 3: script_fail, самодельный скрипт
+
+Команда:
+
+```text
+cat > /tmp/test_fix2.py << 'EOF'
+import xarray as xr
+import numpy as np
+
+# Create a simple test with a dask array
+print("Creating test dataset with dask...")
+data = np.random.rand(100, 100)
+
+# Create a chunked dask array
+dask_array = xr.DataArray(data, chunks=(10, 10))
+ds = xr.Dataset({'data': dask_array})
+
+print("Dataset created. Now accessing chunks...")
+print("This should not load data into memory!")
+chunks = ds.chunks
+print(f"Chunks: {chunks}")
+print("Success! No data was loaded into memory.")
+
+# Verify that the chunks are correct
+assert 'dim_0' in chunks or 'dim_1' in chunks, "Chunks shou …[команда усечена в отчёте]
+```
+
+Последние 15 строк вывода:
+
+```text
+returncode: 1
+command failed with exit code 1. Error output:
+Creating test dataset with dask...
+
+Traceback (most recent call last):
+  File "/tmp/test_fix2.py", line 9, in <module>
+    dask_array = xr.DataArray(data, chunks=(10, 10))
+TypeError: DataArray.__init__() got an unexpected keyword argument 'chunks'
+```
+
+## 15. B1: error_env — kth
+
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_4/scikit-learn__scikit-learn-13135`, шаг 16
+- самодельный скрипт; программа: —; код возврата от проверки
+- категория **error_env**, правило `3-script-error`, вид ошибки `env-script-encoding`, строка: `UnicodeEncodeError: 'ascii' codec can't encode character '\u2713' in position 0: ordinal not in range(128)`; упавших: 0; в раунде 3: script_fail, самодельный скрипт
+
+Команда:
+
+```text
+cd /tmp && python3 << 'EOF'
+import numpy as np
+from sklearn.preprocessing import KBinsDiscretizer
+
+# Test the exact case from the issue
+X = np.array([0, 0.5, 2, 3, 9, 10]).reshape(-1, 1)
+
+# with 5 bins (the problematic case)
+est = KBinsDiscretizer(n_bins=5, strategy='kmeans', encode='ordinal')
+Xt = est.fit_transform(X)
+
+print("Transformed data:", Xt.ravel())
+print("Bin edges:", est.bin_edges_)
+
+# Verify bin edges are sorted
+bin_edges = est.bin_edges_[0]
+assert np.all(bin_edges[:-1] <= bin_edges[1:]), "Bin edges are not sorted!"
+print("✓ Bin edges are sorted")
+
+# Test with different encoding op …[команда усечена в отчёте]
+```
+
+Последние 15 строк вывода:
+
+```text
+returncode: 1
+command failed with exit code 1. Error output:
+Transformed data: [0. 0. 1. 2. 3. 4.]
+Bin edges: [array([ 0.   ,  1.125,  2.5  ,  6.   ,  9.5  , 10.   ])]
+
+Traceback (most recent call last):
+  File "<stdin>", line 17, in <module>
+UnicodeEncodeError: 'ascii' codec can't encode character '\u2713' in position 0: ordinal not in range(128)
+```
+
+## 16. B1: error_env — kth
+
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_4/sympy__sympy-15875`, шаг 80
+- самодельный скрипт; программа: —; код возврата от проверки
+- категория **error_env**, правило `3-script-error`, вид ошибки `env-script-exception`, строка: `AttributeError: 'int' object has no attribute 'is_zero'`; упавших: 0; в раунде 3: script_fail, самодельный скрипт
+
+Команда:
+
+```text
+python3 << 'EOF'
+from sympy import I, S, symbols, simplify, Matrix
+
+print("Testing is_zero fix for complex integers")
+print("="*70)
+
+# Test 1: Original issue
+print("\nTest 1: Original issue")
+e = -2*I + (1 + I)**2
+print(f"  Expression: {e}")
+print(f"  e.is_zero: {e.is_zero}")
+print(f"  simplify(e): {simplify(e)}")
+print(f"  simplify(e).is_zero: {simplify(e).is_zero}")
+assert e.is_zero is None, "e.is_zero should be None, not False"
+assert simplify(e).is_zero is True, "simplify(e).is_zero should be True"
+print("  ✓ Passed")
+
+# Test 2: All imaginary arguments that sum to zero
+print("\nTest 2: All …[команда усечена в отчёте]
+```
+
+Последние 15 строк вывода:
+
+```text
+  Expression: 3*I
+  e3.is_zero: False
+  ✓ Passed
+
+Test 4: Mixed real and imaginary
+  Expression: 1 + I
+  e4.is_zero: False
+  ✓ Passed
+
+Test 5: Real arguments that sum to zero
+  Expression: 0
+
+Traceback (most recent call last):
+  File "<stdin>", line 45, in <module>
+AttributeError: 'int' object has no attribute 'is_zero'
+```
+
+## 17. B2: script_fail — leaderboard
+
+- группа: minimax-m2 | 1.17.0
+- прогон: `20251124_mini-v1.17.0_minimax-m2/matplotlib__matplotlib-25332`, шаг 34
+- самодельный скрипт; программа: —; код возврата от проверки
+- категория **script_fail**, правило `3-script-marker`, строка: `✗`; упавших: 1; в раунде 3: unknown, самодельный скрипт
+
+Команда:
+
+```text
+cd /testbed && python test_pickle_comprehensive.py
+```
+
+Последние 15 строк вывода:
+
+```text
+returncode: 1
+Testing comprehensive pickling...
+✓ Pickling successful
+✓ Unpickling successful
+✓ Figure structure preserved
+✓ align_labels() works on unpickled figure
+
+Testing Grouper pickling...
+✓ Grouper functionality before pickling
+✗ Grouper pickling failed: Can't pickle local object 'test_grouper_pickling.<locals>.TestObj'
+
+Testing empty Grouper pickling...
+✓ Empty Grouper pickling successful
+
+❌ Some tests failed!
+```
+
+## 18. B2: script_fail — leaderboard
+
+- группа: gemini-3-flash-preview@high | 2.0.0
+- прогон: `20260217_mini-v2.0.0_gemini-3-flash-high/pytest-dev__pytest-7521`, шаг 46
+- самодельный скрипт; программа: —; код возврата от проверки
+- категория **script_fail**, правило `3-script-marker`, строка: `Failed`; упавших: 1; в раунде 3: unknown, самодельный скрипт
+
+Команда:
+
+```text
+git checkout src/_pytest/assertion/rewrite.py
+python manual_test.py
+```
+
+Последние 15 строк вывода:
+
+```text
+returncode: 1
+Updated 1 path from the index
+Result: 'Greetings from DOS\n'
+Failed!
+```
+
+## 19. B2: script_fail — leaderboard
+
+- группа: devstral-small-2512 | 1.17.2
+- прогон: `20251209_mini-v1.17.2_devstral-small-2512/django__django-15499`, шаг 41
+- самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
+- категория **script_fail**, правило `3-script-marker`, строка: `failed`; упавших: 1; в раунде 3: unknown, самодельный скрипт
+
+Команда:
+
+```text
+cat > /testbed/test_edge_cases.py << 'EOF'
+import os
+import sys
+import django
+from django.conf import settings
+
+# Configure Django settings
 settings.configure(
     DEBUG=True,
     DATABASES={
@@ -2506,35 +1086,58 @@ settings.configure(
         'django.contrib.contenttypes',
         'django.contrib.auth',
     ],
-    SECRET_KEY='test',
+    SECRET_KEY='test-secret-key',
 )
 
 django.setup()
 
-from django.db import models
-from django.core.files.storage import FileSystemStorage, default_storage
+from django.db import migrations, models
+from django.db.migrations.optimizer import MigrationOptimizer
 
-# Test that the deconstructed field can be reconstructed
-print('Test: Reconstructing f …[команда усечена в отчёте]
+def test_multiple_alter_model_m …[команда усечена в отчёте]
 ```
 
 Последние 15 строк вывода:
 
 ```text
-Test: Reconstructing from deconstructed field
-Deconstructed kwargs: {'upload_to': 'test/', 'storage': <function my_storage at 0x77cbe1e222f0>}
-Upload_to matches: test/
-Storage is the original callable: True
-Runtime storage is evaluated: True
-Reconstruction test passed!
+returncode: 1
+Test: Multiple AlterModelManagers operations
+Test failed: Expected 2 operations, got 1
 ```
 
-## 75. script_ok — kth
+## 20. B2: script_fail — leaderboard
+
+- группа: glm-5@high | 2.0.0
+- прогон: `20260217_mini-v2.0.0_glm-5-high/django__django-11490`, шаг 15
+- самодельный скрипт; программа: —; код возврата от проверки
+- категория **script_fail**, правило `3-script-marker`, строка: `✗`; упавших: 1; в раунде 3: unknown, самодельный скрипт
+
+Команда:
+
+```text
+python /testbed/test_union_bug.py
+```
+
+Последние 15 строк вывода:
+
+```text
+returncode: 1
+First query result (name, order): ('a', 2)
+Expected: ('a', 2)
+
+Second query result (order only): ('a', 2)
+Expected: (2,)
+Actual: ('a', 2)
+
+✗ Test FAILED - Issue still exists. Got ('a', 2) instead of (2,)
+```
+
+## 21. B2: script_fail — kth
 
 - группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_8/django__django-12419`, шаг 72
+- прогон: `nano-agent-mistral_devstral-2512/run_3/django__django-13406`, шаг 77
 - самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
-- категория **script_ok**, правило `5-script-rc0`, строка: `—`; упавших: 0
+- категория **script_fail**, правило `3-script-marker`, строка: `FAIL`; упавших: 1; в раунде 3: unknown, самодельный скрипт
 
 Команда:
 
@@ -2544,1045 +1147,888 @@ import os
 import sys
 import django
 from django.conf import settings
-from django.test import RequestFactory
-from django.middleware.security import SecurityMiddleware
-from django.http import HttpResponse
-
-# Test 1: Default behavior (should set same-origin)
-print("Test 1: Default behavior")
-print("="*60)
-settings.configure(
-    DEBUG=True,
-    SECRET_KEY='test-secret-key',
-    MIDDLEWARE=['django.middleware.security.SecurityMiddleware'],
-)
-django.setup()
-
-middleware = SecurityMiddleware(get_response=lambda r: HttpResponse("OK"))
-factory = RequestFactory() …[команда усечена в отчёте]
-```
-
-Последние 15 строк вывода:
-
-```text
-
-Test 2: Explicitly set to None
-============================================================
-None value does not set Referrer-Policy header
-
-Test 3: Set to different value
-============================================================
-Custom value sets Referrer-Policy correctly
-
-Test 4: Multiple values (fallback)
-============================================================
-Multiple values work correctly
-
-============================================================
-All tests passed!
-```
-
-## 76. script_fail — leaderboard
-
-- группа: deepseek-v3.2@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_deepseek-3-2-high/pydata__xarray-6721`, шаг 95
-- самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
-- категория **script_fail**, правило `3-script-traceback`, строка: `Traceback (most recent call last)`; упавших: 1
-
-Команда:
-
-```text
-cd /testbed && cat > /tmp/verify_fix.py << 'EOF'
-import sys
-sys.path.insert(0, '.')
-import xarray as xr
-import numpy as np
-import dask.array as da
-import zarr
-import tempfile
-import shutil
-import os
-
-# Test that ds.chunks for dask arrays works
-print('Testing dask array chunks')
-darr = da.from_array(np.random.randn(30, 40), chunks=(10, 20))
-ds = xr.Dataset({'b': (['x', 'y'], darr)})
-print('ds.chunks:', ds.chunks)
-assert ds.chunks['x'] == (10, 10, 10)
-assert ds.chunks['y'] == (20, 20)
-print('OK')
-
-# Create a zarr dataset in temporary directory
-print('Testing zarr dataset...')
-tmpdir = tempfile.m …[команда усечена в отчёте]
-```
-
-Последние 15 строк вывода:
-
-```text
-  File "/testbed/xarray/backends/zarr.py", line 450, in open_store_variable
-    "compressor": zarr_array.compressor,
-                  ^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/miniconda3/lib/python3.11/site-packages/typing_extensions.py", line 3004, in wrapper
-    return arg(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^
-  File "/opt/miniconda3/lib/python3.11/site-packages/zarr/core/array.py", line 2466, in compressor
-    return self.async_array.compressor
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/miniconda3/lib/python3.11/site-packages/typing_extensions.py", line 3004, in wrapper
-    return arg(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^
-  File "/opt/miniconda3/lib/python3.11/site-packages/zarr/core/array.py", line 1118, in compressor
-    raise TypeError("`compressor` is not available for Zarr format 3 arrays.")
-TypeError: `compressor` is not available for Zarr format 3 arrays.
-```
-
-## 77. script_fail — leaderboard
-
-- группа: glm-4.6 | 1.17.1
-- прогон: `20251201_mini-v1.17.1_glm-4.6/matplotlib__matplotlib-23299`, шаг 32
-- самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_fail**, правило `3-script-traceback`, строка: `Traceback (most recent call last)`; упавших: 1
-
-Команда:
-
-```text
-cd /testbed && python reproduce_bug.py
-```
-
-Последние 15 строк вывода:
-
-```text
-returncode: 1
-Traceback (most recent call last):
-  File "/testbed/reproduce_bug.py", line 14, in <module>
-    assert before == after, '\n' + before + '\n' + after
-           ^^^^^^^^^^^^^^^
-AssertionError: 
-106325149266096 OrderedDict([(1, <matplotlib.backend_bases.FigureManagerBase object at 0x73cc44fedd50>)])
-106325149266096 OrderedDict()
-Before get_backend(): 106325149266096 OrderedDict([(1, <matplotlib.backend_bases.FigureManagerBase object at 0x73cc44fedd50>)])
-After get_backend(): 106325149266096 OrderedDict()
-```
-
-## 78. script_fail — leaderboard
-
-- группа: claude-sonnet-4-5-20250929 | 1.13.3
-- прогон: `20250929_mini-v1.13.3_sonnet-4-5-20250929/django__django-11451`, шаг 15
-- самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_fail**, правило `3-script-traceback`, строка: `Traceback (most recent call last)`; упавших: 1
-
-Команда:
-
-```text
-cd /testbed && python test_auth_comprehensive.py
-```
-
-Последние 15 строк вывода:
-
-```text
-returncode: 1
-Test 1: username=None, password=None
-======================================================================
-Result: None
-Number of queries: 0
-Traceback (most recent call last):
-  File "test_auth_comprehensive.py", line 50, in <module>
-    print("\u2713 PASSED\n")
-UnicodeEncodeError: 'ascii' codec can't encode character '\u2713' in position 0: ordinal not in range(128)
-```
-
-## 79. script_fail — leaderboard
-
-- группа: minimax-m2 | 1.17.0
-- прогон: `20251124_mini-v1.17.0_minimax-m2/django__django-13012`, шаг 46
-- самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
-- категория **script_fail**, правило `3-script-traceback`, строка: `Traceback (most recent call last)`; упавших: 1
-
-Команда:
-
-```text
-cat <<'EOF' > /testbed/test_contains_aggregate.py
-"""
-Test that contains_aggregate works correctly with ExpressionWrapper
-"""
-import django
-from django.conf import settings
-from django.db import models
-from django.db.models import Sum, Value, IntegerField, F, Count
-from django.db.models.expressions import ExpressionWrapper
 
 # Configure Django settings
-if not settings.configured:
-    settings.configure(
-        DEBUG=True,
-        DATABASES={
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': ':memory:',
-            }
-        },
-        INST …[команда усечена в отчёте]
+settings.configure(
+    DEBUG=True,
+    DATABASES={
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    },
+    INSTALLED_APPS=[
+        'django.contrib.contenttypes',
+        'django.contrib.auth',
+    ],
+    SECRET_KEY='test-secret-key',
+)
+
+django.setup()
+
+# Create a simple model
+from django.db import models
+from django.db.models import Sum, Count
+
+# Use a different approach - create model  …[команда усечена в отчёте]
 ```
 
 Последние 15 строк вывода:
 
 ```text
-returncode: 1
-Test 1 PASSED: ExpressionWrapper(Value(42)).contains_aggregate = False
-Traceback (most recent call last):
-  File "/testbed/test_contains_aggregate.py", line 56, in <module>
-    test_contains_aggregate()
-  File "/testbed/test_contains_aggregate.py", line 45, in test_contains_aggregate
-    assert not expr2.contains_aggregate, "ExpressionWrapper with F() should not contain aggregate"
-  File "/testbed/django/utils/functional.py", line 48, in __get__
-    res = instance.__dict__[self.name] = self.func(instance)
-  File "/testbed/django/db/models/expressions.py", line 222, in contains_aggregate
-    return any(expr and expr.contains_aggregate for expr in self.get_source_expressions())
-  File "/testbed/django/db/models/expressions.py", line 222, in <genexpr>
-    return any(expr and expr.contains_aggregate for expr in self.get_source_expressions())
-AttributeError: 'F' object has no attribute 'contains_aggregate'
+PASS
+
+Test 5: values_list(named=True)
+============================================================
+Original result: [Row(material='wood', price=10), Row(material='plastic', price=20), Row(material='wood', price=100)]
+Original type: <class 'django.db.models.query.Row'>
+Pickled result: [Row(material='wood', price=10), Row(material='plastic', price=20), Row(material='wood', price=100)]
+Pickled type: <class 'django.db.models.query.Row'>
+FAIL: Type mismatch: <class 'django.db.models.query.Row'> != <class 'tuple'>
+
+Test 6: values() with multiple fields
+============================================================
+Original result: [{'material': 'wood', 'price': 10}, {'material': 'plastic', 'price': 20}, {'material': 'wood', 'price': 100}]
+Original type: <class 'dict'>
+Pickled... output truncated
 ```
 
-## 80. script_fail — leaderboard
+## 22. B2: script_fail — kth
 
-- группа: gemini-3-flash-preview@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_gemini-3-flash-high/django__django-15572`, шаг 14
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_1/django__django-13590`, шаг 23
 - самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
-- категория **script_fail**, правило `3-script-traceback`, строка: `Traceback (most recent call last)`; упавших: 1
+- категория **script_fail**, правило `3-script-marker`, строка: `FAIL`; упавших: 1; в раунде 3: unknown, самодельный скрипт
 
 Команда:
 
 ```text
-sed -i "s/'DIRS': \[''\]/'DIRS': \[pathlib.Path('')\]/" reproduce_issue.py
-python3 reproduce_issue.py
-```
-
-Последние 15 строк вывода:
-
-```text
-returncode: 1
-CWD: /testbed
-Template directories: {PosixPath('/testbed')}
-Traceback (most recent call last):
-  File "/testbed/reproduce_issue.py", line 44, in <module>
-    test_template_directories()
-  File "/testbed/reproduce_issue.py", line 27, in test_template_directories
-    assert cwd not in dirs  # Should be NOT in dirs now
-           ^^^^^^^^^^^^^^^
-AssertionError
-```
-
-## 81. script_fail — leaderboard
-
-- группа: minimax-m2 | 1.17.0
-- прогон: `20251124_mini-v1.17.0_minimax-m2/pytest-dev__pytest-7490`, шаг 92
-- самодельный скрипт; программа: pytest
-- категория **script_fail**, правило `1-pytest`, строка: `==================== 2 failed, 1 passed, 3 xfailed in 0.02s`; упавших: 2
-
-Команда:
-
-```text
-python -m pytest test_comprehensive_xfail.py -v
-```
-
-Последние 15 строк вывода:
-
-```text
-test_comprehensive_xfail.py::test_dynamic_xfail XFAIL                    [ 33%]
-test_comprehensive_xfail.py::test_dynamic_xpass FAILED                   [ 50%]
-test_comprehensive_xfail.py::test_dynamic_xfail_strict FAILED            [ 66%]
-test_comprehensive_xfail.py::test_dynamic_xfail_condition XFAIL          [ 83%]
-test_comprehensive_xfail.py::test_normal_test PASSED                     [100%]
-
-=================================== FAILURES ===================================
-______________________________ test_dynamic_xpass ______________________________
-[XPASS(strict)] dynamic xpass
-__________________________ test_dynamic_xfail_strict ___________________________
-[XPASS(strict)] strict xfail
-=========================== short test summary info ============================
-FAILED test_comprehensive_xfail.py::test_dynamic_xpass
-FAILED test_comprehensive_xfail.py::test_dynamic_xfail_strict
-==================== 2 failed, 1 passed, 3 xfailed in 0.02s ====================
-```
-
-## 82. script_fail — leaderboard
-
-- группа: deepseek-v3.2@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_deepseek-3-2-high/django__django-13551`, шаг 42
-- самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
-- категория **script_fail**, правило `3-script-traceback`, строка: `Traceback (most recent call last)`; упавших: 1
-
-Команда:
-
-```text
-cat > /tmp/test_mock2.py << 'EOF'
-import sys
-sys.path.insert(0, '/testbed')
-from django.conf import settings
-if not settings.configured:
-    settings.configure(
-        SECRET_KEY='test',
-        DEFAULT_HASHING_ALGORITHM='sha256',
-    )
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-import datetime
-
-class MockUser:
-    def __init__(self, pk, password, last_login=None, email=''):
-        self.pk = pk
-        self.password = password
-        self.last_login = last_login
-        self.email = email
-    
-    def get_email_field_name(self):
-        return 'email'
-
-def test_email …[команда усечена в отчёте]
-```
-
-Последние 15 строк вывода:
-
-```text
-  File "/tmp/test_mock2.py", line 73, in <module>
-    test_email_field_name()
-  File "/tmp/test_mock2.py", line 64, in test_email_field_name
-    token = generator.make_token(user)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/testbed/django/contrib/auth/tokens.py", line 28, in make_token
-    return self._make_token_with_timestamp(user, self._num_seconds(self._now()))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/testbed/django/contrib/auth/tokens.py", line 70, in _make_token_with_timestamp
-    self._make_hash_value(user, timestamp),
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/testbed/django/contrib/auth/tokens.py", line 95, in _make_hash_value
-    login_timestamp = '' if user.last_login is None else user.last_login.replace(microsecond=0, tzinfo=None)
-                            ^^^^^^^^^^^^^^^
-AttributeError: 'CustomMockUser' object has no attribute 'last_login'
-```
-
-## 83. script_fail — leaderboard
-
-- группа: glm-4.6 | 1.17.1
-- прогон: `20251201_mini-v1.17.1_glm-4.6/pytest-dev__pytest-6202`, шаг 8
-- самодельный скрипт; программа: pytest
-- категория **script_fail**, правило `1-pytest`, строка: `============================== 1 failed in 0.02s`; упавших: 1
-
-Команда:
-
-```text
-python -m pytest test_bug_reproduction.py -v
-```
-
-Последние 15 строк вывода:
-
-```text
-
-=================================== FAILURES ===================================
-________________________________ test_boo[..[] _________________________________
-
-a = '..['
-
-    @pytest.mark.parametrize("a",["..["])
-    def test_boo(a):
->       assert 0
-E       assert 0
-
-test_bug_reproduction.py:5: AssertionError
-=========================== short test summary info ============================
-FAILED test_bug_reproduction.py::test_boo[..[] - assert 0
-============================== 1 failed in 0.02s ===============================
-```
-
-## 84. script_fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_4/pytest-dev__pytest-7490`, шаг 10
-- самодельный скрипт; программа: pytest
-- категория **script_fail**, правило `1-pytest`, строка: `============================== 1 failed in 0.01s`; упавших: 1
-
-Команда:
-
-```text
-cd /tmp && python -m pytest -rsx test_xfail_dynamic.py
-```
-
-Последние 15 строк вывода:
-
-```text
-test_xfail_dynamic.py F                                                  [100%]
-
-=================================== FAILURES ===================================
-_______________________________ test_xfail_test ________________________________
-
-request = <FixtureRequest for <Function test_xfail_test>>
-
-    def test_xfail_test(request):
-        mark = pytest.mark.xfail(reason="xfail")
-        request.node.add_marker(mark)
->       assert 0
-E       assert 0
-
-test_xfail_dynamic.py:7: AssertionError
-============================== 1 failed in 0.01s ===============================
-```
-
-## 85. script_fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_3/pylint-dev__pylint-4970`, шаг 85
-- самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_fail**, правило `3-script-traceback`, строка: `Traceback (most recent call last)`; упавших: 1
-
-Команда:
-
-```text
-cd . && python /tmp/test_pylint_integration2.py
-```
-
-Последние 15 строк вывода:
-
-```text
-returncode: 1
-command failed with exit code 1. Error output:
-Traceback (most recent call last):
-  File "/tmp/test_pylint_integration2.py", line 29, in <module>
-    test_min_similarity_lines_non_zero_with_pylinter()
-  File "/tmp/test_pylint_integration2.py", line 23, in test_min_similarity_lines_non_zero_with_pylinter
-    messages = [msg for msg in linter.reporter.messages if msg.msg_id == 'R0801']
-  File "/tmp/test_pylint_integration2.py", line 23, in <listcomp>
-    messages = [msg for msg in linter.reporter.messages if msg.msg_id == 'R0801']
-AttributeError: 'str' object has no attribute 'msg_id'
-```
-
-## 86. script_fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_1/pytest-dev__pytest-6202`, шаг 9
-- самодельный скрипт; программа: pytest
-- категория **script_fail**, правило `1-pytest`, строка: `============================== 1 failed in 0.04s`; упавших: 1
-
-Команда:
-
-```text
-cd /tmp && python -m pytest test_bug.py -v
-```
-
-Последние 15 строк вывода:
-
-```text
-
-test_bug.py::test_boo[..[] FAILED                                        [100%]
-
-=================================== FAILURES ===================================
-_________________________________ test_boo[.[] _________________________________
-
-a = '..['
-
-    @pytest.mark.parametrize("a",["..["])
-    def test_boo(a):
->       assert 0
-E       assert 0
-
-test_bug.py:5: AssertionError
-============================== 1 failed in 0.04s ===============================
-```
-
-## 87. script_fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_7/django__django-13279`, шаг 49
-- самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_fail**, правило `3-script-traceback`, строка: `Traceback (most recent call last)`; упавших: 1
-
-Команда:
-
-```text
-cd . && python /tmp/test_legacy_decode.py
-```
-
-Последние 15 строк вывода:
-
-```text
-returncode: 1
-command failed with exit code 1. Error output:
-Testing legacy decode with existing test data
-Decoded: {}
-
-Session data corrupted
-Traceback (most recent call last):
-  File "/tmp/test_legacy_decode.py", line 37, in <module>
-    assert decoded == expected, f'Expected {expected}, got {decoded}'
-AssertionError: Expected {'a test key': 'a test value'}, got {}
-```
-
-## 88. script_fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_8/django__django-12262`, шаг 74
-- самодельный скрипт; программа: —; код возврата от проверки
-- категория **script_fail**, правило `3-script-traceback`, строка: `Traceback (most recent call last)`; упавших: 1
-
-Команда:
-
-```text
-cd /tmp && python3 test_keyword_only.py
-```
-
-Последние 15 строк вывода:
-
-```text
-  File "test_keyword_only.py", line 68, in <module>
-    template = Template("{% load test_tag %}{% hi %}")
-  File "/testbed/django/template/base.py", line 155, in __init__
-    self.nodelist = self.compile_nodelist()
-  File "/testbed/django/template/base.py", line 193, in compile_nodelist
-    return parser.parse()
-  File "/testbed/django/template/base.py", line 478, in parse
-    raise self.error(token, e)
-  File "/testbed/django/template/base.py", line 476, in parse
-    compiled_result = compile_func(self, token)
-  File "/testbed/django/template/library.py", line 121, in compile_func
-    kwonly, kwonly_defaults, takes_context, function_name,
-  File "/testbed/django/template/library.py", line 308, in parse_bits
-    (name, ", ".join("'%s'" % p for p in unhandled_params + unhandled_kwargs)))
-django.template.exceptions.TemplateSyntaxError: 'hi' did not receive value(s) for the argument(s): 'greeting'
-```
-
-## 89. script_fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_6/django__django-13417`, шаг 76
-- самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
-- категория **script_fail**, правило `3-script-traceback`, строка: `Traceback (most recent call last)`; упавших: 1
-
-Команда:
-
-```text
-cat > /tmp/test_final_comprehensive.py << 'EOF'
-"""
-Comprehensive test for the fix to the QuerySet.ordered property for GROUP BY queries.
-
-This test verifies that the `ordered` property correctly returns False for GROUP BY queries
-on models with Meta.ordering, even though the model has default ordering.
-
-The bug was that when using annotate() on a queryset, the `ordered` property would return True
-even though the resulting SQL query would not have an ORDER BY clause (because it's a GROUP BY query).
-
-The fix sets `default_ordering = False` when `group_by` is set in the `_annotate` method.
-"""
-
- …[команда усечена в отчёте]
-```
-
-Последние 15 строк вывода:
-
-```text
-================================================================================
-
-Test 1: Simple queryset with default ordering
-  SQL: SELECT "test_app_foo"."id", "test_app_foo"."uuid", "test_app_foo"."name" FROM "test_app_foo" ORDER BY "test_app_foo"."name" ASC
-  qs.ordered: True
-  Expected ordered: True
-  Has ORDER BY: True
-  Expected ORDER BY: True
-
-Traceback (most recent call last):
-  File "/tmp/test_final_comprehensive.py", line 89, in <module>
-    expected_has_order_by=True
-  File "/tmp/test_final_comprehensive.py", line 78, in test_case
-    print("  \u2713 PASS")
-UnicodeEncodeError: 'ascii' codec can't encode character '\u2713' in position 2: ordinal not in range(128)
-```
-
-## 90. script_fail — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_8/django__django-11149`, шаг 75
-- самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
-- категория **script_fail**, правило `3-script-traceback`, строка: `Traceback (most recent call last)`; упавших: 1
-
-Команда:
-
-```text
-cat > /tmp/test_m2m_fix_final.py << 'EOF'
+cat > /tmp/test_edge_cases.py << 'EOF'
 #!/usr/bin/env python
-"""
-Test script to verify the ManyToManyField inline permission fix
-"""
-import os
+"""Test edge cases for the named tuple fix"""
+
 import sys
 import django
-
-# Setup Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tests.admin_inlines.settings')
-
-# Add the testbed to the path
-sys.path.insert(0, '/testbed')
-
-# Configure Django settings for testing
 from django.conf import settings
-if not settings.configured:
-    settings.configure(
-        DEBUG=True,
-        DATABASES={
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME':  …[команда усечена в отчёте]
+
+# Configure Django settings
+settings.configure(
+    DEBUG=True,
+    DATABASES={
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    },
+    INSTALLED_APPS=[
+        'django.contrib.contenttypes',
+        'django.contrib.auth',
+    ],
+    SECRET_KEY='test-secret-key',
+    USE_TZ=True,
+)
+
+django.setup()
+
+from collections import namedtuple
+from django.db import models …[команда усечена в отчёте]
 ```
 
 Последние 15 строк вывода:
 
 ```text
-Delete permission: False
+returncode: 1
+command failed with exit code 1. Error output:
+Testing edge cases...
 
-Traceback (most recent call last):
-  File "/tmp/test_m2m_fix_final.py", line 176, in <module>
-    test_m2m_inline_permissions()
-  File "/tmp/test_m2m_fix_final.py", line 103, in test_m2m_inline_permissions
-    print("\u2705 Test 1 passed!")
-UnicodeEncodeError: 'ascii' codec can't encode character '\u2705' in position 0: ordinal not in range(128)
+1. Named tuple with many fields...
+   PASS - no crash with extra fields
 
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/tmp/test_m2m_fix_final.py", line 184, in <module>
-    print(f"\n\u274c Error: {e}")
-UnicodeEncodeError: 'ascii' codec can't encode character '\u274c' in position 1: ordinal not in range(128)
+2. Named tuple with one field...
+   FAIL: Field 'value' expected a number but got SingleFieldTuple(value=20).
 ```
 
-## 91. unknown — leaderboard
+## 23. B2: script_fail — kth
 
-- группа: minimax-m2.5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_minimax-2-5-high/django__django-14631`, шаг 59
-- тесты проекта; программа: runtests
-- категория **unknown**, правило `4-agent-pipe`, строка: `| grep`; упавших: 0
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_4/django__django-15863`, шаг 75
+- самодельный скрипт; программа: —; код возврата от проверки
+- категория **script_fail**, правило `3-script-marker`, строка: `✗`; упавших: 1; в раунде 3: unknown, самодельный скрипт
 
 Команда:
 
 ```text
-cd /testbed && python tests/runtests.py forms_tests --parallel=1 -v 1 2>&1 | grep -E "^FAIL:|^ERROR:" | head -10
+cd /testbed && python final_test.py
 ```
 
 Последние 15 строк вывода:
 
 ```text
-ERROR: test_value_placeholder_with_char_field (forms_tests.tests.test_validators.ValidatorCustomMessageTests.test_value_placeholder_with_char_field) [URLValidator] (value='http://[::1:2::3]/')
+
+Testing backwards compatibility...
+  ✓ Regular float: 42.12346 == 42.12346
+  ✓ Integer: 42.00 == 42.00
+  ✓ String number: 42.123 == 42.123
+  ✓ Simple Decimal: 555.56 == 555.56
+  ✓ Decimal with no format arg: 9 == 9
+
+Testing edge cases...
+  ✓ Zero with high precision
+  ✓ Negative high precision
+  ✓ Very large Decimal
+  ✗ Very small Decimal
+
+❌ TEST FAILED: Expected 0.0000000000000012345678901234567890, got 0.000000000000001234567890123457
 ```
 
-## 92. unknown — leaderboard
+## 24. B2: script_fail — kth
 
-- группа: glm-5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_glm-5-high/sphinx-doc__sphinx-9602`, шаг 77
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_2/pytest-dev__pytest-7324`, шаг 63
+- самодельный скрипт (создан и запущен в этой команде); программа: —; код возврата от проверки
+- категория **script_fail**, правило `3-script-marker`, строка: `✗`; упавших: 1; в раунде 3: unknown, самодельный скрипт
+
+Команда:
+
+```text
+cat > /tmp/final_test.py << 'EOF'
+#!/usr/bin/env python
+"""Final comprehensive test to demonstrate the fix."""
+
+import sys
+sys.path.insert(0, './src')
+
+from _pytest.mark.expression import Expression
+
+def test_reserved_names_fix():
+    """Test that reserved names (False, True, None) work correctly."""
+    
+    print("Testing reserved names fix...")
+    print("=" * 50)
+    
+    # Test 1: Expression.compile("False") should not crash
+    print("\n1. Testing Expression.compile('False')")
+    try:
+        expr = Expression.compile("False")
+        print("   ✓ Compilation succeeded")
+        
+        …[команда усечена в отчёте]
+```
+
+Последние 15 строк вывода:
+
+```text
+   ✓ Compilation succeeded
+   ✓ Evaluation result: True
+
+2. Testing Expression.compile('True')
+   ✓ Compilation succeeded
+   ✓ Evaluation result: True
+
+3. Testing Expression.compile('None')
+   ✓ Compilation succeeded
+   ✓ Evaluation result: True
+
+4. Testing complex expressions
+   ✓ 'False or True' = True
+   ✓ 'True and False' = True
+   ✗ Failed: Expected False
+```
+
+## 25. C: error_env — leaderboard
+
+- группа: claude-sonnet-4-5-20250929@high | 2.0.0
+- прогон: `20260217_mini-v2.0.0_claude-4-5-sonnet-high/pytest-dev__pytest-6197`, шаг 34
+- самодельный скрипт; программа: pytest
+- категория **error_env**, правило `1-pytest`, вид ошибки `?-runtime`, строка: `=============================== 1 error in 0.04s`; упавших: 0; в раунде 3: error_env, тесты проекта
+
+Команда:
+
+```text
+cd /tmp && rm -rf test_issue2 && mkdir test_issue2 && cd test_issue2 && cat > test_simple.py << 'EOF'
+def test_simple():
+    assert 1 + 1 == 2
+EOF
+python -m pytest -v
+```
+
+Последние 15 строк вывода:
+
+```text
+/opt/miniconda3/lib/python3.11/site-packages/py/_path/local.py:704: in pyimport
+    __import__(modname)
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+/testbed/src/_pytest/assertion/rewrite.py:133: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+/testbed/src/_pytest/assertion/rewrite.py:284: in _rewrite_test
+    co = compile(tree, fn, "exec", dont_inherit=True)
+E   TypeError: required field "lineno" missing from alias
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 errors during collection !!!!!!!!!!!!!!!!!!!!
+=============================== 1 error in 0.04s ===============================
+```
+
+## 26. C: error_env — leaderboard
+
+- группа: claude-haiku-4-5-20251001@high | 2.0.0
+- прогон: `20260217_mini-v2.0.0_claude-4-5-haiku-high/pytest-dev__pytest-6197`, шаг 7
+- самодельный скрипт; программа: pytest
+- категория **error_env**, правило `1-pytest`, вид ошибки `env-traceback`, строка: `=============================== 2 error in 0.14s`; упавших: 0; в раунде 3: error_env, тесты проекта
+
+Команда:
+
+```text
+cd /tmp/pytest_test_issue && python -m pytest -v
+```
+
+Последние 15 строк вывода:
+
+```text
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+/testbed/src/_pytest/assertion/rewrite.py:133: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+/testbed/src/_pytest/assertion/rewrite.py:284: in _rewrite_test
+    co = compile(tree, fn, "exec", dont_inherit=True)
+E   TypeError: required field "lineno" missing from alias
+_____________________ ERROR collecting foobar/__init__.py ______________________
+foobar/__init__.py:1: in <module>
+    assert False
+E   AssertionError
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!
+=============================== 2 error in 0.14s ===============================
+```
+
+## 27. C: error_env — leaderboard
+
+- группа: GLM-4.5 | 1.9.1
+- прогон: `20250822_mini-v1.9.1_glm-4.5/django__django-16032`, шаг 31
 - тесты проекта; программа: pytest
-- категория **unknown**, правило `4-agent-pipe`, строка: `| head`; упавших: 0
+- категория **error_env**, правило `2-error`, вид ошибки `env-runner-missing`, строка: `No module named pytest`; упавших: 0; в раунде 3: error_env, самодельный скрипт
 
 Команда:
 
 ```text
-cd /testbed && python -m pytest tests/test_ext_autodoc.py -v -x --ignore-glob="*enum*" 2>&1 | head -80
+cd tests && python -m pytest annotations/tests.py::AnnotationTests::test_annotation_and_alias_filter_in_subquery -v
 ```
 
 Последние 15 строк вывода:
 
 ```text
-            '   .. py:method:: EnumCls.say_goodbye()',
-            '      :module: target.enums',
-            '      :classmethod:',
-            '',
-            '      a classmethod says good-bye to you.',
-            '',
-            '',
-            '   .. py:method:: EnumCls.say_hello()',
-            '      :module: target.enums',
-            '',
-            '      a method says hello to you.',
-            '',
-            '',
-            '   .. py:attribute:: EnumCls.val1',
-            '      :module: target.enums',
+returncode: 1
+/opt/miniconda3/envs/testbed/bin/python: No module named pytest
 ```
 
-## 93. unknown — leaderboard
+## 28. C: script_ok — leaderboard
 
-- группа: deepseek-v3.2@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_deepseek-3-2-high/django__django-14500`, шаг 119
-- тесты проекта; программа: runtests
-- категория **unknown**, правило `4-agent-pipe`, строка: `| grep`; упавших: 0
+- группа: devstral-2512 | 1.17.2
+- прогон: `20251209_mini-v1.17.2_devstral-2512/pytest-dev__pytest-6197`, шаг 42
+- самодельный скрипт; программа: pytest
+- категория **script_ok**, правило `1-pytest`, строка: `============================== 1 passed in 0.00s`; упавших: 0; в раунде 3: pass, тесты проекта
 
 Команда:
 
 ```text
-cd /testbed && python tests/runtests.py migrations.test_executor_debug --verbosity=2 2>&1 | grep -E "unapply_migration: deleting replaced migration" | head -10
+cd /tmp/test_issue && python -m pytest
 ```
 
 Последние 15 строк вывода:
 
 ```text
-When unapplying a squashed migration and the replaced migration files are still around, ... unapply_migration: deleting replaced migration migrations.0001_initial
-unapply_migration: deleting replaced migration migrations.0002_second
+============================= test session starts ==============================
+platform linux -- Python 3.9.20, pytest-5.2.4.dev6+ge856638ba, py-1.11.0, pluggy-0.13.1
+rootdir: /tmp/test_issue
+collected 1 item
+
+test_foo.py .                                                            [100%]
+
+============================== 1 passed in 0.00s ===============================
 ```
 
-## 94. unknown — leaderboard
+## 29. C: pass — kth
 
-- группа: claude-sonnet-4-5-20250929 | 1.13.3
-- прогон: `20250929_mini-v1.13.3_sonnet-4-5-20250929/django__django-11087`, шаг 48
-- тесты проекта; программа: runtests
-- категория **unknown**, правило `4-agent-pipe`, строка: `| tail`; упавших: 0
+- группа: nano-agent-agentica-org_DeepSWE-Preview
+- прогон: `nano-agent-agentica-org_DeepSWE-Preview/run_5/pytest-dev__pytest-7490`, шаг 13
+- тесты проекта; программа: pytest
+- категория **pass**, правило `1-pytest`, строка: `============================== 1 passed in 0.00s`; упавших: 0; в раунде 3: script_ok, самодельный скрипт
 
 Команда:
 
 ```text
-cd /testbed && python tests/runtests.py foreign_object --parallel=1 -v2 2>&1 | tail -20
+cd testing/example_scripts/config/collect_pytest_prefix && pytest -rsx test_foo.py -o log_cli=true
 ```
 
 Последние 15 строк вывода:
 
 ```text
-    Creating table foreign_object_contact
-    Creating table foreign_object_slugpage
-    Creating table foreign_object_country
-    Creating table foreign_object_person
-    Creating table foreign_object_group
-    Creating table foreign_object_membership
-    Creating table foreign_object_friendship
-    Running deferred SQL...
-Running migrations:
-  Applying admin.0001_initial... OK
-  Applying admin.0002_logentry_remove_auto_add... OK
+============================= test session starts ==============================
+platform linux -- Python 3.9.21, pytest-6.0.0rc2.dev33+g7f7a36478, py-1.11.0, pluggy-0.13.1
+rootdir: /testbed/testing/example_scripts, configfile: pytest.ini
+collected 1 item
+
+test_foo.py::test_foo PASSED                                             [100%]
+
+============================== 1 passed in 0.00s ===============================
+```
+
+## 30. C: unknown — kth
+
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_5/scikit-learn__scikit-learn-13496`, шаг 44
+- тесты проекта; программа: pytest
+- категория **unknown**, правило `4-truncated`, строка: `output truncated`; упавших: 0; в раунде 3: unknown, самодельный скрипт
+
+Команда:
+
+```text
+cd ./sklearn/ensemble/tests && python -m pytest test_iforest.py -x -v
+```
+
+Последние 15 строк вывода:
+
+```text
+test_iforest.py::test_iforest_works[0.25] PASSED                         [ 36%]
+test_iforest.py::test_iforest_works[auto] PASSED                         [ 40%]
+test_iforest.py::test_max_samples_consistency PASSED                     [ 45%]
+test_iforest.py::test_iforest_subsampled_features PASSED                 [ 50%]
+test_iforest.py::test_iforest_average_path_length PASSED                 [ 54%]
+test_iforest.py::test_score_samples PASSED                               [ 59%]
+test_iforest.py::test_deprecation PASSED                                 [ 63%]
+test_iforest.py::test_behaviour_param PASSED                             [ 68%]
+test_iforest.py::test_warm_start PASSED                                  [ 72%]
+test_iforest.py::test_warm_start_clear PASSED                            [ 77%]
+test_iforest.py::test_warm_start_smaller_n_estimators PASSED             [ 81%]
+test_iforest.py::test_iforest_chunks_works1[0.25-3] PASSED               [ 86%]
+test_iforest.py::test_iforest_chunks_works1[auto-2] PASSED               [ 90%]
+test_iforest.py::test_iforest_chunks_works2[0.25-3] PASSED               [ 95%]
+test_iforest.py::test_iforest_chunks_work... output truncated
+```
+
+## 31. C: pass — kth
+
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_5/scikit-learn__scikit-learn-25232`, шаг 38
+- тесты проекта; программа: pytest
+- категория **pass**, правило `1-pytest`, строка: `============================== 1 passed in 0.45s`; упавших: 0; в раунде 3: script_ok, самодельный скрипт
+
+Команда:
+
+```text
+cd ./sklearn/impute/tests && python -m pytest test_impute.py::test_iterative_imputer_fill_value -v
+```
+
+Последние 15 строк вывода:
+
+```text
+============================= test session starts ==============================
+platform linux -- Python 3.9.21, pytest-7.4.4, pluggy-1.5.0 -- /root/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /testbed
+configfile: setup.cfg
+collecting ... collected 1 item
+
+test_impute.py::test_iterative_imputer_fill_value PASSED                 [100%]
+
+============================== 1 passed in 0.45s ===============================
+```
+
+## 32. C: unknown — kth
+
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_3/sphinx-doc__sphinx-8721`, шаг 59
+- самодельный скрипт; программа: pytest
+- категория **unknown**, правило `4-agent-pipe`, строка: `| grep`; упавших: 0; в раунде 3: unknown, самодельный скрипт
+
+Команда:
+
+```text
+cd tests && python -m pytest test_ext_viewcode_epub.py::test_viewcode_html_enabled -v --tb=short -rN --cache-clear 2>&1 | grep -B 20 "AssertionError"
+```
+
+Последние 15 строк вывода:
+
+```text
+returncode: 1
+command failed with exit code 1
+```
+
+## 33. D: script_ok — leaderboard
+
+- группа: gemini-3-flash-preview@high | 2.0.0
+- прогон: `20260217_mini-v2.0.0_gemini-3-flash-high/django__django-15572`, шаг 23
+- самодельный скрипт; программа: runtests
+- категория **script_ok**, правило `1-unittest`, строка: `Ran 2 tests in 0.002s / OK`; упавших: 0; в раунде 3: pass, тесты проекта
+
+Команда:
+
+```text
+cat > tests/template_tests/test_autoreloader_issue.py <<EOF
+from pathlib import Path
+from unittest import mock
+from django.template import autoreload
+from django.test import SimpleTestCase, override_settings
+
+class TemplateReloadEmptyDirsTests(SimpleTestCase):
+    @override_settings(
+        TEMPLATES=[
+            {
+                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "DIRS": [""],
+            }
+        ]
+    )
+    def test_get_template_directories_skips_empty_string(self):
+        self.assertSetEqual(
+            autoreload.get_template_directories(), …[команда усечена в отчёте]
+```
+
+Последние 15 строк вывода:
+
+```text
+Testing against Django installed in '/testbed/django' with up to 32 processes
+Found 2 test(s).
+System check identified no issues (0 silenced).
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.002s
+
+OK
+```
+
+## 34. D: script_ok — leaderboard
+
+- группа: kimi-k2.5@high | 2.0.0
+- прогон: `20260217_mini-v2.0.0_kimi-k2-5-high/django__django-13568`, шаг 41
+- самодельный скрипт; программа: runtests
+- категория **script_ok**, правило `1-unittest`, строка: `Ran 1 test in 0.003s / OK`; упавших: 0; в раунде 3: pass, тесты проекта
+
+Команда:
+
+```text
+cd /testbed && python tests/runtests.py auth_tests.test_unique_constraint 2>&1
+```
+
+Последние 15 строк вывода:
+
+```text
+Testing against Django installed in '/testbed/django' with up to 32 processes
+System check identified no issues (0 silenced).
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.003s
+
+OK
+```
+
+## 35. D: script_ok — leaderboard
+
+- группа: gemini-3-pro-preview | 1.15.0
+- прогон: `20251118_mini-v1.15.0_gemini-3-pro-preview-20251118/django__django-11734`, шаг 12
+- самодельный скрипт; программа: runtests
+- категория **script_ok**, правило `1-unittest`, строка: `Ran 1 test in 0.005s / OK`; упавших: 0; в раунде 3: pass, тесты проекта
+
+Команда:
+
+```text
+cat <<'EOF' > tests/queries/test_reproduce_issue.py
+from django.db.models import Exists, OuterRef, Q
+from django.test import TestCase
+from .models import Item, Number, Tag, NamedCategory
+
+class ReproduceIssueTest(TestCase):
+    def test_exists_exclude(self):
+        # filter()
+        qs = Number.objects.annotate(
+            foo=Exists(
+                Item.objects.filter(tags__category_id=OuterRef('pk'))
+            )
+        ).filter(foo=True)
+        print("Filter SQL:", qs.query)
+        
+        # exclude()
+        try:
+            qs = Number.objects.annotate(
+                foo =Exist …[команда усечена в отчёте]
+```
+
+Последние 15 строк вывода:
+
+```text
+Creating test database for alias 'default'...
+.Testing against Django installed in '/testbed/django' with up to 8 processes
+System check identified no issues (1 silenced).
+Filter SQL: SELECT "queries_number"."id", "queries_number"."num", "queries_number"."other_num", EXISTS(SELECT U0."id", U0."name", U0."created", U0."modified", U0."creator_id", U0."note_id" FROM "queries_item" U0 INNER JOIN "queries_item_tags" U1 ON (U0."id" = U1."item_id") INNER JOIN "queries_tag" U2 ON (U1."tag_id" = U2."id") WHERE U2."category_id" = "queries_number"."id") AS "foo" FROM "queries_number" WHERE EXISTS(SELECT U0."id", U0."name", U0."created", U0."modified", U0."creator_id", U0."note_id" FROM "queries_item" U0 INNER JOIN "queries_item_tags" U1 ON (U0."id" = U1."item_id") INNER JOIN "queries_tag" U2 ON (U1."tag_id" = U2."id") WHERE U2."category_id" = "queries_number"."id") = True
+Exclude SQL: SELECT "queries_number"."id", "queries_number"."num", "queries_number"."other_num", EXISTS(SELECT V0."id", V0."name", V0."created", V0."modified", V0."creator_id", V0."note_id" FROM "queries_item" V0 WHERE NOT (V0."id" IN (SELECT U1."item_id" FROM "queries_item_tags" U1 INNER JOIN "queries_tag" U2 ON (U1."tag_id" = U2."id") WHERE U2."category_id" = "V0"."id"))) AS "foo" FROM "queries_number" WHERE EXISTS(SELECT V0."id", V0."name", V0."created", V0."modified", V0."creator_id", V0."note_id" FROM "queries_item" V0 WHERE NOT (V0."id" IN (SELECT U1."item_id" FROM "queries_item_tags" U1 INNER JOIN "queries_tag" U2 ON (U1."tag_id" = U2."id") WHERE U2."category_id" = "V0"."id"))) = True
+Filter ~Q SQL: SELECT "queries_number"."id", "queries_number"."num", "queries_number"."other_num", EXISTS(SELECT V0."id", V0."name", V0."created", V0."modified", V0."creator_id", V0."note_id" FROM "queries_item" V0 WHERE NOT (V0."id" IN (SELECT U1."item_id" FROM "queries_item_tags" U1 INNER JOIN "queries_tag" U2 ON (U1."tag_id" = U2."id") WHERE U2."category_id" = "V0"."id"))) AS "foo" FROM "queries_number" WHERE EXISTS(SELECT V0."id", V0."name", V0."created", V0."modified", V0."creator_id", V0."note_id" FROM "queries_item" V0 WHERE NOT (V0."id" IN (SELECT U1."item_id" FROM "queries_item_tags" U1 INNER JOIN "queries_tag" U2 ON (U1."tag_id" = U2."id") WHERE U2."category_id" = "V0"."id"))) = True
+
+----------------------------------------------------------------------
+Ran 1 test in 0.005s
+
+OK
+Destroying test database for alias 'default'...
+```
+
+## 36. D: error_env — leaderboard
+
+- группа: claude-haiku-4-5-20251001@high | 2.0.0
+- прогон: `20260217_mini-v2.0.0_claude-4-5-haiku-high/django__django-15382`, шаг 37
+- самодельный скрипт; программа: runtests
+- категория **error_env**, правило `2-error`, вид ошибки `env-usage`, строка: `error: unrecognized arguments`; упавших: 0; в раунде 3: error_env, тесты проекта
+
+Команда:
+
+```text
+cat > /tmp/test_exists_empty.py << 'EOF'
+"""Test for Exists with empty queryset issue"""
+import os
+import sys
+sys.path.insert(0, '/testbed')
+os.chdir('/testbed')
+
+from django.test import TestCase
+from django.db.models import Exists
+from django.contrib.auth.models import User
+from django.core.exceptions import EmptyResultSet
+
+class ExistsEmptyQuerySetTest(TestCase):
+    """Test for issue: filter on exists-subquery with empty queryset removes whole WHERE block"""
+    
+    def test_negated_exists_empty_queryset_with_additional_filter(self):
+        """Test ~Exists with empty queryset + additional …[команда усечена в отчёте]
+```
+
+Последние 15 строк вывода:
+
+```text
+usage: runtests.py [-h] [-v {0,1,2,3}] [--noinput] [--failfast] [--keepdb]
+                   [--settings SETTINGS] [--bisect BISECT] [--pair PAIR]
+                   [--shuffle [SEED]] [--reverse] [--selenium BROWSERS]
+                   [--headless] [--selenium-hub SELENIUM_HUB]
+                   [--external-host EXTERNAL_HOST] [--debug-sql]
+                   [--parallel [N]] [--tag TAGS] [--exclude-tag EXCLUDE_TAGS]
+                   [--start-after START_AFTER] [--start-at START_AT] [--pdb]
+                   [-b] [--timing] [-k TEST_NAME_PATTERNS]
+                   [module ...]
+runtests.py: error: unrecognized arguments: -m --no-migrations
+```
+
+## 37. D: error_env — kth
+
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_7/django__django-13741`, шаг 49
+- самодельный скрипт; программа: runtests
+- категория **error_env**, правило `4b-runner-crash`, вид ошибки `env-traceback`, строка: `TypeError:`; упавших: 0; в раунде 3: error_env, тесты проекта
+
+Команда:
+
+```text
+python tests/runtests.py /tmp/test_disabled_field.py
+```
+
+Последние 15 строк вывода:
+
+```text
+command failed with exit code 1. Error output:
+Testing against Django installed in '/testbed/django' with up to 36 processes
+
+Traceback (most recent call last):
+  File "tests/runtests.py", line 589, in <module>
+    options.timing,
+  File "tests/runtests.py", line 320, in django_tests
+    extra_tests=extra_tests,
+  File "/testbed/django/test/runner.py", line 720, in run_tests
+    suite = self.build_suite(test_labels, extra_tests)
+  File "/testbed/django/test/runner.py", line 612, in build_suite
+    suite.addTests(tests)
+  File "/root/.venv/lib/python3.6/unittest/suite.py", line 57, in addTests
+    for test in tests:
+TypeError: 'NoneType' object is not iterable
+```
+
+## 38. D: script_ok — kth
+
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_8/django__django-16139`, шаг 90
+- самодельный скрипт; программа: runtests
+- категория **script_ok**, правило `1-unittest`, строка: `Ran 1 test in 0.033s / OK`; упавших: 0; в раунде 3: pass, тесты проекта
+
+Команда:
+
+```text
+cat > /testbed/tests/auth_tests/test_to_field_password_link.py << 'EOF'
+import re
+from urllib.parse import urljoin
+
+from django.contrib.auth.models import User
+from django.test import TestCase, override_settings
+from django.urls import reverse
+
+
+@override_settings(ROOT_URLCONF="auth_tests.urls_admin")
+class UserChangeFormToFieldTest(TestCase):
+    """Test that password reset link works with to_field"""
+    
+    @classmethod
+    def setUpTestData(cls):
+        # Create a superuser
+        cls.admin = User.objects.create_user(
+            username='testclient',
+            password='password',
+  …[команда усечена в отчёте]
+```
+
+Последние 15 строк вывода:
+
+```text
   Applying admin.0003_logentry_add_action_flag_choices... OK
   Applying sites.0001_initial... OK
   Applying sites.0002_alter_domain_unique... OK
 System check identified no issues (0 silenced).
+test_password_reset_link_with_to_field (auth_tests.test_to_field_password_link.UserChangeFormToFieldTest)
+Test that the password reset link in UserChangeForm works correctly ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.033s
+
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+ERROR: No password field found in response
+Response status: 400
+Response length: 143
 ```
 
-## 95. unknown — leaderboard
+## 39. D: script_ok — kth
 
-- группа: glm-5@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_glm-5-high/sphinx-doc__sphinx-9461`, шаг 69
-- тесты проекта; программа: pytest
-- категория **unknown**, правило `4-agent-pipe`, строка: `| head`; упавших: 0
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_5/django__django-13033`, шаг 54
+- самодельный скрипт; программа: runtests
+- категория **script_ok**, правило `1-unittest`, строка: `Ran 4 tests in 0.007s / OK`; упавших: 0; в раунде 3: pass, тесты проекта
 
 Команда:
 
 ```text
-cd /testbed && python -m pytest tests/test_ext_autodoc_autoclass.py -xvs 2>&1 | head -150
+python tests/runtests.py self_ref_fk_ordering.tests 2>&1
 ```
 
 Последние 15 строк вывода:
 
 ```text
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.007s
 
-# warning: 
+OK
+Destroying test database for alias 'default'...
+Testing against Django installed in '/testbed/django' with up to 36 processes
+System check identified no issues (0 silenced).
 
+=== Test: order_by('ref__parent_id') ===
+Query: SELECT "self_ref_fk_ordering_relatedmodel"."id", "self_ref_fk_ordering_relatedmodel"."ref_id", "self_ref_fk_ordering_relatedmodel"."other_value" FROM "self_ref_fk_ordering_relatedmodel" INNER JOIN "self_ref_fk_ordering_selfrefmodel" ON ("self_ref_fk_ordering_relatedmodel"."ref_id" = "self_ref_fk_ordering_selfrefmodel"."id") WHERE "self_ref_fk_ordering_selfrefmodel"."value" IN (1, 2, 3) ORDER BY "self_ref_fk_ordering_selfrefmodel"."parent_id" ASC
 
-tests/test_ext_autodoc_autoclass.py::test_class_alias PASSED# testroot: root
-# builder: html
-# srcdir: /tmp/pytest-of-root/pytest-1/root
-# outdir: /tmp/pytest-of-root/pytest-1/root/_build/html
-# status: 
-Running Sphinx v4.2.0+/4819347eb
-
-# warning: 
-
-
-tests/test_ext_autodoc_autoclass.py::test_class_alias_having_doccomment PASSED# testroot: root
+=== Verification ===
+PASS: Query does not have extra JOIN with DESC ordering
+PASS: Query uses ASC ordering
 ```
 
-## 96. unknown — leaderboard
+## 40. D: unknown — kth
+
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_9/django__django-15554`, шаг 99
+- самодельный скрипт; программа: runtests
+- категория **unknown**, правило `4-agent-pipe`, строка: `| grep`; упавших: 0; в раунде 3: unknown, тесты проекта
+
+Команда:
+
+```text
+cd /testbed && python tests/runtests.py filtered_relation.test_multiple_filtered_relation_issue 2>&1 | grep -A 5 "SQL Query:"
+```
+
+Последние 15 строк вывода:
+
+```text
+SQL Query:
+SELECT "filtered_relation_author"."id", "filtered_relation_author"."name", "filtered_relation_author"."content_type_id", "filtered_relation_author"."object_id", CASE WHEN book_alice."id" IS NULL THEN T3."id" ELSE book_alice."id" END AS "price_final" FROM "filtered_relation_author" LEFT OUTER JOIN "filtered_relation_book" book_alice ON ("filtered_relation_author"."id" = book_alice."author_id" AND (T4."title" LIKE poem by alice ESCAPE '\')) LEFT OUTER JOIN "filtered_relation_book" T3 ON ("filtered_relation_author"."id" = T3."author_id" AND (T5."title" LIKE the book by jane a ESCAPE '\'))
+
+Number of joins to book table: 2
+
+✓ OK: Two joins are created as expected
+```
+
+## 41. E: error_env — leaderboard
+
+- группа: claude-sonnet-4-5-20250929 | 1.13.3
+- прогон: `20250929_mini-v1.13.3_sonnet-4-5-20250929/django__django-14631`, шаг 55
+- тесты проекта; программа: runtests
+- категория **error_env**, правило `1-unittest`, вид ошибки `?-not-loaded`, строка: `Ran 1 test in 0.000s / FAILED (errors=1)`; упавших: 0; в раунде 3: fail, тесты проекта
+
+Команда:
+
+```text
+cd /testbed && python tests/runtests.py forms_tests.tests.test_boundfield -v0 2>&1 | tail -5
+```
+
+Последние 15 строк вывода:
+
+```text
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
+System check identified no issues (0 silenced).
+```
+
+## 42. E: error_env — leaderboard
 
 - группа: claude-haiku-4-5-20251001@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_claude-4-5-haiku-high/django__django-13346`, шаг 100
+- прогон: `20260217_mini-v2.0.0_claude-4-5-haiku-high/django__django-11299`, шаг 40
 - тесты проекта; программа: runtests
-- категория **unknown**, правило `4-agent-pipe`, строка: `| tail`; упавших: 0
+- категория **error_env**, правило `1-unittest`, вид ошибки `?-not-loaded`, строка: `Ran 1 test in 0.000s / FAILED (errors=1)`; упавших: 0; в раунде 3: fail, тесты проекта
 
 Команда:
 
 ```text
-cd /testbed && python tests/runtests.py model_fields.test_jsonfield 2>&1 | tail -5
+cd /testbed && python tests/runtests.py db.models.constraints -v 1 2>&1 | grep -E "^(Ran|OK|FAILED)"
 ```
 
 Последние 15 строк вывода:
 
 ```text
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
-Destroying test database for alias 'default'...
+Ran 1 test in 0.000s
+FAILED (errors=1)
 ```
 
-## 97. unknown — leaderboard
+## 43. E: error_env — leaderboard
 
-- группа: claude-sonnet-4-5-20250929@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_claude-4-5-sonnet-high/django__django-15731`, шаг 14
-- тесты проекта; программа: runtests
-- категория **unknown**, правило `4-agent-pipe`, строка: `| tail`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py queries --verbosity=1 2>&1 | tail -30
-```
-
-Последние 15 строк вывода:
-
-```text
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-```
-
-## 98. unknown — leaderboard
-
-- группа: claude-sonnet-4-5-20250929@high | 2.0.0
-- прогон: `20260217_mini-v2.0.0_claude-4-5-sonnet-high/sympy__sympy-16450`, шаг 22
-- тесты проекта; программа: pytest
-- категория **unknown**, правило `4-agent-pipe`, строка: `| grep`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python -m pytest sympy/simplify/tests/test_simplify.py -v --tb=short --ignore-glob="*xfail*" 2>&1 | grep -E "(PASSED|FAILED|ERROR|test_)" | head -100
-```
-
-Последние 15 строк вывода:
-
-```text
-sympy/simplify/tests/test_simplify.py::test_issue_9398 PASSED            [ 88%]
-sympy/simplify/tests/test_simplify.py::test_issue_9324_simplify PASSED   [ 90%]
-sympy/simplify/tests/test_simplify.py::test_issue_13474 PASSED           [ 93%]
-sympy/simplify/tests/test_simplify.py::test_simplify_function_inverse PASSED [ 95%]
-sympy/simplify/tests/test_simplify.py::test_clear_coefficients PASSED    [ 97%]
-sympy/simplify/tests/test_simplify.py::test_nc_simplify PASSED           [100%]
-___________________________ test_factorial_simplify ____________________________
-sympy/simplify/tests/test_simplify.py:28: in test_factorial_simplify
-E   sympy.utilities.pytest.XFail: test_factorial_simplify
-________________________ test_simplify_float_vs_integer ________________________
-sympy/simplify/tests/test_simplify.py:526: in test_simplify_float_vs_integer
-E   sympy.utilities.pytest.XFail: test_simplify_float_vs_integer
-sympy/simplify/tests/test_simplify.py::test_simplify_expr
-FAILED sympy/simplify/tests/test_simplify.py::test_factorial_simplify - sympy...
-FAILED sympy/simplify/tests/test_simplify.py::test_simplify_float_vs_integer
-```
-
-## 99. unknown — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_9/django__django-16263`, шаг 100
-- тесты проекта; программа: runtests
-- категория **unknown**, правило `4-agent-pipe`, строка: `| grep`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py aggregation.tests.AggregateTestCase.test_count_with_unused_annotation 2>&1 | grep -A10 "Simple count"
-```
-
-Последние 15 строк вывода:
-
-```text
-Simple count: 6
-Annotated count: 10
-Simple SQL: SELECT COUNT(*) AS "__count" FROM "aggregation_book"
-Annotated SQL: SELECT COUNT(*) AS "__count" FROM "aggregation_book" LEFT OUTER JOIN "aggregation_book_authors" ON ("aggregation_book"."id" = "aggregation_book_authors"."book_id")
-```
-
-## 100. unknown — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_4/django__django-17087`, шаг 61
-- тесты проекта; программа: runtests
-- категория **unknown**, правило `4-agent-pipe`, строка: `| tail`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py migrations 2>&1 | tail -50
-```
-
-Последние 15 строк вывода:
-
-```text
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for ali... output truncated
-```
-
-## 101. unknown — kth
-
-- группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_6/django__django-15380`, шаг 36
-- тесты проекта; программа: runtests
-- категория **unknown**, правило `4-agent-pipe`, строка: `| tail`; упавших: 0
-
-Команда:
-
-```text
-cd /testbed && python tests/runtests.py migrations 2>&1 | tail -30
-```
-
-Последние 15 строк вывода:
-
-```text
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-Destroying test database for alias 'other'...
-```
-
-## 102. unknown — kth
-
-- группа: nano-agent-Qwen_Qwen3-32B
-- прогон: `nano-agent-Qwen_Qwen3-32B/run_0/django__django-16950`, шаг 17
+- группа: deepseek-v3.2@high | 2.0.0
+- прогон: `20260217_mini-v2.0.0_deepseek-3-2-high/django__django-16642`, шаг 45
 - тесты проекта; программа: django test
-- категория **unknown**, правило `4-truncated`, строка: `output truncated`; упавших: 0
+- категория **error_env**, правило `1-unittest`, вид ошибки `?-not-loaded`, строка: `Ran 1 test in 0.000s / FAILED (errors=1)`; упавших: 0; в раунде 3: fail, тесты проекта
 
 Команда:
 
 ```text
-django-admin test tests.admin_inlines.tests --settings=test_settings
+cd /testbed && python -m django test responses.test_fileresponse --settings=test_settings 2>&1 | grep -A 20 "Ran"
 ```
 
 Последние 15 строк вывода:
 
 ```text
-    test_runner_class = test_runner_class or settings.TEST_RUNNER
-                                             ^^^^^^^^^^^^^^^^^^^^
-  File "/testbed/django/conf/__init__.py", line 84, in __getattr__
-    self._setup(name)
-  File "/testbed/django/conf/__init__.py", line 71, in _setup
-    self._wrapped = Settings(settings_module)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/testbed/django/conf/__init__.py", line 185, in __init__
-    mod = importlib.import_module(self.SETTINGS_MODULE)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/miniconda3/envs/testbed/lib/python3.11/importlib/__init__.py", line 126, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
-... output truncated
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
 ```
 
-## 103. unknown — kth
+## 44. E: error_env — leaderboard
+
+- группа: deepseek-v3.2@high | 2.0.0
+- прогон: `20260217_mini-v2.0.0_deepseek-3-2-high/django__django-12406`, шаг 80
+- тесты проекта; программа: runtests
+- категория **error_env**, правило `1-unittest`, вид ошибки `?-not-loaded`, строка: `Ran 1 test in 0.000s / FAILED (errors=1)`; упавших: 0; в раунде 3: fail, тесты проекта
+
+Команда:
+
+```text
+cd /testbed && python tests/runtests.py forms_tests.field_tests.test_modelchoicefield --verbosity=0 2>&1 | tail -5
+```
+
+Последние 15 строк вывода:
+
+```text
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
+System check identified no issues (0 silenced).
+```
+
+## 45. E: error_env — kth
 
 - группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_1/pytest-dev__pytest-10081`, шаг 27
-- самодельный скрипт; программа: pytest
-- категория **unknown**, правило `1-pytest-no-outcome`, строка: `============================== 1 skipped in 0.01s`; упавших: 0
+- прогон: `nano-agent-mistral_devstral-2512/run_1/django__django-16661`, шаг 115
+- тесты проекта; программа: runtests
+- категория **error_env**, правило `1-unittest`, вид ошибки `?-not-loaded`, строка: `Ran 1 test in 0.000s / FAILED (errors=1)`; упавших: 0; в раунде 3: fail, тесты проекта
 
 Команда:
 
 ```text
-cd /tmp && python -m pytest test_repro_skip_class.py --pdb -v 2>&1 | head -50
+cd /testbed && python tests/runtests.py admin* 2>&1 | grep -E "(Ran|OK|FAILED)" | tail -5
 ```
 
 Последние 15 строк вывода:
 
 ```text
-============================= test session starts ==============================
-platform linux -- Python 3.9.21, pytest-7.2.0.dev173+gda9a2b584, pluggy-0.13.1 -- /root/.venv/bin/python
-cachedir: .pytest_cache
-rootdir: /tmp
-collecting ... collected 1 item
-
-test_repro_skip_class.py::MyTestCase::test_one SKIPPED (hello)           [100%]
-
-============================== 1 skipped in 0.01s ==============================
+Ran 1 test in 0.000s
+FAILED (errors=1)
 ```
 
-## 104. unknown — kth
+## 46. E: error_env — kth
 
 - группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_1/sphinx-doc__sphinx-8551`, шаг 97
-- тесты проекта; программа: pytest
-- категория **unknown**, правило `4-agent-pipe`, строка: `| grep`; упавших: 0
+- прогон: `nano-agent-mistral_devstral-2512/run_3/django__django-16527`, шаг 58
+- тесты проекта; программа: runtests
+- категория **error_env**, правило `1-unittest`, вид ошибки `?-not-loaded`, строка: `Ran 1 test in 0.000s / FAILED (errors=1)`; упавших: 0; в раунде 3: fail, тесты проекта
 
 Команда:
 
 ```text
-cd /testbed && python -m pytest tests/test_domain_py.py::test_warn_missing_reference -xvs 2>&1 | grep -A 10 "FAILED\|AssertionError"
+cd /testbed && timeout 300 python tests/runtests.py admin_templates -v 0 2>&1 | tail -5
 ```
 
 Последние 15 строк вывода:
 
 ```text
-updating environment: [new config] 15 added, 0 changed, 0 removed
-reading sources... [  6%] autodoc                                              
-reading sources... [ 13%] bom                                                  
-reading sources... [ 20%] extapi                                               
-reading sources... [ 26%] extensions                                           
-reading sources... [ 33%] footnote                                             
-reading sources... [ 40%] images                                               
-reading sources... [ 46%] includes                                             
-reading sources... [ 53%] index                                                
-reading sources... [ 60%] lists                                                
-reading sources... [ 66%] markup                                               
-reading sources... [ 73%] math                                                 
-reading sources... [ 80%] objects                                              
-reading sources... [ 86%] otherext                                             
-reading sources... [ 93%] subdir... output truncated
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
 ```
 
-## 105. unknown — kth
+## 47. E: error_env — kth
 
 - группа: nano-agent-mistral_devstral-2512
-- прогон: `nano-agent-mistral_devstral-2512/run_6/scikit-learn__scikit-learn-25747`, шаг 45
-- тесты проекта; программа: pytest
-- категория **unknown**, правило `4-agent-pipe`, строка: `| tail`; упавших: 0
+- прогон: `nano-agent-mistral_devstral-2512/run_1/django__django-11433`, шаг 77
+- тесты проекта; программа: runtests
+- категория **error_env**, правило `1-unittest`, вид ошибки `?-not-loaded`, строка: `Ran 1 test in 0.000s / FAILED (errors=1)`; упавших: 0; в раунде 3: fail, тесты проекта
 
 Команда:
 
 ```text
-cd /testbed && python -m pytest sklearn/tests/ -k "set_output" -x --tb=short 2>&1 | tail -20
+cd /testbed && timeout 120 python tests/runtests.py forms 2>&1 | tail -5
 ```
 
 Последние 15 строк вывода:
 
 ```text
-============================= test session starts ==============================
-platform linux -- Python 3.9.21, pytest-7.4.4, pluggy-1.5.0
-rootdir: /testbed
-configfile: setup.cfg
-collected 10796 items / 10628 deselected / 2 skipped / 168 selected
+Ran 1 test in 0.000s
 
-sklearn/tests/test_common.py ...........s...s..........ss..........s.... [ 25%]
-......s.........................s..................s...s..........ss.... [ 68%]
-......s..........s.........................s.......              ... output truncated
+FAILED (errors=1)
+Testing against Django installed in '/testbed/django' with up to 36 processes
+System check identified no issues (0 silenced).
+```
+
+## 48. E: error_env — kth
+
+- группа: nano-agent-mistral_devstral-2512
+- прогон: `nano-agent-mistral_devstral-2512/run_5/django__django-16899`, шаг 41
+- тесты проекта; программа: runtests
+- категория **error_env**, правило `1-unittest`, вид ошибки `?-not-loaded`, строка: `Ran 1 test in 0.000s / FAILED (errors=1)`; упавших: 0; в раунде 3: fail, тесты проекта
+
+Команда:
+
+```text
+cd . && python tests/runtests.py admin_checks.AdminChecksTestCase 2>&1 | grep -E "(OK|FAILED|Ran)"
+```
+
+Последние 15 строк вывода:
+
+```text
+Ran 1 test in 0.000s
+FAILED (errors=1)
 ```
 
