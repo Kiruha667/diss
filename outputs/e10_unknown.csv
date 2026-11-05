@@ -1,0 +1,20 @@
+corpus,group,checks,unknown_share,runs_with_checks,unknown_share_last,over_half
+kth,nano-agent-Qwen_Qwen3-32B,101,0.277228,32,0.21875,False
+kth,nano-agent-agentica-org_DeepSWE-Preview,224,0.223214,90,0.311111,False
+kth,nano-agent-mistral_devstral-2512,42308,0.164602,4655,0.123738,False
+leaderboard,GLM-4.5 | 1.9.1,559,0.035778,157,0.025478,False
+leaderboard,claude-haiku-4-5-20251001@high | 2.0.0,4574,0.086139,470,0.046809,False
+leaderboard,claude-sonnet-4-5-20250929 | 1.13.3,3643,0.05188,480,0.020833,False
+leaderboard,claude-sonnet-4-5-20250929@high | 2.0.0,3138,0.077119,447,0.04698,False
+leaderboard,deepseek-v3.2@high | 2.0.0,3858,0.114567,471,0.106157,False
+leaderboard,devstral-2512 | 1.17.2,2842,0.029205,412,0.019417,False
+leaderboard,devstral-small-2512 | 1.17.2,3110,0.044051,447,0.03132,False
+leaderboard,gemini-2.5-pro | 1.0.0,190,0.068421,58,0.068966,False
+leaderboard,gemini-3-flash-preview@high | 2.0.0,1852,0.028078,363,0.024793,False
+leaderboard,gemini-3-pro-preview | 1.15.0,1369,0.032871,418,0.002392,False
+leaderboard,gemini-3-pro-preview@high | 2.0.0,1362,0.0279,340,0.011765,False
+leaderboard,glm-4.6 | 1.17.1,1382,0.031838,328,0.045732,False
+leaderboard,glm-5@high | 2.0.0,4181,0.077493,461,0.045553,False
+leaderboard,kimi-k2.5@high | 2.0.0,3390,0.108555,442,0.088235,False
+leaderboard,minimax-m2 | 1.17.0,2273,0.028157,441,0.018141,False
+leaderboard,minimax-m2.5@high | 2.0.0,3436,0.096624,439,0.034169,False

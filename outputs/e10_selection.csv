@@ -1,0 +1,161 @@
+scope,k,rule,baseline,solved,delta_pp,ci_lo,ci_hi
+nano-agent-Qwen_Qwen3-32B,2,random,submitted-random,0.16374,-0.7055,-0.93555,-0.481475
+nano-agent-Qwen_Qwen3-32B,2,submitted-random,submitted-random,0.170795,0.0,0.0,0.0
+nano-agent-Qwen_Qwen3-32B,2,S,submitted-random,0.17104,0.0245,-0.363537,0.422025
+nano-agent-Qwen_Qwen3-32B,2,O,submitted-random,0.170815,0.002,0.0,0.006
+nano-agent-Qwen_Qwen3-32B,2,S+O,submitted-random,0.17103,0.0235,-0.367125,0.423188
+nano-agent-Qwen_Qwen3-32B,2,Om,submitted-random,0.170815,0.002,0.0,0.006
+nano-agent-Qwen_Qwen3-32B,2,S+Om,submitted-random,0.17106,0.0265,-0.361512,0.428025
+nano-agent-Qwen_Qwen3-32B,2,oracle,submitted-random,0.21853,4.7735,4.0785,5.4705
+nano-agent-Qwen_Qwen3-32B,2,S+O - S,S,,-0.001,-0.018,0.015
+nano-agent-Qwen_Qwen3-32B,2,S+Om - S,S,,0.002,-0.009,0.015
+nano-agent-Qwen_Qwen3-32B,3,random,submitted-random,0.16389,-0.836833,-1.127504,-0.559887
+nano-agent-Qwen_Qwen3-32B,3,submitted-random,submitted-random,0.172258,0.0,0.0,0.0
+nano-agent-Qwen_Qwen3-32B,3,S,submitted-random,0.17071,-0.154833,-0.811037,0.522067
+nano-agent-Qwen_Qwen3-32B,3,O,submitted-random,0.172287,0.002833,0.0,0.0085
+nano-agent-Qwen_Qwen3-32B,3,S+O,submitted-random,0.17071,-0.154833,-0.813667,0.518367
+nano-agent-Qwen_Qwen3-32B,3,Om,submitted-random,0.172287,0.002833,0.0,0.0085
+nano-agent-Qwen_Qwen3-32B,3,S+Om,submitted-random,0.17062,-0.163833,-0.82485,0.506179
+nano-agent-Qwen_Qwen3-32B,3,oracle,submitted-random,0.25088,7.862167,6.73215,8.976213
+nano-agent-Qwen_Qwen3-32B,3,S+O - S,S,,0.0,-0.012,0.012
+nano-agent-Qwen_Qwen3-32B,3,S+Om - S,S,,-0.009,-0.039,0.008
+nano-agent-Qwen_Qwen3-32B,5,random,submitted-random,0.163824,-0.881517,-1.201804,-0.588931
+nano-agent-Qwen_Qwen3-32B,5,submitted-random,submitted-random,0.172639,0.0,0.0,0.0
+nano-agent-Qwen_Qwen3-32B,5,S,submitted-random,0.16652,-0.611917,-1.649946,0.441243
+nano-agent-Qwen_Qwen3-32B,5,O,submitted-random,0.17271,0.007067,0.0,0.0212
+nano-agent-Qwen_Qwen3-32B,5,S+O,submitted-random,0.16653,-0.610917,-1.649921,0.443218
+nano-agent-Qwen_Qwen3-32B,5,Om,submitted-random,0.17271,0.007067,0.0,0.0212
+nano-agent-Qwen_Qwen3-32B,5,S+Om,submitted-random,0.16644,-0.619917,-1.649921,0.429575
+nano-agent-Qwen_Qwen3-32B,5,oracle,submitted-random,0.28966,11.702083,10.086183,13.420202
+nano-agent-Qwen_Qwen3-32B,5,S+O - S,S,,0.001,0.0,0.003
+nano-agent-Qwen_Qwen3-32B,5,S+Om - S,S,,-0.008,-0.027,0.002
+nano-agent-Qwen_Qwen3-32B,10,random,submitted-random,0.1638,-0.908651,-1.252063,-0.601962
+nano-agent-Qwen_Qwen3-32B,10,submitted-random,submitted-random,0.172887,0.0,0.0,0.0
+nano-agent-Qwen_Qwen3-32B,10,S,submitted-random,0.157,-1.588651,-3.532704,0.35927
+nano-agent-Qwen_Qwen3-32B,10,O,submitted-random,0.172953,0.006667,0.0,0.02
+nano-agent-Qwen_Qwen3-32B,10,S+O,submitted-random,0.157,-1.588651,-3.532704,0.35927
+nano-agent-Qwen_Qwen3-32B,10,Om,submitted-random,0.172953,0.006667,0.0,0.02
+nano-agent-Qwen_Qwen3-32B,10,S+Om,submitted-random,0.157,-1.588651,-3.532704,0.35927
+nano-agent-Qwen_Qwen3-32B,10,oracle,submitted-random,0.342,16.911349,14.416972,19.470819
+nano-agent-Qwen_Qwen3-32B,10,S+O - S,S,,0.0,0.0,0.0
+nano-agent-Qwen_Qwen3-32B,10,S+Om - S,S,,0.0,0.0,0.0
+nano-agent-agentica-org_DeepSWE-Preview,2,random,submitted-random,0.31449,-1.3655,-1.7112,-1.050463
+nano-agent-agentica-org_DeepSWE-Preview,2,submitted-random,submitted-random,0.328145,0.0,0.0,0.0
+nano-agent-agentica-org_DeepSWE-Preview,2,S,submitted-random,0.32461,-0.3535,-0.90855,0.147325
+nano-agent-agentica-org_DeepSWE-Preview,2,O,submitted-random,0.327985,-0.016,-0.124575,0.109013
+nano-agent-agentica-org_DeepSWE-Preview,2,S+O,submitted-random,0.32424,-0.3905,-0.94835,0.116537
+nano-agent-agentica-org_DeepSWE-Preview,2,Om,submitted-random,0.32805,-0.0095,-0.093512,0.075075
+nano-agent-agentica-org_DeepSWE-Preview,2,S+Om,submitted-random,0.32444,-0.3705,-0.906187,0.142625
+nano-agent-agentica-org_DeepSWE-Preview,2,oracle,submitted-random,0.41244,8.4295,7.561387,9.242988
+nano-agent-agentica-org_DeepSWE-Preview,2,S+O - S,S,,-0.037,-0.134,0.048025
+nano-agent-agentica-org_DeepSWE-Preview,2,S+Om - S,S,,-0.017,-0.116,0.083025
+nano-agent-agentica-org_DeepSWE-Preview,3,random,submitted-random,0.313447,-1.603833,-2.057196,-1.235767
+nano-agent-agentica-org_DeepSWE-Preview,3,submitted-random,submitted-random,0.329485,0.0,0.0,0.0
+nano-agent-agentica-org_DeepSWE-Preview,3,S,submitted-random,0.322653,-0.683167,-1.519625,0.115108
+nano-agent-agentica-org_DeepSWE-Preview,3,O,submitted-random,0.329945,0.046,-0.114883,0.245158
+nano-agent-agentica-org_DeepSWE-Preview,3,S+O,submitted-random,0.321563,-0.792167,-1.670604,-0.009046
+nano-agent-agentica-org_DeepSWE-Preview,3,Om,submitted-random,0.329295,-0.019,-0.145679,0.116225
+nano-agent-agentica-org_DeepSWE-Preview,3,S+Om,submitted-random,0.321823,-0.766167,-1.601783,-0.001992
+nano-agent-agentica-org_DeepSWE-Preview,3,oracle,submitted-random,0.45969,13.0205,11.578617,14.2957
+nano-agent-agentica-org_DeepSWE-Preview,3,S+O - S,S,,-0.109,-0.270075,0.030025
+nano-agent-agentica-org_DeepSWE-Preview,3,S+Om - S,S,,-0.083,-0.237075,0.056
+nano-agent-agentica-org_DeepSWE-Preview,5,random,submitted-random,0.314134,-1.741033,-2.237131,-1.333823
+nano-agent-agentica-org_DeepSWE-Preview,5,submitted-random,submitted-random,0.331544,0.0,0.0,0.0
+nano-agent-agentica-org_DeepSWE-Preview,5,S,submitted-random,0.31901,-1.253433,-2.612163,0.111564
+nano-agent-agentica-org_DeepSWE-Preview,5,O,submitted-random,0.332233,0.068817,-0.143033,0.335201
+nano-agent-agentica-org_DeepSWE-Preview,5,S+O,submitted-random,0.31662,-1.492433,-2.81673,-0.137265
+nano-agent-agentica-org_DeepSWE-Preview,5,Om,submitted-random,0.331471,-0.00735,-0.252893,0.252822
+nano-agent-agentica-org_DeepSWE-Preview,5,S+Om,submitted-random,0.31757,-1.397433,-2.709864,-0.077233
+nano-agent-agentica-org_DeepSWE-Preview,5,oracle,submitted-random,0.51664,18.509567,16.584033,20.421958
+nano-agent-agentica-org_DeepSWE-Preview,5,S+O - S,S,,-0.239,-0.586025,0.032075
+nano-agent-agentica-org_DeepSWE-Preview,5,S+Om - S,S,,-0.144,-0.479025,0.134025
+nano-agent-agentica-org_DeepSWE-Preview,10,random,submitted-random,0.3138,-1.741667,-2.236085,-1.332629
+nano-agent-agentica-org_DeepSWE-Preview,10,submitted-random,submitted-random,0.331217,0.0,0.0,0.0
+nano-agent-agentica-org_DeepSWE-Preview,10,S,submitted-random,0.323,-0.821667,-3.282849,1.642597
+nano-agent-agentica-org_DeepSWE-Preview,10,O,submitted-random,0.33263,0.141349,-0.161494,0.51571
+nano-agent-agentica-org_DeepSWE-Preview,10,S+O,submitted-random,0.317,-1.421667,-3.999889,1.03425
+nano-agent-agentica-org_DeepSWE-Preview,10,Om,submitted-random,0.332118,0.090159,-0.42725,0.645063
+nano-agent-agentica-org_DeepSWE-Preview,10,S+Om,submitted-random,0.317,-1.421667,-3.920534,1.031262
+nano-agent-agentica-org_DeepSWE-Preview,10,oracle,submitted-random,0.58,24.878333,22.099454,27.539202
+nano-agent-agentica-org_DeepSWE-Preview,10,S+O - S,S,,-0.6,-1.6,0.2
+nano-agent-agentica-org_DeepSWE-Preview,10,S+Om - S,S,,-0.6,-1.6,0.2
+nano-agent-mistral_devstral-2512,2,random,submitted-random,0.635055,-0.0705,-0.146025,-0.0135
+nano-agent-mistral_devstral-2512,2,submitted-random,submitted-random,0.63576,0.0,0.0,0.0
+nano-agent-mistral_devstral-2512,2,S,submitted-random,0.64375,0.799,0.302725,1.331075
+nano-agent-mistral_devstral-2512,2,O,submitted-random,0.646405,1.0645,0.586163,1.553037
+nano-agent-mistral_devstral-2512,2,S+O,submitted-random,0.6468,1.104,0.5899,1.603037
+nano-agent-mistral_devstral-2512,2,Om,submitted-random,0.647795,1.2035,0.690412,1.706537
+nano-agent-mistral_devstral-2512,2,S+Om,submitted-random,0.64763,1.187,0.688,1.691575
+nano-agent-mistral_devstral-2512,2,oracle,submitted-random,0.70047,6.471,5.673375,7.400487
+nano-agent-mistral_devstral-2512,2,S+O - S,S,,0.305,0.02195,0.565
+nano-agent-mistral_devstral-2512,2,S+Om - S,S,,0.388,0.128825,0.653075
+nano-agent-mistral_devstral-2512,3,random,submitted-random,0.635163,-0.08,-0.168396,-0.013
+nano-agent-mistral_devstral-2512,3,submitted-random,submitted-random,0.635963,0.0,0.0,0.0
+nano-agent-mistral_devstral-2512,3,S,submitted-random,0.64448,0.851667,0.064933,1.641325
+nano-agent-mistral_devstral-2512,3,O,submitted-random,0.648662,1.269833,0.612708,1.923225
+nano-agent-mistral_devstral-2512,3,S+O,submitted-random,0.64988,1.391667,0.6236,2.124521
+nano-agent-mistral_devstral-2512,3,Om,submitted-random,0.650075,1.411167,0.653667,2.108937
+nano-agent-mistral_devstral-2512,3,S+Om,submitted-random,0.65033,1.436667,0.702287,2.190421
+nano-agent-mistral_devstral-2512,3,oracle,submitted-random,0.7302,9.423667,8.230138,10.816304
+nano-agent-mistral_devstral-2512,3,S+O - S,S,,0.54,0.093725,1.013025
+nano-agent-mistral_devstral-2512,3,S+Om - S,S,,0.585,0.165575,1.014
+nano-agent-mistral_devstral-2512,5,random,submitted-random,0.63551,-0.075267,-0.158824,-0.01255
+nano-agent-mistral_devstral-2512,5,submitted-random,submitted-random,0.636263,0.0,0.0,0.0
+nano-agent-mistral_devstral-2512,5,S,submitted-random,0.64395,0.768733,-0.31251,1.853525
+nano-agent-mistral_devstral-2512,5,O,submitted-random,0.648687,1.242467,0.292797,2.153539
+nano-agent-mistral_devstral-2512,5,S+O,submitted-random,0.65211,1.584733,0.495423,2.66288
+nano-agent-mistral_devstral-2512,5,Om,submitted-random,0.650667,1.44045,0.355611,2.524403
+nano-agent-mistral_devstral-2512,5,S+Om,submitted-random,0.65254,1.627733,0.510778,2.700739
+nano-agent-mistral_devstral-2512,5,oracle,submitted-random,0.76191,12.564733,10.957436,14.497197
+nano-agent-mistral_devstral-2512,5,S+O - S,S,,0.816,0.06975,1.6142
+nano-agent-mistral_devstral-2512,5,S+Om - S,S,,0.859,0.1189,1.622175
+nano-agent-mistral_devstral-2512,10,random,submitted-random,0.6354,-0.071667,-0.152222,-0.011111
+nano-agent-mistral_devstral-2512,10,submitted-random,submitted-random,0.636117,0.0,0.0,0.0
+nano-agent-mistral_devstral-2512,10,S,submitted-random,0.642,0.588333,-1.288181,2.439667
+nano-agent-mistral_devstral-2512,10,O,submitted-random,0.648717,1.26,-0.461472,2.948958
+nano-agent-mistral_devstral-2512,10,S+O,submitted-random,0.646,0.988333,-0.916861,2.835333
+nano-agent-mistral_devstral-2512,10,Om,submitted-random,0.6528,1.668333,-0.287931,3.510653
+nano-agent-mistral_devstral-2512,10,S+Om,submitted-random,0.654,1.788333,-0.195861,3.6085
+nano-agent-mistral_devstral-2512,10,oracle,submitted-random,0.794,15.788333,13.619306,18.320806
+nano-agent-mistral_devstral-2512,10,S+O - S,S,,0.4,-1.4,2.2
+nano-agent-mistral_devstral-2512,10,S+Om - S,S,,1.2,-0.4,3.0
+all,2,random,submitted-random,0.371095,-0.713833,-0.857504,-0.573154
+all,2,submitted-random,submitted-random,0.378233,0.0,0.0,0.0
+all,2,S,submitted-random,0.3798,0.156667,-0.148883,0.43155
+all,2,O,submitted-random,0.381735,0.350167,0.188604,0.513171
+all,2,S+O,submitted-random,0.38069,0.245667,-0.043846,0.509067
+all,2,Om,submitted-random,0.38222,0.398667,0.225825,0.568187
+all,2,S+Om,submitted-random,0.381043,0.281,-0.008896,0.550396
+all,2,oracle,submitted-random,0.443813,6.558,6.090258,7.024129
+all,2,S+O - S,S,,0.089,-0.009008,0.184
+all,2,S+Om - S,S,,0.124333,0.0313,0.22335
+all,3,random,submitted-random,0.370833,-0.840222,-1.021351,-0.677608
+all,3,submitted-random,submitted-random,0.379236,0.0,0.0,0.0
+all,3,S,submitted-random,0.379281,0.004556,-0.431843,0.430654
+all,3,O,submitted-random,0.383631,0.439556,0.218547,0.671887
+all,3,S+O,submitted-random,0.380718,0.148222,-0.267899,0.584664
+all,3,Om,submitted-random,0.383886,0.465,0.209596,0.698661
+all,3,S+Om,submitted-random,0.380924,0.168889,-0.259836,0.604847
+all,3,oracle,submitted-random,0.480257,10.102111,9.375904,10.826944
+all,3,S+O - S,S,,0.143667,-0.026708,0.30835
+all,3,S+Om - S,S,,0.164333,0.008633,0.317075
+all,5,random,submitted-random,0.371156,-0.899272,-1.098217,-0.721039
+all,5,submitted-random,submitted-random,0.380149,0.0,0.0,0.0
+all,5,S,submitted-random,0.376493,-0.365539,-1.01704,0.298167
+all,5,O,submitted-random,0.384543,0.43945,0.128633,0.757
+all,5,S+O,submitted-random,0.37842,-0.172872,-0.807347,0.515832
+all,5,Om,submitted-random,0.384949,0.480056,0.10913,0.8368
+all,5,S+Om,submitted-random,0.37885,-0.129872,-0.786119,0.539956
+all,5,oracle,submitted-random,0.522737,14.258794,13.238586,15.331159
+all,5,S+O - S,S,,0.192667,-0.095,0.489917
+all,5,S+Om - S,S,,0.235667,-0.039008,0.527058
+all,10,random,submitted-random,0.371,-0.907328,-1.113089,-0.724904
+all,10,submitted-random,submitted-random,0.380073,0.0,0.0,0.0
+all,10,S,submitted-random,0.374,-0.607328,-1.803074,0.629322
+all,10,O,submitted-random,0.384767,0.469339,-0.102093,1.047181
+all,10,S+O,submitted-random,0.373333,-0.673995,-1.858904,0.503294
+all,10,Om,submitted-random,0.385957,0.588386,-0.106317,1.242012
+all,10,S+Om,submitted-random,0.376,-0.407328,-1.561862,0.730065
+all,10,oracle,submitted-random,0.572,19.192672,17.766948,20.768404
+all,10,S+O - S,S,,-0.066667,-0.733333,0.6
+all,10,S+Om - S,S,,0.2,-0.4,0.866667

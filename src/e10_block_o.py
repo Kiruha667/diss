@@ -58,7 +58,9 @@ LB_DIFFS = [("S+O", "S"), ("M+S+O", "M+S"), ("S+Om", "S"), ("M+S+Om", "M+S")]
 LB_METRICS = ["auroc", "within", "pairs", "p@10", "brier"]
 KTH_MODELS = {"S": ["S"], "O": ["O"], "S+O": ["S", "O"], "Om": ["Om"], "S+Om": ["S", "Om"]}
 KTH_DIFFS = [("S+O", "S"), ("S+Om", "S")]
-EXPECTED = {"S": (0.662, 0.640), "M+S": 0.685, "e9_delta_S_k5": (0.77, -0.61, -1.25)}
+EXPECTED = {"S": (0.662, 0.640), "M+S": 0.685,  # E7; E9 (P2 = S within the setting), Δ at k = 5 in p.p.:
+            "e9_delta_S_k5": {"nano-agent-Qwen_Qwen3-32B": -0.61, "nano-agent-agentica-org_DeepSWE-Preview": -1.25,
+                              "nano-agent-mistral_devstral-2512": 0.77}}
 
 Check = namedtuple("Check", "pos cat proj nf after")
 
@@ -384,8 +386,8 @@ def selection(att: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
                             "delta_pp": (point[(k, a)] - point[(k, b)]) * 100, "ci_lo": np.percentile(dd, 2.5),
                             "ci_hi": np.percentile(dd, 97.5)})
     res = pd.DataFrame(out)
-    got = tuple(round(float(res[(res.scope == s) & (res.k == K_MAIN) & (res.rule == "S")].delta_pp.iloc[0]), 2)
-                for s in SETTINGS)
+    got = {s: round(float(res[(res.scope == s) & (res.k == K_MAIN) & (res.rule == "S")].delta_pp.iloc[0]), 2)
+           for s in SETTINGS}
     if got != EXPECTED["e9_delta_S_k5"]:
         raise SystemExit(f"STOP: Δ(S) at k = 5 {got}, E9 {EXPECTED['e9_delta_S_k5']}")
     return res, {"reproduced_delta_S_k5": got}
