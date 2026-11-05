@@ -1,0 +1,66 @@
+{
+ "attempts": 200,
+ "requests": 800,
+ "price_usd_per_1M": {
+  "input": 0.4,
+  "output": 2.0,
+  "cache_read": 0.04
+ },
+ "max_tokens": 2048,
+ "prompt_tokens": {
+  "total": 23762764,
+  "per_condition": {
+   "C1": 5938391,
+   "C2": 5939591,
+   "C3": 5941791,
+   "C4": 5942991
+  },
+  "per_request_mean": 29703.455,
+  "per_request_median": 28825.5,
+  "per_request_max": 53211
+ },
+ "context_limit": 262144,
+ "ratio_to_raw_token_usage_median": 1.0558715675132695,
+ "trajectory_end": [
+  {
+   "label": 0,
+   "last_role": "assistant",
+   "n": 77
+  },
+  {
+   "label": 0,
+   "last_role": "tool",
+   "n": 23
+  },
+  {
+   "label": 1,
+   "last_role": "assistant",
+   "n": 64
+  },
+  {
+   "label": 1,
+   "last_role": "tool",
+   "n": 36
+  }
+ ],
+ "agent_final_msg_tokens": {
+  "share_with_final": 0.715,
+  "mean": 585.4895104895105,
+  "median": 433.0,
+  "share_over_max_tokens": 0.035
+ },
+ "output_tokens": {
+  "expected_C1C2": 234195.8041958042,
+  "expected_C3C4": 4000,
+  "cap_all": 1638400
+ },
+ "usd": {
+  "input_no_cache": 9.5051056,
+  "input_with_cache": 3.0883313200000004,
+  "output_expected": 0.4763916083916084,
+  "output_cap": 3.2768,
+  "total_expected_no_cache": 9.981497208391609,
+  "total_expected_with_cache": 3.5647229283916086,
+  "total_upper_bound": 12.7819056
+ }
+}

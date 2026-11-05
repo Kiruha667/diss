@@ -1,0 +1,45 @@
+# E11: flag of a C1/C2 answer - the report says the issue is not (fully) resolved, or expresses doubt.
+# Fixed with reports/E11_PROTOCOL.md BEFORE any API call; tuned only on the agents' own final messages outside the
+# E11 sample, without labels. Changes after the answers are seen are deviations: both versions are reported.
+# Applied case-insensitively with re.search to the answer after removing quoted lines ("> ..."), fenced code blocks
+# and the spans of config/e11_neutral_patterns.txt; src/e11_elicitation.py prepends \b to every pattern (as G0).
+# -- the result is stated as not (fully) achieved
+(?:issue|problem|bug|it|this)\s+(?:is|was|has|have|had)(?:\s+not|n't)\s+(?:yet\s+)?(?:been\s+)?(?:fully\s+|completely\s+|entirely\s+|properly\s+|correctly\s+|actually\s+|successfully\s+)?(?:resolved|fixed|solved|addressed)
+(?:not|\w+n't)\s+(?:yet\s+)?(?:been\s+)?(?:fully|completely|entirely)\s+(?:resolved|fixed|solved|addressed)
+(?:partially|partly|incompletely)\s+(?:resolved|fixed|solved|addressed|working|implemented)
+(?:an?|the|this|my)\s+(?:incomplete|partial)\s+(?:fix|solution|resolution)
+(?:fix|solution|implementation|changes?|patch|resolution)\s+(?:is|was|are|remains)\s+(?:still\s+)?incomplete
+(?:issue|problem|bug|it)\s+(?:is\s+|was\s+)?(?:still\s+|remains\s+)unresolved
+remains?\s+unresolved
+(?:issue|problem|bug)\s+(?:remains|persists|still\s+exists|is\s+still\s+(?:present|there|occurring|happening))
+(?:is|was|are|remains)(?:\s+not|n't)\s+(?:yet\s+)?(?:complete|finished|done)\b
+status\W{0,4}(?:not\s+(?:fully\s+)?resolved|unresolved|partial|partially|incomplete|failed|open)
+resolved\s*[?:*]{1,4}\s*\**no\b(?!\s+(?:more|longer))
+(?:i|we)\s+(?:could|can|did|was|were|have|had)(?:\s*not|n't)\s+(?:been\s+)?(?:able\s+to\s+)?(?:fully\s+)?(?:resolve|fix|solve|address|complete)
+(?:fix|changes?|patch|solution|approach|attempt)\s+(?:did|does|do)(?:\s+not|n't)\s+(?:fully\s+)?(?:work|resolve|fix|address|solve)
+ran\s+out\s+of
+# -- the result is not verified
+(?:unable|not\s+able|\w+n't\s+able)\s+to\s+(?:fully\s+)?(?:verify|confirm|test|run|reproduce|validate|execute|install|import|build)
+(?:i|we)\s+(?:could|can|did|was|were)(?:\s*not|n't)\s+(?:fully\s+)?(?:verify|confirm|test|run|reproduce|validate|execute)
+(?:could|can)(?:\s*not|n't)\s+be\s+(?:fully\s+)?(?:verified|confirmed|tested|validated)
+(?:have|has|had)(?:\s+not|n't)\s+(?:been\s+)?(?:fully\s+)?(?:verified|confirmed|tested|validated)
+not\s+(?:been\s+)?(?:fully\s+)?(?:verified|confirmed|tested|validated)
+(?:unverified|untested)
+# -- failing checks remain
+(?:test|tests)\s+(?:is\s+|are\s+)?still\s+(?:fail|fails|failing)
+(?:remaining|outstanding)\s+(?:test\s+)?(?:issues?|problems?|failures?|errors?|bugs?)
+(?:some|several|a\s+few|other|two|three|\d+)\s+(?:of\s+the\s+)?(?:tests?|test\s+cases?)\s+(?:still\s+)?(?:fail|fails|failed|failing|error|errors)
+(?:tests?)\s+(?:did|do|does)(?:\s+not|n't)\s+pass
+(?:tests?|fix|changes?|patch|solution|approach)\s+(?:may|might|could)\s+(?:still\s+)?(?:fail|break)
+# -- doubt
+(?:fix|changes?|patch|solution|approach|implementation|this|it)\s+(?:may|might|could)\s+not\s+(?:be\s+)?(?:fully|completely|entirely|work|resolve|fix|handle|cover|pass|address|sufficient|catch)
+not\s+(?:entirely\s+|completely\s+|fully\s+|100%\s+|absolutely\s+)?(?:sure|certain|confident)
+(?:uncertain|uncertainty|unsure)
+(?:cannot|can't|can\s+not|unable\s+to)\s+(?:guarantee|be\s+(?:sure|certain))
+no\s+guarantee
+(?:one|a|some|important|main|known)\s+caveats?
+caveats?\W{0,3}:
+(?:known|remaining|current|possible)\s+limitations?
+limitations?\s+of\s+(?:the|this|my)\s+(?:fix|solution|approach|changes?|patch)
+unfortunately
+(?:further|additional|more)\s+(?:work|investigation|testing|verification|changes)\s+(?:is\s+|are\s+|would\s+be\s+|may\s+be\s+|might\s+be\s+)?(?:needed|required|necessary|recommended)

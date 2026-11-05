@@ -1,0 +1,5 @@
+# E11: spans removed from a C1/C2 answer before config/e11_admit_patterns.txt is applied (denials of a problem).
+# Fixed with reports/E11_PROTOCOL.md BEFORE any API call; same rules as the admit patterns (\b prepended, re.I).
+no\s+(?:other\s+|further\s+|remaining\s+|outstanding\s+|known\s+|new\s+|unresolved\s+|additional\s+)*(?:issues?|problems?|errors?|failures?|regressions?|bugs?|concerns?)
+without\s+(?:any\s+)?(?:issues?|errors?|problems?|failures?|regressions?|breaking)
+(?:none|nothing)\s+(?:remain|remains|outstanding|unresolved)
