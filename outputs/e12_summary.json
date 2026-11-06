@@ -1,0 +1,25 @@
+{
+ "encoder_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+ "pca_explained_variance": {
+  "fold0": 0.55,
+  "fold1": 0.5514,
+  "fold2": 0.5494,
+  "fold3": 0.548,
+  "fold4": 0.5496
+ },
+ "convergence_warnings": 0,
+ "M+S_vs_e7_max_abs_diff": 4.999761604729258e-09,
+ "M+S_reproduction": [
+  0.685,
+  0.689
+ ],
+ "n_runs": 7864,
+ "n_tasks": 500,
+ "seconds": 251.2,
+ "criterion": {
+  "diff": -0.015139570975014505,
+  "ci_lo": -0.043990667772601195,
+  "ci_hi": 0.01293758467479192,
+  "met": false
+ }
+}
