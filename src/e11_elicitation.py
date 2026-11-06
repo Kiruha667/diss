@@ -65,9 +65,11 @@ def draw_sample() -> pd.DataFrame:
 
 
 def has_final_message(dp: dict) -> int:
-    """1 if the trajectory ends with an assistant message without a tool call (protocol 12.2)."""
+    """1 if the trajectory ends with a non-empty assistant message without a tool call (protocol 12.2; "non-empty"
+    added in section 13 before the E11b calls - no attempt of the E11 sample ends with an empty one)."""
     last = dp["completion"][-1] if dp["completion"] else {}
-    return int(last.get("role") == "assistant" and not last.get("tool_calls"))
+    return int(last.get("role") == "assistant" and not last.get("tool_calls")
+               and bool((last.get("content") or "").strip()))
 
 
 def sample() -> pd.DataFrame:
