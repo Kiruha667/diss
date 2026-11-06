@@ -2,8 +2,9 @@
 
   python -m src.e11_elicitation sample   -> outputs/e11_sample.csv (100 units x (1 solved, 1 unresolved), seed 42)
   python -m src.e11_elicitation cost     -> outputs/e11_cost.json (token counts of the 800 requests, no API calls)
-  python -m src.e11_elicitation check [--provider openrouter|mistral]   one minimal request: is the model served
-  python -m src.e11_elicitation ask [--provider ...] [--limit N]        the 800 requests -> outputs/e11_responses.jsonl
+  python -m src.e11_elicitation check    -> outputs/e11_check.json (one minimal request: devstral-2512 by Mistral?)
+  python -m src.e11_elicitation ask [--limit N]   the 800 requests -> outputs/e11_responses.jsonl (resumable;
+                                                  stops at the $15 budget or an answer not from devstral-2512/Mistral)
 
 Data: ASSERT-KTH repeats (E8), setting nano-agent x devstral-2512. A request = the attempt's full conversation as
 nano-agent sent it to the model (system and task prompt, every assistant / tool / user message of the completion,
@@ -63,11 +64,19 @@ def draw_sample() -> pd.DataFrame:
     return out
 
 
+def has_final_message(dp: dict) -> int:
+    """1 if the trajectory ends with an assistant message without a tool call (protocol 12.2)."""
+    last = dp["completion"][-1] if dp["completion"] else {}
+    return int(last.get("role") == "assistant" and not last.get("tool_calls"))
+
+
 def sample() -> pd.DataFrame:
-    if not SAMPLE.exists():
-        df = draw_sample()
+    df = pd.read_csv(SAMPLE) if SAMPLE.exists() else draw_sample()
+    if "has_final_message" not in df:
+        recs = raw_records(df.run_id.tolist())
+        df["has_final_message"] = [has_final_message(recs[r]) for r in df.run_id]
         df.round(8).to_csv(SAMPLE, index=False)
-    return pd.read_csv(SAMPLE)
+    return df
 
 
 # ------------------------------------------------------------------------------------------ requests
@@ -251,15 +260,16 @@ def cost() -> dict:
 
 # ------------------------------------------------------------------------------------------ API (protocol, section 3)
 
-PROVIDERS = {  # the key is read from the environment variable; it is never written anywhere
+PROVIDERS = {  # the key is read from the environment variable; it is never written anywhere (protocol 12.1)
     "openrouter": {"url": "https://openrouter.ai/api/v1/chat/completions", "key_env": "OPENROUTER_API_KEY",
                    "model": "mistralai/devstral-2512",
-                   "extra": {"provider": {"order": ["mistral"], "allow_fallbacks": False}, "seed": SEED}},
-    "mistral": {"url": "https://api.mistral.ai/v1/chat/completions", "key_env": "MISTRAL_API_KEY",
-                "model": "devstral-2512", "extra": {"random_seed": SEED}},
+                   "extra": {"provider": {"order": ["Mistral"], "allow_fallbacks": False}, "seed": SEED}},
 }
 RESPONSES = OUTPUTS / "e11_responses.jsonl"
+CHECK = OUTPUTS / "e11_check.json"
 MAX_RETRIES = 5
+BUDGET_USD = 15.0
+CHECK_EVERY = 20
 
 
 def _post(provider: str, body: dict) -> tuple[int, dict | None, str]:
@@ -293,55 +303,99 @@ def _post(provider: str, body: dict) -> tuple[int, dict | None, str]:
     return status, None, err
 
 
+def cost_usd(usage: dict | None) -> tuple[float, str]:
+    """Spend of one response (protocol 12.1): usage.cost of OpenRouter, else tokens x the prices of section 9."""
+    u = usage or {}
+    if isinstance(u.get("cost"), (int, float)):
+        return float(u["cost"]), "usage.cost"
+    cached = ((u.get("prompt_tokens_details") or {}).get("cached_tokens") or 0)
+    return ((u.get("prompt_tokens", 0) - cached) * PRICE["input"] + cached * PRICE["cache_read"]
+            + u.get("completion_tokens", 0) * PRICE["output"]) / 1e6, "tokens"
+
+
+def identity_ok(js: dict | None) -> bool:
+    """Protocol 12.1: the answer comes from devstral-2512 served by Mistral."""
+    return bool(js) and "devstral-2512" in str(js.get("model") or "") and js.get("provider") == "Mistral"
+
+
+def _summary(js: dict | None) -> dict:
+    ch = (js or {}).get("choices") or [{}]
+    msg = ch[0].get("message") or {}
+    usage = (js or {}).get("usage")
+    usd, how = cost_usd(usage)
+    return {"response": msg.get("content"), "tool_calls": msg.get("tool_calls"),
+            "finish_reason": ch[0].get("finish_reason"), "model": (js or {}).get("model"),
+            "served_by": (js or {}).get("provider"), "usage": usage, "cost_usd": usd if js else 0.0,
+            "cost_source": how if js else ""}
+
+
 def check(provider: str) -> dict:
-    """The availability check of protocol 3.4: one minimal request; is devstral-2512 served, and by whom."""
+    """The availability check of protocol 3.4 / 12.1: one minimal request -> outputs/e11_check.json."""
+    import time
+
     status, js, err = _post(provider, {"messages": [{"role": "user", "content": "Reply with the single word OK."}],
                                        "temperature": 0, "max_tokens": 5})
-    out = {"provider": provider, "status": status, "error": err}
-    if js:
-        out.update({"model": js.get("model"), "served_by": js.get("provider"), "usage": js.get("usage"),
-                    "text": (js.get("choices") or [{}])[0].get("message", {}).get("content")})
+    out = {"provider": provider, "status": status, "error": err, **_summary(js), "identity_ok": identity_ok(js),
+           "time": time.strftime("%Y-%m-%dT%H:%M:%S")}
+    CHECK.write_text(json.dumps(out, indent=1, ensure_ascii=False), encoding="utf-8")
     return out
 
 
-def _done() -> set[tuple[str, str]]:
+def _responses() -> list[dict]:
     if not RESPONSES.exists():
-        return set()
+        return []
     with open(RESPONSES, encoding="utf-8") as fh:
-        return {(r["run_id"], r["cond"]) for r in map(json.loads, fh) if r["status"] == 200}
+        return [json.loads(x) for x in fh if x.strip()]
+
+
+def spent() -> tuple[float, float]:
+    """(total spend so far incl. the check request, the largest spend of one request)."""
+    costs = [r.get("cost_usd") or 0.0 for r in _responses()]
+    chk = json.loads(CHECK.read_text(encoding="utf-8")).get("cost_usd", 0.0) if CHECK.exists() else 0.0
+    return sum(costs) + chk, max(costs, default=0.0)
 
 
 def ask(provider: str, limit: int | None = None) -> None:
     """All 800 requests (resumable): by attempt in the order of the sample, C1-C4 one after another; every answer
-    is appended in full to outputs/e11_responses.jsonl."""
+    is appended in full to outputs/e11_responses.jsonl. Stops (protocol 12.1) on an answer not from devstral-2512 /
+    Mistral, on an HTTP error, and when the spend could pass BUDGET_USD within the next CHECK_EVERY requests."""
     import time
 
+    chk = json.loads(CHECK.read_text(encoding="utf-8")) if CHECK.exists() else {}
+    if not chk.get("identity_ok"):
+        raise SystemExit("STOP: no passed availability check (outputs/e11_check.json)")
     smp = sample()
     recs = raw_records(smp.run_id.tolist())
-    done = _done()
+    done = {(r["run_id"], r["cond"]) for r in _responses() if r["status"] == 200}
     n = 0
     for r in smp.itertuples():
         for cond in QUESTIONS:
             if (r.run_id, cond) in done:
                 continue
+            if n % CHECK_EVERY == 0:
+                total, top = spent()
+                log.info("spent so far $%.4f (largest request $%.4f)", total, top)
+                if total + CHECK_EVERY * top > BUDGET_USD:
+                    raise SystemExit(f"STOP: spend ${total:.4f} + {CHECK_EVERY} x ${top:.4f} > ${BUDGET_USD}")
             if limit is not None and n >= limit:
                 return
             t0 = time.time()
             status, js, err = _post(provider, request(recs[r.run_id], cond))
-            ch = (js or {}).get("choices") or [{}]
-            msg = ch[0].get("message") or {}
             row = {"run_id": r.run_id, "task_id": r.task_id, "run": r.run, "cond": cond, "question": QUESTIONS[cond],
-                   "provider": provider, "status": status, "error": err, "response": msg.get("content"),
-                   "tool_calls": msg.get("tool_calls"), "finish_reason": ch[0].get("finish_reason"),
-                   "model": (js or {}).get("model"), "served_by": (js or {}).get("provider"),
-                   "usage": (js or {}).get("usage"), "seconds": round(time.time() - t0, 1),
+                   "provider": provider, "status": status, "error": err, **_summary(js),
+                   "identity_ok": identity_ok(js), "seconds": round(time.time() - t0, 1),
                    "time": time.strftime("%Y-%m-%dT%H:%M:%S")}
             with open(RESPONSES, "a", encoding="utf-8") as fh:
                 fh.write(json.dumps(row, ensure_ascii=False) + "\n")
             n += 1
-            log.info("%s %s %s status %s %ss", r.run_id, cond, row["finish_reason"], status, row["seconds"])
+            log.info("%s %s %s status %s %ss $%.4f", r.run_id, cond, row["finish_reason"], status, row["seconds"],
+                     row["cost_usd"])
             if status != 200:
                 raise SystemExit(f"STOP: {r.run_id} {cond}: HTTP {status}: {err[:300]}")
+            if not row["identity_ok"]:
+                raise SystemExit(f"STOP: {r.run_id} {cond}: model {row['model']!r}, provider {row['served_by']!r}")
+    total, _ = spent()
+    log.info("all requests done, spent $%.4f", total)
 
 
 def main() -> None:
@@ -352,7 +406,7 @@ def main() -> None:
     a = p.parse_args()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     if a.cmd == "sample":
-        print(sample().groupby("label").size())
+        print(sample().groupby(["label", "has_final_message"]).size())
     elif a.cmd == "cost":
         print(json.dumps(cost(), indent=1, ensure_ascii=False))
     elif a.cmd == "check":
