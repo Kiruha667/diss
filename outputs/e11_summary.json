@@ -1,0 +1,200 @@
+{
+ "criteria_main": {
+  "K1: C4 - C3": {
+   "value": 0.039999999999999925,
+   "ci_lo": -0.020000000000000018,
+   "ci_hi": 0.10499999999999998,
+   "met": false
+  },
+  "K2: C4 - 0.5": {
+   "value": 0.08999999999999997,
+   "ci_lo": 0.040000000000000036,
+   "ci_hi": 0.14500000000000002,
+   "met": true
+  },
+  "K3: C4 - (S+O)": {
+   "value": 0.010000000000000009,
+   "ci_lo": -0.09000000000000008,
+   "ci_hi": 0.10499999999999998,
+   "met": false
+  },
+  "K4: (S+O+C4) - max(S+O, C4)": {
+   "value": -0.029999999999999916,
+   "ci_lo": -0.13,
+   "ci_hi": 0.030000000000000027,
+   "met": false
+  }
+ },
+ "criteria_excluded_missing": {
+  "K1: C4 - C3": {
+   "value": 0.0403946388682056,
+   "ci_lo": -0.03870639253527088,
+   "ci_hi": 0.12430752840909087,
+   "met": false
+  },
+  "K2: C4 - 0.5": {
+   "value": 0.11392405063291144,
+   "ci_lo": 0.04944885361552033,
+   "ci_hi": 0.18000000000000005,
+   "met": true
+  },
+  "K3: C4 - (S+O)": {
+   "value": 0.033924050632911484,
+   "ci_lo": -0.06999999999999995,
+   "ci_hi": 0.1338229166666665,
+   "met": false
+  },
+  "K4: (S+O+C4) - max(S+O, C4)": {
+   "value": -0.05392405063291139,
+   "ci_lo": -0.14003488372093023,
+   "ci_hi": 0.010011194029850743,
+   "met": false
+  }
+ },
+ "criteria_both_final": {
+  "K1: C4 - C3": {
+   "value": -0.039215686274509776,
+   "ci_lo": -0.1274509803921568,
+   "ci_hi": 0.0490196078431373,
+   "met": false
+  },
+  "K2: C4 - 0.5": {
+   "value": 0.0,
+   "ci_lo": -0.06862745098039214,
+   "ci_hi": 0.06862745098039214,
+   "met": false
+  },
+  "K3: C4 - (S+O)": {
+   "value": -0.10784313725490191,
+   "ci_lo": -0.2450980392156863,
+   "ci_hi": 0.02941176470588236,
+   "met": false
+  },
+  "K4: (S+O+C4) - max(S+O, C4)": {
+   "value": -0.0980392156862745,
+   "ci_lo": -0.25490196078431365,
+   "ci_hi": 0.039215686274509776,
+   "met": false
+  }
+ },
+ "pairs_both_final": 51,
+ "requests": 801,
+ "answers_ok": 800,
+ "spent_usd": 3.374852799999998,
+ "identity_all_ok": true,
+ "models": [
+  "mistralai/devstral-2512"
+ ],
+ "served_by": [
+  "Mistral"
+ ],
+ "finish_reason": [
+  {
+   "cond": "C1",
+   "finish_reason": "length",
+   "n": 1
+  },
+  {
+   "cond": "C1",
+   "finish_reason": "stop",
+   "n": 199
+  },
+  {
+   "cond": "C2",
+   "finish_reason": "stop",
+   "n": 200
+  },
+  {
+   "cond": "C3",
+   "finish_reason": "length",
+   "n": 1
+  },
+  {
+   "cond": "C3",
+   "finish_reason": "stop",
+   "n": 199
+  },
+  {
+   "cond": "C4",
+   "finish_reason": "stop",
+   "n": 200
+  }
+ ],
+ "parse_C3C4": [
+  {
+   "cond": "C3",
+   "label": 0,
+   "parse": "percent",
+   "n": 1
+  },
+  {
+   "cond": "C3",
+   "label": 0,
+   "parse": "strict",
+   "n": 92
+  },
+  {
+   "cond": "C3",
+   "label": 0,
+   "parse": "unparsed",
+   "n": 7
+  },
+  {
+   "cond": "C3",
+   "label": 1,
+   "parse": "lenient",
+   "n": 3
+  },
+  {
+   "cond": "C3",
+   "label": 1,
+   "parse": "strict",
+   "n": 69
+  },
+  {
+   "cond": "C3",
+   "label": 1,
+   "parse": "unparsed",
+   "n": 28
+  },
+  {
+   "cond": "C4",
+   "label": 0,
+   "parse": "lenient",
+   "n": 1
+  },
+  {
+   "cond": "C4",
+   "label": 0,
+   "parse": "strict",
+   "n": 95
+  },
+  {
+   "cond": "C4",
+   "label": 0,
+   "parse": "unparsed",
+   "n": 4
+  },
+  {
+   "cond": "C4",
+   "label": 1,
+   "parse": "lenient",
+   "n": 4
+  },
+  {
+   "cond": "C4",
+   "label": 1,
+   "parse": "strict",
+   "n": 78
+  },
+  {
+   "cond": "C4",
+   "label": 1,
+   "parse": "unparsed",
+   "n": 18
+  }
+ ],
+ "tool_call_answers": 0,
+ "empty_answers": 0,
+ "manual_check": null
+}
