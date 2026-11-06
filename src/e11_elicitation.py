@@ -398,9 +398,272 @@ def ask(provider: str, limit: int | None = None) -> None:
     log.info("all requests done, spent $%.4f", total)
 
 
+# ------------------------------------------------------------------------------------------ analysis (sections 4-8, 12)
+
+PARSED = OUTPUTS / "e11_parsed.csv"
+METRICS = OUTPUTS / "e11_metrics.csv"
+SUMMARY = OUTPUTS / "e11_summary.json"
+MANUAL = OUTPUTS / "e11_manual_sample.csv"
+MANUAL_KEY = OUT_DIR / "manual_key.csv"
+N_BOOT = 1000
+N_MANUAL_PER_STRATUM = 10
+PREDICTORS = ["G0", "S", "S+O", "C1", "C2", "C3", "C4", "S+O+C4", "has_final_message"]
+
+
+def parse_responses() -> pd.DataFrame:
+    """One row per (attempt, condition): flag (C1/C2) or number (C3/C4); missing answer -> NaN."""
+    smp = sample()
+    last = {(r["run_id"], r["cond"]): r for r in _responses() if r["status"] == 200}
+    rows = []
+    for a in smp.itertuples():
+        for cond in QUESTIONS:
+            r = last.get((a.run_id, cond))
+            text = (r or {}).get("response") or ""
+            row = {"run_id": a.run_id, "task_id": a.task_id, "label": a.label, "cond": cond, "answered": r is not None,
+                   "finish_reason": (r or {}).get("finish_reason"), "has_tool_calls": bool((r or {}).get("tool_calls")),
+                   "chars": len(text), "completion_tokens": ((r or {}).get("usage") or {}).get("completion_tokens"),
+                   "flag": np.nan, "hits": "", "number": np.nan, "parse": ""}
+            if cond in ("C1", "C2"):
+                if text.strip():
+                    row["flag"], hits = admit_flag(text)
+                    row["hits"] = " || ".join(hits)
+            else:
+                v, how = parse_number(text) if text.strip() and not row["has_tool_calls"] else (None, "unparsed")
+                row["number"], row["parse"] = (np.nan if v is None else v), how
+            rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def _stack_oof(att: pd.DataFrame) -> np.ndarray:
+    """S+O+C4 (protocol 5): LR on logit(S+O) and (100 - C4)/100, out-of-fold over the 200 attempts, GroupKFold by
+    task; unparsed C4 -> median of the parsed C4 risks of the training folds."""
+    from sklearn.model_selection import GroupKFold
+
+    from src import e8_repeats as e8
+
+    p = att["S+O"].clip(1e-6, 1 - 1e-6).to_numpy()
+    x1, x2 = np.log(p / (1 - p)), att["C4"].to_numpy() / 100
+    y, out = att.label.to_numpy(), np.full(len(att), np.nan)
+    for tr, te in GroupKFold(n_splits=5, shuffle=True, random_state=SEED).split(att, y, att.task_id):
+        med = np.nanmedian(x2[tr])
+        X = np.column_stack([x1, np.where(np.isnan(x2), med, x2)])
+        out[te] = e8.new_model().fit(X[tr], y[tr]).predict_proba(X[te])[:, 1]
+    return out
+
+
+def attempt_table(parsed: pd.DataFrame) -> pd.DataFrame:
+    """200 attempts: the risks of all predictors (higher = more likely unresolved) and block O groups."""
+    att = sample().copy()
+    fe = pd.read_csv(OUTPUTS / "e10_features.csv.gz")
+    fe = fe[fe.corpus == "kth"].set_index("run_id")
+    att["G0"] = 1 - fe.loc[att.run_id, "has_claim"].astype(int).to_numpy()
+    for c in ("C1", "C2"):
+        att[c] = parsed[parsed.cond == c].set_index("run_id").loc[att.run_id, "flag"].to_numpy()
+    for c in ("C3", "C4"):
+        att[f"{c}_number"] = parsed[parsed.cond == c].set_index("run_id").loc[att.run_id, "number"].to_numpy()
+        att[c] = 100 - att[f"{c}_number"]
+    att["S+O+C4"] = _stack_oof(att)
+    att["has_final_message_risk"] = 1 - att.has_final_message
+    om = fe.loc[att.run_id]
+    g = np.where(om.om_last_status_pass == 1, "pass",
+                 np.where((om.om_last_status_fail == 1) | (om.om_last_status_error == 1), "fail-error",
+                          np.where(om.om_last_status_unknown == 1, "unknown", "no checks")))
+    gp = np.where(om.o_last_project_status_pass == 1, "pass",
+                  np.where(om[["o_last_project_status_fail", "o_last_project_status_error_env",
+                               "o_last_project_status_error_code"]].sum(axis=1) > 0, "fail-error",
+                           np.where(om.o_last_project_status_unknown == 1, "unknown", "no project tests")))
+    att["group_last_check"], att["group_last_project_test"] = g, gp
+    return att
+
+
+def _risk(att: pd.DataFrame, name: str) -> np.ndarray:
+    return att["has_final_message_risk" if name == "has_final_message" else name].to_numpy(float)
+
+
+def pair_scores(att: pd.DataFrame, name: str) -> tuple[np.ndarray, np.ndarray]:
+    """Per unit (sorted by task): 1 / 0.5 / 0 for the (unresolved, solved) pair, and whether both risks exist.
+    A missing risk -> tie (protocol 6)."""
+    r = _risk(att, name)
+    d = pd.DataFrame({"task": att.task_id.to_numpy(), "label": att.label.to_numpy(), "r": r})
+    w = d.pivot(index="task", columns="label", values="r")
+    r1, r0 = w[1].to_numpy(), w[0].to_numpy()
+    ok = ~(np.isnan(r1) | np.isnan(r0))
+    s = np.where(~ok, 0.5, np.where(r1 > r0, 1.0, np.where(r1 < r0, 0.0, 0.5)))
+    return s, ok
+
+
+def within_metrics(att: pd.DataFrame, subset: str) -> tuple[list[dict], dict]:
+    """Within-unit AUROC of every predictor with bootstrap CIs over units, the differences of K1-K4 on the same
+    draws; 'ties' = missing answers as ties (main), 'excluded' = such pairs dropped (check)."""
+    sc = {p: pair_scores(att, p) for p in PREDICTORS}
+    n = len(next(iter(sc.values()))[0])
+    draws = np.random.default_rng(SEED).integers(0, n, (N_BOOT, n))
+    rows, crit = [], {}
+    for mode in ("ties", "excluded"):
+        def boot(p):
+            s, ok = sc[p]
+            if mode == "ties":
+                return s.mean(), s[draws].mean(axis=1)
+            w = ok[draws]
+            return s[ok].mean(), (s[draws] * w).sum(axis=1) / np.maximum(w.sum(axis=1), 1)
+        b = {p: boot(p) for p in PREDICTORS}
+        for p in PREDICTORS:
+            lo, hi = np.percentile(b[p][1], [2.5, 97.5])
+            rows.append({"subset": subset, "missing": mode, "metric": "within_auroc", "name": p, "value": b[p][0],
+                         "ci_lo": lo, "ci_hi": hi, "n_pairs": n, "n_pairs_complete": int(sc[p][1].sum())})
+        diffs = {"K1: C4 - C3": (b["C4"][0] - b["C3"][0], b["C4"][1] - b["C3"][1]),
+                 "K2: C4 - 0.5": (b["C4"][0] - 0.5, b["C4"][1] - 0.5),
+                 "K3: C4 - (S+O)": (b["C4"][0] - b["S+O"][0], b["C4"][1] - b["S+O"][1]),
+                 "K4: (S+O+C4) - max(S+O, C4)": (b["S+O+C4"][0] - max(b["S+O"][0], b["C4"][0]),
+                                                 b["S+O+C4"][1] - np.maximum(b["S+O"][1], b["C4"][1])),
+                 "C2 - C1": (b["C2"][0] - b["C1"][0], b["C2"][1] - b["C1"][1]),
+                 "C3 - (S+O)": (b["C3"][0] - b["S+O"][0], b["C3"][1] - b["S+O"][1]),
+                 "C4 - G0": (b["C4"][0] - b["G0"][0], b["C4"][1] - b["G0"][1])}
+        for k, (v, bb) in diffs.items():
+            lo, hi = np.percentile(bb, [2.5, 97.5])
+            rows.append({"subset": subset, "missing": mode, "metric": "within_auroc_diff", "name": k, "value": v,
+                         "ci_lo": lo, "ci_hi": hi, "n_pairs": n, "n_pairs_complete": np.nan})
+            if k.startswith("K"):
+                crit[f"{mode}|{k}"] = {"value": float(v), "ci_lo": float(lo), "ci_hi": float(hi), "met": bool(lo > 0)}
+    return rows, crit
+
+
+def class_metrics(att: pd.DataFrame) -> list[dict]:
+    """Shares of the flag (C1/C2) and the numbers (C3/C4) by class with bootstrap CIs over units; paired C2 - C1
+    and C4 - C3 within the class; overall AUROC on the 200 (descriptive)."""
+    from src import e8_repeats as e8
+
+    rows = []
+    units = np.array(sorted(att.task_id.unique()))
+    draws = np.random.default_rng(SEED).integers(0, len(units), (N_BOOT, len(units)))
+    for lab in (0, 1):
+        a = att[att.label == lab].set_index("task_id").loc[units]
+        vals = {"flag C1": a.C1, "flag C2": a.C2, "flag C2 - C1": a.C2 - a.C1,
+                "mean C3": a.C3_number, "mean C4": a.C4_number, "mean C4 - C3": a.C4_number - a.C3_number}
+        for k, v in vals.items():
+            x = v.to_numpy(float)
+            ok = ~np.isnan(x)
+            bs = np.array([np.nanmean(x[d]) if ok[d].any() else np.nan for d in draws])
+            lo, hi = np.nanpercentile(bs, [2.5, 97.5])
+            rows.append({"subset": "all", "missing": "excluded", "metric": "by_class", "name": k,
+                         "label": lab, "value": np.nanmean(x), "ci_lo": lo, "ci_hi": hi, "n": int(ok.sum())})
+        for c in ("C3", "C4"):
+            rows.append({"subset": "all", "missing": "excluded", "metric": "by_class", "name": f"median {c}",
+                         "label": lab, "value": a[f"{c}_number"].median(), "n": int(a[f"{c}_number"].notna().sum())})
+    for p in PREDICTORS:
+        r, y = _risk(att, p), att.label.to_numpy()
+        ok = ~np.isnan(r)
+        rows.append({"subset": "all", "missing": "excluded", "metric": "overall_auroc", "name": p,
+                     "value": e8.auroc(y[ok], r[ok]), "n": int(ok.sum())})
+    both = att.C3_number.notna() & att.C4_number.notna()
+    rows.append({"subset": "all", "missing": "excluded", "metric": "share_same_number_C3_C4", "name": "C3 == C4",
+                 "value": float((att.C3_number[both] == att.C4_number[both]).mean()), "n": int(both.sum())})
+    return rows
+
+
+def group_table(att: pd.DataFrame) -> pd.DataFrame:
+    """Section 8: by the last own check (and, as a check, the last project test run), per class."""
+    rows = []
+    for by in ("group_last_check", "group_last_project_test"):
+        for (lab, g), a in att.groupby(["label", by]):
+            rows.append({"by": by, "label": lab, "group": g, "n": len(a), "flag_C1": a.C1.mean(),
+                         "flag_C2": a.C2.mean(), "mean_C3": a.C3_number.mean(), "mean_C4": a.C4_number.mean(),
+                         "n_C1C2": int((a.C1.notna() & a.C2.notna()).sum()),
+                         "share_C1_0_C2_1": float(((a.C1 == 0) & (a.C2 == 1)).sum() / max((a.C1.notna() &
+                                                                                        a.C2.notna()).sum(), 1)),
+                         "share_C1_1_C2_0": float(((a.C1 == 1) & (a.C2 == 0)).sum() / max((a.C1.notna() &
+                                                                                        a.C2.notna()).sum(), 1))})
+    return pd.DataFrame(rows)
+
+
+def manual_sample(parsed: pd.DataFrame) -> pd.DataFrame:
+    """Protocol 4.3: 40 C1/C2 answers, 10 per (condition x flag), seed 42, shortfall filled from the other stratum
+    of the same condition; the author's file holds only the case number and the answer text."""
+    resp = {(r["run_id"], r["cond"]): r.get("response") or "" for r in _responses() if r["status"] == 200}
+    rng = np.random.default_rng(SEED)
+    pick = []
+    for cond in ("C1", "C2"):
+        p = parsed[(parsed.cond == cond) & parsed.flag.notna()]
+        strata = {f: p[p.flag == f].sort_values("run_id") for f in (1, 0)}
+        take = {f: min(N_MANUAL_PER_STRATUM, len(s)) for f, s in strata.items()}
+        for f in (1, 0):
+            short = N_MANUAL_PER_STRATUM - take[1 - f]
+            if short > 0:
+                take[f] = min(len(strata[f]), N_MANUAL_PER_STRATUM + short)
+        for f, s in strata.items():
+            idx = rng.choice(len(s), take[f], replace=False)
+            sel = s.iloc[sorted(idx)].assign(stratum_N=len(s), stratum_n=take[f])
+            pick.append(sel)
+    key = pd.concat(pick, ignore_index=True)
+    key = key.iloc[rng.permutation(len(key))].reset_index(drop=True)
+    key.insert(0, "case", np.arange(1, len(key) + 1))
+    key[["case", "run_id", "cond", "label", "flag", "hits", "stratum_N", "stratum_n"]].to_csv(MANUAL_KEY, index=False)
+    sheet = pd.DataFrame({"case": key.case, "answer": [resp[(r, c)] for r, c in zip(key.run_id, key.cond)],
+                          "author_mark": ""})
+    sheet.to_csv(MANUAL, index=False)
+    return key
+
+
+def manual_eval() -> dict | None:
+    """Agreement of the flag with the author's marks (protocol 12.3): weighted recall (weights N/n of the stratum),
+    unweighted recall, precision, agreement. None while the marks are missing."""
+    if not MANUAL.exists() or not MANUAL_KEY.exists():
+        return None
+    m = pd.read_csv(MANUAL).merge(pd.read_csv(MANUAL_KEY), on="case")
+    m = m[pd.to_numeric(m.author_mark, errors="coerce").notna()]
+    if len(m) == 0:
+        return None
+    a, f, w = m.author_mark.astype(int).to_numpy(), m.flag.astype(int).to_numpy(), (m.stratum_N / m.stratum_n).to_numpy()
+    res = {"n_marked": len(m), "author_1": int(a.sum()),
+           "recall_weighted": float((w * (a & f)).sum() / (w * a).sum()) if a.any() else None,
+           "recall_unweighted": float((a & f).sum() / a.sum()) if a.any() else None,
+           "precision_weighted": float((w * (a & f)).sum() / (w * f).sum()) if f.any() else None,
+           "agreement_weighted": float((w * (a == f)).sum() / w.sum())}
+    res["c1c2_descriptive_only"] = res["recall_weighted"] is None or res["recall_weighted"] < 0.7
+    return res
+
+
+def analyze() -> dict:
+    parsed = parse_responses()
+    assert parsed.answered.all(), f"answers missing: {int((~parsed.answered).sum())}"
+    parsed.to_csv(PARSED, index=False)
+    att = attempt_table(parsed)
+    rows, crit = within_metrics(att, "all")
+    fin = att.groupby("task_id").has_final_message.min()
+    sub = att[att.task_id.isin(fin.index[fin == 1])]
+    rows_f, crit_f = within_metrics(sub, "both_final")
+    metrics = pd.DataFrame(rows + rows_f + class_metrics(att))
+    metrics.to_csv(METRICS, index=False)
+    groups = group_table(att)
+    groups.to_csv(OUTPUTS / "e11_groups.csv", index=False)
+    att.drop(columns=["O"]).round(6).to_csv(OUTPUTS / "e11_attempts.csv", index=False)
+    if not MANUAL.exists():
+        manual_sample(parsed)
+    resp = _responses()
+    ok = [r for r in resp if r["status"] == 200]
+    summ = {
+        "criteria_main": {k.split("|")[1]: v for k, v in crit.items() if k.startswith("ties|")},
+        "criteria_excluded_missing": {k.split("|")[1]: v for k, v in crit.items() if k.startswith("excluded|")},
+        "criteria_both_final": {k.split("|")[1]: v for k, v in crit_f.items() if k.startswith("ties|")},
+        "pairs_both_final": int(len(sub) // 2),
+        "requests": len(resp), "answers_ok": len(ok), "spent_usd": spent()[0],
+        "identity_all_ok": all(r.get("identity_ok") for r in ok),
+        "models": sorted({r.get("model") for r in ok}), "served_by": sorted({r.get("served_by") for r in ok}),
+        "finish_reason": parsed.groupby(["cond", "finish_reason"]).size().rename("n").reset_index()
+        .to_dict("records"),
+        "parse_C3C4": parsed[parsed.cond.isin(["C3", "C4"])].groupby(["cond", "label", "parse"]).size()
+        .rename("n").reset_index().to_dict("records"),
+        "tool_call_answers": int(parsed.has_tool_calls.sum()),
+        "empty_answers": int((parsed.chars == 0).sum()),
+        "manual_check": manual_eval(),
+    }
+    SUMMARY.write_text(json.dumps(summ, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
+    return summ
+
+
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("cmd", choices=["sample", "cost", "check", "ask"])
+    p.add_argument("cmd", choices=["sample", "cost", "check", "ask", "analyze"])
     p.add_argument("--provider", choices=list(PROVIDERS), default="openrouter")
     p.add_argument("--limit", type=int, default=None)
     a = p.parse_args()
@@ -413,6 +676,8 @@ def main() -> None:
         print(json.dumps(check(a.provider), indent=1, ensure_ascii=False))
     elif a.cmd == "ask":
         ask(a.provider, a.limit)
+    elif a.cmd == "analyze":
+        print(json.dumps(analyze(), indent=1, ensure_ascii=False, default=float))
 
 
 if __name__ == "__main__":
