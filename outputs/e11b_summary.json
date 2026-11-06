@@ -1,0 +1,118 @@
+{
+ "criteria_main": {
+  "K2': C4 - 0.5": {
+   "value": 0.017857142857142905,
+   "ci_lo": -0.03125,
+   "ci_hi": 0.0625,
+   "met": false
+  },
+  "K1': C4 - C3": {
+   "value": -0.05357142857142849,
+   "ci_lo": -0.10267857142857145,
+   "ci_hi": 0.0,
+   "met": false
+  }
+ },
+ "criteria_excluded_missing": {
+  "K2': C4 - 0.5": {
+   "value": 0.01904761904761909,
+   "ci_lo": -0.033018867924528295,
+   "ci_hi": 0.06605345911949682,
+   "met": false
+  },
+  "K1': C4 - C3": {
+   "value": -0.05787545787545778,
+   "ci_lo": -0.1125637305342386,
+   "ci_hi": -8.678237650204182e-05,
+   "met": false
+  }
+ },
+ "pairs": {
+  "E11": 51,
+  "E11b": 61
+ },
+ "requests": 244,
+ "answers_ok": 244,
+ "spent_usd": 1.4558663999999988,
+ "identity_all_ok": true,
+ "models": [
+  "mistralai/devstral-2512"
+ ],
+ "served_by": [
+  "Mistral"
+ ],
+ "finish_reason": [
+  {
+   "cond": "C3",
+   "finish_reason": "stop",
+   "n": 122
+  },
+  {
+   "cond": "C4",
+   "finish_reason": "stop",
+   "n": 122
+  }
+ ],
+ "parse": [
+  {
+   "cond": "C3",
+   "label": 0,
+   "parse": "strict",
+   "n": 58
+  },
+  {
+   "cond": "C3",
+   "label": 0,
+   "parse": "unparsed",
+   "n": 3
+  },
+  {
+   "cond": "C3",
+   "label": 1,
+   "parse": "lenient",
+   "n": 2
+  },
+  {
+   "cond": "C3",
+   "label": 1,
+   "parse": "strict",
+   "n": 56
+  },
+  {
+   "cond": "C3",
+   "label": 1,
+   "parse": "unparsed",
+   "n": 3
+  },
+  {
+   "cond": "C4",
+   "label": 0,
+   "parse": "strict",
+   "n": 58
+  },
+  {
+   "cond": "C4",
+   "label": 0,
+   "parse": "unparsed",
+   "n": 3
+  },
+  {
+   "cond": "C4",
+   "label": 1,
+   "parse": "lenient",
+   "n": 2
+  },
+  {
+   "cond": "C4",
+   "label": 1,
+   "parse": "strict",
+   "n": 58
+  },
+  {
+   "cond": "C4",
+   "label": 1,
+   "parse": "unparsed",
+   "n": 1
+  }
+ ]
+}
