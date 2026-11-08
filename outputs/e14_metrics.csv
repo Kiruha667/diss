@@ -1,0 +1,127 @@
+scope,model,metric,value,ci_lo,ci_hi,kind,baseline,diff
+new combos together,S transfer,auroc,0.63583,0.587477,0.680966,model,,
+new combos together,S transfer,within,0.442308,0.307692,0.58,model,,
+new combos together,S transfer,brier,0.169439,0.149692,0.190486,model,,
+new combos together,S transfer,p@5,0.42,0.28,0.58,model,,
+new combos together,S transfer,p@10,0.40404,0.323232,0.52,model,,
+new combos together,S transfer,p@20,0.395939,0.318182,0.469697,model,,
+new combos together,S upper,auroc,0.61708,0.56993,0.664462,model,,
+new combos together,S upper,within,0.423077,0.288075,0.560986,model,,
+new combos together,S upper,brier,0.174076,0.155571,0.192964,model,,
+new combos together,S upper,p@5,0.4,0.26,0.54,model,,
+new combos together,S upper,p@10,0.393939,0.282828,0.490124,model,,
+new combos together,S upper,p@20,0.370558,0.292803,0.438791,model,,
+new combos together,S+P transfer,auroc,0.658598,0.607934,0.707323,model,,
+new combos together,S+P transfer,within,0.403846,0.269826,0.543528,model,,
+new combos together,S+P transfer,brier,0.166288,0.146305,0.186705,model,,
+new combos together,S+P transfer,p@5,0.46,0.32,0.62,model,,
+new combos together,S+P transfer,p@10,0.474747,0.363636,0.59596,model,,
+new combos together,S+P transfer,p@20,0.401015,0.319757,0.479658,model,,
+new combos together,S+P upper,auroc,0.612449,0.566168,0.661296,model,,
+new combos together,S+P upper,within,0.442308,0.309056,0.578125,model,,
+new combos together,S+P upper,brier,0.176148,0.158025,0.194762,model,,
+new combos together,S+P upper,p@5,0.34,0.22,0.5,model,,
+new combos together,S+P upper,p@10,0.383838,0.272659,0.489925,model,,
+new combos together,S+P upper,p@20,0.35533,0.279153,0.436548,model,,
+new combos together,S upper,auroc,,-0.049261,0.012476,diff,S transfer,-0.018749
+new combos together,S upper,within,,-0.152174,0.116726,diff,S transfer,-0.019231
+new combos together,S upper,brier,,-0.001335,0.010889,diff,S transfer,0.004637
+new combos together,S upper,p@5,,-0.14,0.12,diff,S transfer,-0.02
+new combos together,S upper,p@10,,-0.112245,0.05102,diff,S transfer,-0.010101
+new combos together,S upper,p@20,,-0.080818,0.020307,diff,S transfer,-0.025381
+new combos together,S+P transfer,auroc,,-0.006336,0.053405,diff,S transfer,0.022769
+new combos together,S+P transfer,within,,-0.132075,0.053583,diff,S transfer,-0.038462
+new combos together,S+P transfer,brier,,-0.006985,0.000783,diff,S transfer,-0.003151
+new combos together,S+P transfer,p@5,,-0.08,0.163265,diff,S transfer,0.04
+new combos together,S+P transfer,p@10,,-0.030008,0.151554,diff,S transfer,0.070707
+new combos together,S+P transfer,p@20,,-0.045685,0.060914,diff,S transfer,0.005076
+new combos together,S+P upper,auroc,,-0.079571,-0.012074,diff,S+P transfer,-0.04615
+new combos together,S+P upper,within,,-0.093041,0.171888,diff,S+P transfer,0.038462
+new combos together,S+P upper,brier,,0.003899,0.015916,diff,S+P transfer,0.009859
+new combos together,S+P upper,p@5,,-0.26,0.020898,diff,S+P transfer,-0.12
+new combos together,S+P upper,p@10,,-0.191919,-0.010101,diff,S+P transfer,-0.090909
+new combos together,S+P upper,p@20,,-0.09596,0.010101,diff,S+P transfer,-0.045685
+claude-4-5-opus@high | 2.0.0,S transfer,auroc,0.661984,0.602477,0.720262,model,,
+claude-4-5-opus@high | 2.0.0,S transfer,within,,,,model,,
+claude-4-5-opus@high | 2.0.0,S transfer,brier,0.163194,0.142753,0.184309,model,,
+claude-4-5-opus@high | 2.0.0,S transfer,p@5,0.4,0.24,0.64,model,,
+claude-4-5-opus@high | 2.0.0,S transfer,p@10,0.44,0.28,0.56,model,,
+claude-4-5-opus@high | 2.0.0,S transfer,p@20,0.434343,0.333333,0.535606,model,,
+claude-4-5-opus@high | 2.0.0,S upper,auroc,0.629707,0.571402,0.691263,model,,
+claude-4-5-opus@high | 2.0.0,S upper,within,,,,model,,
+claude-4-5-opus@high | 2.0.0,S upper,brier,0.167025,0.147573,0.186647,model,,
+claude-4-5-opus@high | 2.0.0,S upper,p@5,0.48,0.28,0.68,model,,
+claude-4-5-opus@high | 2.0.0,S upper,p@10,0.42,0.26,0.56,model,,
+claude-4-5-opus@high | 2.0.0,S upper,p@20,0.343434,0.272475,0.454545,model,,
+claude-4-5-opus@high | 2.0.0,S+P transfer,auroc,0.683821,0.624591,0.742931,model,,
+claude-4-5-opus@high | 2.0.0,S+P transfer,within,,,,model,,
+claude-4-5-opus@high | 2.0.0,S+P transfer,brier,0.158609,0.139535,0.179322,model,,
+claude-4-5-opus@high | 2.0.0,S+P transfer,p@5,0.48,0.32,0.72,model,,
+claude-4-5-opus@high | 2.0.0,S+P transfer,p@10,0.52,0.4,0.66,model,,
+claude-4-5-opus@high | 2.0.0,S+P transfer,p@20,0.414141,0.323232,0.525253,model,,
+claude-4-5-opus@high | 2.0.0,S+P upper,auroc,0.637089,0.577511,0.697301,model,,
+claude-4-5-opus@high | 2.0.0,S+P upper,within,,,,model,,
+claude-4-5-opus@high | 2.0.0,S+P upper,brier,0.16767,0.148469,0.188208,model,,
+claude-4-5-opus@high | 2.0.0,S+P upper,p@5,0.48,0.24,0.68,model,,
+claude-4-5-opus@high | 2.0.0,S+P upper,p@10,0.44,0.28,0.58,model,,
+claude-4-5-opus@high | 2.0.0,S+P upper,p@20,0.373737,0.272727,0.474747,model,,
+claude-4-5-opus@high | 2.0.0,S upper,auroc,,-0.081103,0.018245,diff,S transfer,-0.032277
+claude-4-5-opus@high | 2.0.0,S upper,within,,,,diff,S transfer,
+claude-4-5-opus@high | 2.0.0,S upper,brier,,-0.00349,0.011283,diff,S transfer,0.003832
+claude-4-5-opus@high | 2.0.0,S upper,p@5,,-0.12,0.2,diff,S transfer,0.08
+claude-4-5-opus@high | 2.0.0,S upper,p@10,,-0.14,0.1,diff,S transfer,-0.02
+claude-4-5-opus@high | 2.0.0,S upper,p@20,,-0.151515,0.020202,diff,S transfer,-0.090909
+claude-4-5-opus@high | 2.0.0,S+P transfer,auroc,,-0.015911,0.059377,diff,S transfer,0.021837
+claude-4-5-opus@high | 2.0.0,S+P transfer,within,,,,diff,S transfer,
+claude-4-5-opus@high | 2.0.0,S+P transfer,brier,,-0.008741,-0.000315,diff,S transfer,-0.004584
+claude-4-5-opus@high | 2.0.0,S+P transfer,p@5,,-0.12,0.24,diff,S transfer,0.08
+claude-4-5-opus@high | 2.0.0,S+P transfer,p@10,,0.0,0.24,diff,S transfer,0.08
+claude-4-5-opus@high | 2.0.0,S+P transfer,p@20,,-0.080808,0.060606,diff,S transfer,-0.020202
+claude-4-5-opus@high | 2.0.0,S+P upper,auroc,,-0.095462,0.002483,diff,S+P transfer,-0.046732
+claude-4-5-opus@high | 2.0.0,S+P upper,within,,,,diff,S+P transfer,
+claude-4-5-opus@high | 2.0.0,S+P upper,brier,,0.001033,0.016326,diff,S+P transfer,0.00906
+claude-4-5-opus@high | 2.0.0,S+P upper,p@5,,-0.24,0.16,diff,S+P transfer,0.0
+claude-4-5-opus@high | 2.0.0,S+P upper,p@10,,-0.24,0.02,diff,S+P transfer,-0.08
+claude-4-5-opus@high | 2.0.0,S+P upper,p@20,,-0.121212,0.020202,diff,S+P transfer,-0.040404
+claude-opus-4-6 | 2.0.0,S transfer,auroc,0.634549,0.580305,0.692058,model,,
+claude-opus-4-6 | 2.0.0,S transfer,within,,,,model,,
+claude-opus-4-6 | 2.0.0,S transfer,brier,0.175697,0.151437,0.200413,model,,
+claude-opus-4-6 | 2.0.0,S transfer,p@5,0.44,0.24,0.64,model,,
+claude-opus-4-6 | 2.0.0,S transfer,p@10,0.36,0.26,0.54,model,,
+claude-opus-4-6 | 2.0.0,S transfer,p@20,0.373737,0.282828,0.474747,model,,
+claude-opus-4-6 | 2.0.0,S upper,auroc,0.615451,0.559459,0.676155,model,,
+claude-opus-4-6 | 2.0.0,S upper,within,,,,model,,
+claude-opus-4-6 | 2.0.0,S upper,brier,0.181141,0.157451,0.204366,model,,
+claude-opus-4-6 | 2.0.0,S upper,p@5,0.32,0.16,0.52,model,,
+claude-opus-4-6 | 2.0.0,S upper,p@10,0.38,0.24,0.52,model,,
+claude-opus-4-6 | 2.0.0,S upper,p@20,0.343434,0.252525,0.454545,model,,
+claude-opus-4-6 | 2.0.0,S+P transfer,auroc,0.653045,0.596878,0.708735,model,,
+claude-opus-4-6 | 2.0.0,S+P transfer,within,,,,model,,
+claude-opus-4-6 | 2.0.0,S+P transfer,brier,0.173983,0.150385,0.197304,model,,
+claude-opus-4-6 | 2.0.0,S+P transfer,p@5,0.4,0.2,0.6,model,,
+claude-opus-4-6 | 2.0.0,S+P transfer,p@10,0.42,0.28,0.5605,model,,
+claude-opus-4-6 | 2.0.0,S+P transfer,p@20,0.40404,0.292929,0.495202,model,,
+claude-opus-4-6 | 2.0.0,S+P upper,auroc,0.597489,0.538339,0.658406,model,,
+claude-opus-4-6 | 2.0.0,S+P upper,within,,,,model,,
+claude-opus-4-6 | 2.0.0,S+P upper,brier,0.184643,0.161594,0.20705,model,,
+claude-opus-4-6 | 2.0.0,S+P upper,p@5,0.24,0.08,0.44,model,,
+claude-opus-4-6 | 2.0.0,S+P upper,p@10,0.34,0.2195,0.48,model,,
+claude-opus-4-6 | 2.0.0,S+P upper,p@20,0.343434,0.252273,0.444697,model,,
+claude-opus-4-6 | 2.0.0,S upper,auroc,,-0.065153,0.030414,diff,S transfer,-0.019099
+claude-opus-4-6 | 2.0.0,S upper,within,,,,diff,S transfer,
+claude-opus-4-6 | 2.0.0,S upper,brier,,-0.003151,0.014281,diff,S transfer,0.005444
+claude-opus-4-6 | 2.0.0,S upper,p@5,,-0.24,0.04,diff,S transfer,-0.12
+claude-opus-4-6 | 2.0.0,S upper,p@10,,-0.12,0.1,diff,S transfer,0.02
+claude-opus-4-6 | 2.0.0,S upper,p@20,,-0.10101,0.040404,diff,S transfer,-0.030303
+claude-opus-4-6 | 2.0.0,S+P transfer,auroc,,-0.016444,0.055676,diff,S transfer,0.018495
+claude-opus-4-6 | 2.0.0,S+P transfer,within,,,,diff,S transfer,
+claude-opus-4-6 | 2.0.0,S+P transfer,brier,,-0.006142,0.002469,diff,S transfer,-0.001714
+claude-opus-4-6 | 2.0.0,S+P transfer,p@5,,-0.24,0.16,diff,S transfer,-0.04
+claude-opus-4-6 | 2.0.0,S+P transfer,p@10,,-0.08,0.16,diff,S transfer,0.06
+claude-opus-4-6 | 2.0.0,S+P transfer,p@20,,-0.050505,0.090909,diff,S transfer,0.030303
+claude-opus-4-6 | 2.0.0,S+P upper,auroc,,-0.101952,-0.008963,diff,S+P transfer,-0.055556
+claude-opus-4-6 | 2.0.0,S+P upper,within,,,,diff,S+P transfer,
+claude-opus-4-6 | 2.0.0,S+P upper,brier,,0.002056,0.019277,diff,S+P transfer,0.01066
+claude-opus-4-6 | 2.0.0,S+P upper,p@5,,-0.32,0.04,diff,S+P transfer,-0.16
+claude-opus-4-6 | 2.0.0,S+P upper,p@10,,-0.18,0.04,diff,S+P transfer,-0.08
+claude-opus-4-6 | 2.0.0,S+P upper,p@20,,-0.131313,0.030303,diff,S+P transfer,-0.060606

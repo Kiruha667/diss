@@ -1,0 +1,87 @@
+{
+ "reproduction": {
+  "checked": 50,
+  "mismatches": 0
+ },
+ "patch_source": {
+  "patch_files": 2000,
+  "missing_used_submission": 0,
+  "identical_to_submission": 1541
+ },
+ "new_runs": [
+  {
+   "sub": "20260217_mini-v2.0.0_claude-4-5-opus-high",
+   "trajectories": 500,
+   "excluded": 0,
+   "reasons": {},
+   "submitted": 493,
+   "resolved_share_submitted": 0.7789046653144016,
+   "empty_diff_share_submitted": 0.002028397565922921,
+   "parsed_submitted": 493
+  },
+  {
+   "sub": "20260217_mini-v2.0.0_claude-4-6-opus",
+   "trajectories": 500,
+   "excluded": 0,
+   "reasons": {},
+   "submitted": 492,
+   "resolved_share_submitted": 0.7682926829268293,
+   "empty_diff_share_submitted": 0.0,
+   "parsed_submitted": 492
+  },
+  {
+   "sub": "20260217_mini-v2.0.0_gpt-5-2-high",
+   "trajectories": 500,
+   "excluded": 500,
+   "reasons": {
+    "unsupported_format:responses_api": 500
+   },
+   "submitted": 500,
+   "resolved_share_submitted": 0.728,
+   "empty_diff_share_submitted": 0.0,
+   "parsed_submitted": 0
+  },
+  {
+   "sub": "20260219_mini-v2.0.0_gpt-5-2-codex",
+   "trajectories": 500,
+   "excluded": 500,
+   "reasons": {
+    "unsupported_format:responses_api": 500
+   },
+   "submitted": 500,
+   "resolved_share_submitted": 0.728,
+   "empty_diff_share_submitted": 0.0,
+   "parsed_submitted": 0
+  }
+ ],
+ "criterion": {
+  "auroc_S_transfer": 0.6358297141108482,
+  "ci_lo": 0.5874768113046794,
+  "ci_hi": 0.6809655277912293,
+  "met": false
+ },
+ "test": {
+  "runs": 985,
+  "tasks": 497,
+  "combos": [
+   "claude-4-5-opus@high | 2.0.0",
+   "claude-opus-4-6 | 2.0.0"
+  ],
+  "unresolved_share": 0.2263959390862944,
+  "within_task_pairs": 52
+ },
+ "spearman": {
+  "transfer": {
+   "rho": -0.17234262125902994,
+   "ci_lo": -0.6420656391232734,
+   "ci_hi": 0.30562710045468666,
+   "n_combos": 18
+  },
+  "upper": {
+   "rho": -0.3126934984520124,
+   "ci_lo": -0.726356465476124,
+   "ci_hi": 0.1748499855690816,
+   "n_combos": 18
+  }
+ }
+}
