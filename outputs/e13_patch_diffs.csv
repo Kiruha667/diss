@@ -1,0 +1,13 @@
+scope,model,metric,ci_lo,ci_hi,baseline,diff
+leaderboard,M+S+P,auroc,0.002156,0.021153,M+S,0.011504
+leaderboard,M+S+P,within,-0.016771,0.007129,M+S,-0.004792
+leaderboard,M+S+P,brier,-0.005185,-0.000508,M+S,-0.00275
+leaderboard,M+S+P,p@5,-0.035533,0.035682,M+S,0.0
+leaderboard,M+S+P,p@10,-0.012723,0.036849,M+S,0.011436
+leaderboard,M+S+P,p@20,-0.003173,0.03501,M+S,0.015257
+leaderboard,S+P,auroc,0.00875,0.029368,S,0.018607
+leaderboard,S+P,within,0.003663,0.031625,S,0.016403
+leaderboard,S+P,brier,-0.006181,-0.001429,S,-0.003756
+leaderboard,S+P,p@5,-0.01269,0.05598,S,0.017766
+leaderboard,S+P,p@10,-0.016477,0.049831,S,0.016518
+leaderboard,S+P,p@20,0.009554,0.053271,S,0.031786

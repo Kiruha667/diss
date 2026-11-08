@@ -1,0 +1,4 @@
+model,metric,value,ci_lo,ci_hi,overall_auroc
+S,within_unit_auroc,0.560616,0.521774,0.598089,0.682314
+S+P,within_unit_auroc,0.582877,0.544767,0.622017,0.694539
+S+P - S,within_unit_auroc_diff,0.02226,-0.001827,0.049104,

@@ -1,0 +1,85 @@
+scope,model,metric,value,ci_lo,ci_hi,kind,baseline,diff
+test v2,S v1->v2,auroc,0.595677,0.567226,0.626093,model,,
+test v2,S v1->v2,within,0.508403,0.469235,0.551994,model,,
+test v2,S v1->v2,brier,0.208778,0.198843,0.219302,model,,
+test v2,S v1->v2,p@5,0.444444,0.366754,0.520202,model,,
+test v2,S v1->v2,p@10,0.406566,0.342569,0.477273,model,,
+test v2,S v1->v2,p@20,0.361111,0.311859,0.416989,model,,
+test v2,M+S v1->v2,auroc,0.605449,0.577088,0.634857,model,,
+test v2,M+S v1->v2,within,0.503001,0.465051,0.547858,model,,
+test v2,M+S v1->v2,brier,0.210916,0.201689,0.220581,model,,
+test v2,M+S v1->v2,p@5,0.494949,0.407035,0.575758,model,,
+test v2,M+S v1->v2,p@10,0.429293,0.358586,0.493672,model,,
+test v2,M+S v1->v2,p@20,0.375,0.324495,0.43165,model,,
+test v2,S v2->v2,auroc,0.645341,0.6157,0.674268,model,,
+test v2,S v2->v2,within,0.520408,0.476768,0.561994,model,,
+test v2,S v2->v2,brier,0.189462,0.176113,0.20439,model,,
+test v2,S v2->v2,p@5,0.515152,0.422038,0.59799,model,,
+test v2,S v2->v2,p@10,0.497475,0.42529,0.566877,model,,
+test v2,S v2->v2,p@20,0.438131,0.377211,0.496228,model,,
+test v2,M+S v2->v2,auroc,0.660516,0.628444,0.691293,model,,
+test v2,M+S v2->v2,within,0.546218,0.505836,0.589253,model,,
+test v2,M+S v2->v2,brier,0.187507,0.174378,0.202381,model,,
+test v2,M+S v2->v2,p@5,0.540404,0.439394,0.626263,model,,
+test v2,M+S v2->v2,p@10,0.497475,0.421717,0.571788,model,,
+test v2,M+S v2->v2,p@20,0.464646,0.40201,0.518987,model,,
+test v2,S v2->v2,auroc,,0.025705,0.073944,diff,S v1->v2,0.049664
+test v2,S v2->v2,within,,-0.035939,0.057335,diff,S v1->v2,0.012005
+test v2,S v2->v2,brier,,-0.025974,-0.011988,diff,S v1->v2,-0.019316
+test v2,S v2->v2,p@5,,-0.010052,0.146465,diff,S v1->v2,0.070707
+test v2,S v2->v2,p@10,,0.035264,0.15443,diff,S v1->v2,0.090909
+test v2,S v2->v2,p@20,,0.031604,0.112965,diff,S v1->v2,0.07702
+test v2,M+S v2->v2,auroc,,0.033213,0.076914,diff,M+S v1->v2,0.055067
+test v2,M+S v2->v2,within,,-0.003414,0.092585,diff,M+S v1->v2,0.043217
+test v2,M+S v2->v2,brier,,-0.030604,-0.015412,diff,M+S v1->v2,-0.02341
+test v2,M+S v2->v2,p@5,,-0.030303,0.116162,diff,M+S v1->v2,0.045455
+test v2,M+S v2->v2,p@10,,0.015152,0.126263,diff,M+S v1->v2,0.068182
+test v2,M+S v2->v2,p@20,,0.046632,0.122174,diff,M+S v1->v2,0.089646
+test v2,M+S v1->v2,auroc,,0.004911,0.014825,diff,S v1->v2,0.009772
+test v2,M+S v1->v2,within,,-0.021076,0.010095,diff,S v1->v2,-0.005402
+test v2,M+S v1->v2,brier,,0.000303,0.003807,diff,S v1->v2,0.002139
+test v2,M+S v1->v2,p@5,,0.0,0.090909,diff,S v1->v2,0.050505
+test v2,M+S v1->v2,p@10,,-0.012595,0.050505,diff,S v1->v2,0.022727
+test v2,M+S v1->v2,p@20,,-0.005063,0.034092,diff,S v1->v2,0.013889
+test v1,S v2->v1,auroc,0.562568,0.537744,0.586147,model,,
+test v1,S v2->v1,within,0.410869,0.376613,0.445531,model,,
+test v1,S v2->v1,brier,0.254787,0.238608,0.272271,model,,
+test v1,S v2->v1,p@5,0.632653,0.533333,0.712821,model,,
+test v1,S v2->v1,p@10,0.588235,0.521598,0.642875,model,,
+test v1,S v2->v1,p@20,0.533248,0.484019,0.585155,model,,
+test v1,M+S v2->v1,auroc,0.578843,0.5547,0.603806,model,,
+test v1,M+S v2->v1,within,0.440291,0.406483,0.474165,model,,
+test v1,M+S v2->v1,brier,0.254677,0.237779,0.272215,model,,
+test v1,M+S v2->v1,p@5,0.637755,0.540816,0.709184,model,,
+test v1,M+S v2->v1,p@10,0.588235,0.524297,0.649616,model,,
+test v1,M+S v2->v1,p@20,0.538363,0.482143,0.589751,model,,
+test v1,S v1->v1,auroc,0.684794,0.661087,0.707326,model,,
+test v1,S v1->v1,within,0.687781,0.65631,0.717548,model,,
+test v1,S v1->v1,brier,0.210247,0.200971,0.220327,model,,
+test v1,S v1->v1,p@5,0.867347,0.811224,0.918367,model,,
+test v1,S v1->v1,p@10,0.759591,0.713509,0.811733,model,,
+test v1,S v1->v1,p@20,0.643223,0.593577,0.689665,model,,
+test v1,M+S v1->v1,auroc,0.692758,0.668689,0.715606,model,,
+test v1,M+S v1->v1,within,0.703011,0.671701,0.732355,model,,
+test v1,M+S v1->v1,brier,0.208959,0.199721,0.218951,model,,
+test v1,M+S v1->v1,p@5,0.846939,0.795918,0.907692,model,,
+test v1,M+S v1->v1,p@10,0.757033,0.711716,0.811236,model,,
+test v1,M+S v1->v1,p@20,0.648338,0.605398,0.693204,model,,
+test v1,S v1->v1,auroc,,0.098736,0.146209,diff,S v2->v1,0.122226
+test v1,S v1->v1,within,,0.230371,0.3219,diff,S v2->v1,0.276912
+test v1,S v1->v1,brier,,-0.054685,-0.035659,diff,S v2->v1,-0.044539
+test v1,S v1->v1,p@5,,0.163265,0.324915,diff,S v2->v1,0.234694
+test v1,S v1->v1,p@10,,0.125633,0.230789,diff,S v2->v1,0.171355
+test v1,S v1->v1,p@20,,0.070328,0.143049,diff,S v2->v1,0.109974
+test v1,M+S v1->v1,auroc,,0.091884,0.134868,diff,M+S v2->v1,0.113915
+test v1,M+S v1->v1,within,,0.216749,0.305932,diff,M+S v2->v1,0.262721
+test v1,M+S v1->v1,brier,,-0.055707,-0.036676,diff,M+S v2->v1,-0.045718
+test v1,M+S v1->v1,p@5,,0.153061,0.30102,diff,M+S v2->v1,0.209184
+test v1,M+S v1->v1,p@10,,0.117298,0.225656,diff,M+S v2->v1,0.168798
+test v1,M+S v1->v1,p@20,,0.071499,0.146876,diff,M+S v2->v1,0.109974
+test v1,M+S v2->v1,auroc,,0.011123,0.021584,diff,S v2->v1,0.016275
+test v1,M+S v2->v1,within,,0.016214,0.042438,diff,S v2->v1,0.029422
+test v1,M+S v2->v1,brier,,-0.001385,0.00116,diff,S v2->v1,-0.000109
+test v1,M+S v2->v1,p@5,,-0.025641,0.035714,diff,S v2->v1,0.005102
+test v1,M+S v2->v1,p@10,,-0.015306,0.02799,diff,S v2->v1,0.0
+test v1,M+S v2->v1,p@20,,-0.008974,0.016689,diff,S v2->v1,0.005115

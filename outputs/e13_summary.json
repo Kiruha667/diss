@@ -1,0 +1,99 @@
+{
+ "transfer": {
+  "convergence_warnings": 0,
+  "test_v2": {
+   "runs": 3956,
+   "tasks": 500,
+   "unresolved_share": 0.27451971688574317
+  },
+  "test_v1": {
+   "runs": 3908,
+   "tasks": 500,
+   "unresolved_share": 0.38689866939611056
+  }
+ },
+ "criterion_transfer": {
+  "auroc_S_v1_to_v2": 0.5956773249658306,
+  "ci_lo": 0.5672255458046949,
+  "ci_hi": 0.6260925920621603,
+  "met": false
+ },
+ "combos": {
+  "spearman_rho": -0.23823529411764705,
+  "ci_lo": -0.7015197155346184,
+  "ci_hi": 0.31843787840481164,
+  "n_combos": 16,
+  "nan_draws": 0,
+  "literature_rho": -0.662
+ },
+ "patch_source": {
+  "requested": 7864,
+  "downloaded": 7864,
+  "compared_with_local_submission": 350,
+  "identical": 350,
+  "fallback_local": 0,
+  "missing_empty": 0
+ },
+ "criterion_patch": {
+  "diff": 0.011503816807284295,
+  "ci_lo": 0.0021558077298435866,
+  "ci_hi": 0.021153330325307185,
+  "met": true
+ },
+ "patch": {
+  "M+S_reproduction": [
+   0.685,
+   0.689
+  ],
+  "convergence_warnings": 0,
+  "empty_diffs_lb": 132
+ },
+ "posthoc_patch": {
+  "non-empty diffs": {
+   "runs": 7732,
+   "auroc": {
+    "diff": 0.012497770668559172,
+    "ci_lo": 0.002196107601672248,
+    "ci_hi": 0.02331468086244737
+   },
+   "within": {
+    "diff": -0.0071211645198450135,
+    "ci_lo": -0.019615144401593204,
+    "ci_hi": 0.0061309731213893045
+   }
+  },
+  "v1 only": {
+   "runs": 3908,
+   "auroc": {
+    "diff": 0.008063897280299659,
+    "ci_lo": -0.0017175873228596483,
+    "ci_hi": 0.017592180913513722
+   },
+   "within": {
+    "diff": -0.004499826929733497,
+    "ci_lo": -0.019802443034131402,
+    "ci_hi": 0.010194479669431458
+   }
+  },
+  "v2 only": {
+   "runs": 3956,
+   "auroc": {
+    "diff": 0.017522346494183272,
+    "ci_lo": 0.002258149215587635,
+    "ci_hi": 0.032942232614133815
+   },
+   "within": {
+    "diff": -0.006602641056422498,
+    "ci_lo": -0.03591486155125931,
+    "ci_hi": 0.021277225229762085
+   }
+  }
+ },
+ "kth": {
+  "runs": 4978,
+  "units_with_both": 180,
+  "pairs": 2920,
+  "S_reproduction": 0.561,
+  "empty_diffs_kth_setting": 21
+ }
+}

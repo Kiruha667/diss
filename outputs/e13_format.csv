@@ -1,0 +1,21 @@
+what,model,feature,n_tasks,mean_v1,mean_v2,median_v1,median_v2,smd,ks_d,verdict
+same model,claude-sonnet-4-5,n_steps,494.0,50.518219,47.935223,46.5,45.0,-0.135319,0.082996,small
+same model,claude-sonnet-4-5,share_verify,494.0,0.126196,0.107581,0.121417,0.104322,-0.245471,0.178138,moderate
+same model,claude-sonnet-4-5,has_any_verification,494.0,0.969636,0.904858,1.0,1.0,-0.269244,0.064777,moderate
+same model,claude-sonnet-4-5,verif_after_last_edit,494.0,0.364372,0.502024,0.0,1.0,0.280229,0.137652,moderate
+same model,claude-sonnet-4-5,phase_bigram_entropy,494.0,0.736476,0.671392,0.752547,0.691615,-0.480634,0.238866,moderate
+same model,gemini-3-pro-preview,n_steps,478.0,39.958159,51.73431,35.0,48.0,0.596441,0.343096,noticeable
+same model,gemini-3-pro-preview,share_verify,478.0,0.073531,0.061783,0.064516,0.051065,-0.187874,0.144351,small
+same model,gemini-3-pro-preview,has_any_verification,478.0,0.83682,0.715481,1.0,1.0,-0.29393,0.121339,moderate
+same model,gemini-3-pro-preview,verif_after_last_edit,478.0,0.675732,0.514644,1.0,1.0,-0.332339,0.161088,moderate
+same model,gemini-3-pro-preview,phase_bigram_entropy,478.0,0.623292,0.55458,0.620022,0.54886,-0.55047,0.253138,noticeable
+between combos (median |SMD|),v1,n_steps,,,,,,0.778013,,28 pairs
+between combos (median |SMD|),v1,share_verify,,,,,,0.568374,,28 pairs
+between combos (median |SMD|),v1,has_any_verification,,,,,,0.681275,,28 pairs
+between combos (median |SMD|),v1,verif_after_last_edit,,,,,,0.451558,,28 pairs
+between combos (median |SMD|),v1,phase_bigram_entropy,,,,,,0.7134,,28 pairs
+between combos (median |SMD|),v2,n_steps,,,,,,0.434785,,28 pairs
+between combos (median |SMD|),v2,share_verify,,,,,,0.499724,,28 pairs
+between combos (median |SMD|),v2,has_any_verification,,,,,,0.20121,,28 pairs
+between combos (median |SMD|),v2,verif_after_last_edit,,,,,,0.338984,,28 pairs
+between combos (median |SMD|),v2,phase_bigram_entropy,,,,,,0.289209,,28 pairs
