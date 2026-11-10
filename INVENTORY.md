@@ -1,6 +1,6 @@
 # INVENTORY — что лежит в репозитории
 
-Состояние ветки `cleanup-2026-11` на 2026-11-10.
+Состояние `main` на 2026-11-10.
 
 **Статусы:**
 - **актуально** — используется для текущей постановки или является её результатом;
@@ -17,7 +17,7 @@
 
 Все этапы — в `docs/EXPERIMENTS.md`.
 
-Пометка **«сомнение»** означает: файл не перенесён в `archive/`, решение за автором.
+Решения автора по спорным файлам (2026-11-10): `AGENTS.md` (задание итерации 1) перенесён в `archive/`; материалы E5 оставлены на месте.
 
 ## Верхний уровень
 
@@ -29,10 +29,11 @@
 | `CLEANUP_FINDINGS.md`, `CLEANUP_REPORT.md` | находки уборки и отчёт о ней | — | актуально (новое) |
 | `DATASET_CARD.md` | источники данных, ревизии, даты снапшотов, SHA256 | все | актуально (новое) |
 | `docs/` | `PROJECT_DOCUMENTATION.md` (полная документация v3, перенесена из корня), `EXPERIMENTS.md`, `LITERATURE.md`, `REPRODUCE.md`, `checksums/` | все | актуально |
-| `archive/` | устаревшие материалы с причинами (`archive/README.md`) | итерация 2 | устарело |
-| `AGENTS.md` | спецификация итерации 1 (хаотичность траекторий, этапы E0–E4) | итерация 1 | **сомнение**: постановка устарела (заменена: тема «достоверность выполнения», `docs/PROJECT_DOCUMENTATION.md` раздел 1). Агентные инструменты читают файл автоматически как инструкции (`CLEANUP_FINDINGS.md` 3.1) |
+| `archive/` | устаревшие материалы с причинами (`archive/README.md`): E6, прежний README, задание итерации 1 (`AGENTS_iteration1.md`) | итерации 1–2 | устарело |
+| `AGENTS.md`, `CLAUDE.md` | одинаковые короткие файлы для агентных инструментов: навигация и правила (без результатов) | все | актуально |
+| `pytest.ini` | `testpaths = tests` | — | вспомогательное |
 | `G0_PROMPT.md` | спецификация G0 | G0 | актуально (результаты G0 используются; на файл ссылаются `src/g0_false_success.py`, `src/cli.py`, `config/*_patterns.txt`) |
-| `E5_PROMPT.md` | спецификация E5 (подвыборка 2 877 заявивших успех) | итерация 2 | **сомнение**: постановка устарела (заменена расчётом на 7 864 прогонах), но здесь определены признаки `S`, а `src/e5_claims.py` (актуальный) ссылается на файл |
+| `E5_PROMPT.md` | спецификация E5 (подвыборка 2 877 заявивших успех) | итерация 2 | старая постановка, но определение признаков S актуально (`src/e5_claims.py`); оставлено на месте |
 | `DEMO_COLAB.md` | спецификация демонстрационного ноутбука | демо | актуально |
 | `DEMO_REPORT.md` | отчёт демо: инвентаризация данных, S 0.662 / 0.640 | демо | актуально |
 | `VISUAL_DEMO_REPORT.md` | отчёт наглядного ноутбука | демо, E7, E8 | актуально (E9–E14 в ноутбук не внесены) |
@@ -69,8 +70,8 @@
 | `E4_smoke_mahmoud.md` | итерация 1, проверка пайплайна на чужих эмбеддингах | вспомогательное |
 | `G0_false_success.md` | G0 | актуально; детектор без проверки человеком (`CLEANUP_FINDINGS.md` 2.6) |
 | `G0_manual_review.md` | G0 | актуально; проверка выполнена ИИ, а не человеком |
-| `G0_HUMAN_CHECK_PROTOCOL.md` | ручная проверка G0 | актуально (ждёт разметки автора) |
-| `E5_results.md`, `E5_segment_audit.md` | итерация 2 | **сомнение**: устарело (заменено E7 и демо на 7 864 прогонах); не перенесено, потому что отчёты пишет актуальный модуль `src/e5_claims.py` |
+| `G0_HUMAN_CHECK_PROTOCOL.md`, `G0_HUMAN_CHECK.md` | проверка детектора G0 по разметке 100 сообщений (метки модели, просмотренные автором; разделы 9–10 протокола) | актуально |
+| `E5_results.md`, `E5_segment_audit.md` | итерация 2 | старая постановка, но определение признаков S актуально (`src/e5_claims.py`); не перенесено |
 | `E7_PROTOCOL.md`, `E7_REPORT.md` | E7 (+ дополнение, раздел 9) | актуально |
 | `E8_PROTOCOL.md`, `E8_REPORT.md`, `E8_adapter_check.md` | E8 | актуально |
 | `E9_PROTOCOL.md`, `E9_REPORT.md` | E9 | актуально |
@@ -79,7 +80,7 @@
 | `E12_PROTOCOL.md`, `E12_REPORT.md` | E12 | актуально |
 | `E13_PROTOCOL.md`, `E13_REPORT.md` | E13 | актуально |
 | `E14_PROTOCOL.md`, `E14_REPORT.md` | E14 | актуально |
-| `figures/e5_reliability.png` | итерация 2 | **сомнение** (как `E5_results.md`) |
+| `figures/e5_reliability.png` | итерация 2 | как `E5_results.md` |
 | `figures/e9_best_of_k.png` | E9 | актуально |
 | `figures/early_curve_main.png`, `early_curve_main_nomic.png`, `early_curve_smoke_mahmoud.png` | итерация 1 | актуально как отрицательный результат |
 | `kaggle_env_e0.txt`, `kaggle_env_e1.txt`, `kaggle_env_e3.txt` | окружения ядер Kaggle | вспомогательное |
@@ -101,7 +102,8 @@
 | `project.py`, `chaos.py`, `features.py`, `folds.py`, `stats.py` | итерация 1 (проекции, ordpy, признаки E3, фолды, тесты E4) | актуально как код отрицательного результата итерации 1; дальше не используется (кроме `outputs/folds.csv` в E5 и E6) |
 | `kaggle_job.py` | запуск E0, E1, E3 на Kaggle | вспомогательное |
 | `g0_false_success.py` | G0; детектор используется в E7, E10, E11 и ручной проверке | актуально |
-| `g0_human_check.py` | ручная проверка G0 | актуально |
+| `g0_human_check.py` | проверка детектора G0 по разметке | актуально |
+| `g0_mutual_information.py` | взаимная информация «заявление детектора × исход» | актуально |
 | `e5_claims.py` | E5; `process_record` строит признаки `S` (демо-данные, E14) | актуально (модуль), постановка E5 устарела |
 | `e6_refine.py`, `e6_external.py` | E6 | устарело (итоговая модель — `M+S`); код не перенесён: на него ссылаются `src/cli.py` и тесты |
 | `e7_sources.py`, `e7_addendum.py` | E7 | актуально |
@@ -155,7 +157,7 @@
 | `g0_final_messages.csv` | G0: детектор по каждой траектории; используется в демо, E7, E10, ручной проверке | актуально |
 | `g0_manual_sample.csv` | G0: выборка 38 строк, проверенная ИИ | актуально (исключена из новой выборки) |
 | `g0_pilot/*` | пилот G0 | вспомогательное |
-| `g0_human_sample.csv` | ручная проверка G0: 100 сообщений вслепую | актуально (ждёт разметки) |
+| `g0_human_sample.csv` (окончательные метки), `g0_human_key.csv` (ключ), `g0_ai_labels.csv` (предразметка модели), `g0_human_independent.csv` (независимые метки автора, id 1–39), `g0_labels_author_1_39.csv`, `g0_ai_agreement.json`, `g0_human_results.json`, `g0_human_results_author_1_39.json`, `g0_mutual_information.json` | проверка детектора G0 | актуально |
 | `e5_features.csv`, `e5_gate.json`, `e5_importance.csv`, `e5_summary.csv`, `e5_transfer.csv` | итерация 2 | устарело по постановке (не перенесено: правило уборки не трогать `outputs/`) |
 | `e6_corr.csv`, `e6_external_features.csv`, `e6_features.csv`, `e6_selection.json`, `e6_single_auroc.csv`, `e6_summary.csv`, `e6_utility.csv`, `e6_vif.csv` | итерация 2 | устарело (не перенесено, то же правило) |
 | `e7_metrics.csv`, `e7_diffs.csv`, `e7_oof_risk.csv.gz`, `e7_summary.json`, `e7_addendum.csv` | E7 | актуально |
@@ -168,7 +170,7 @@
 | `e13_inventory.csv`, `e13_transfer.csv`, `e13_format.csv`, `e13_combos.csv`, `e13_patch_metrics.csv`, `e13_patch_diffs.csv`, `e13_patch_features.csv.gz`, `e13_kth_patch.csv`, `e13_summary.json` | E13 | актуально (код инвентаризации — вне репозитория, `CLEANUP_FINDINGS.md` 3.5) |
 | `e14_runs.csv`, `e14_parse.csv`, `e14_metrics.csv`, `e14_combos.csv`, `e14_summary.json` | E14 | актуально |
 
-Не в git: `outputs/features.csv` (109 МБ; есть `.gz`), `outputs/g0_human_key.csv` (ключ слепой разметки).
+Не в git: `outputs/features.csv` (109 МБ; есть `.gz`) и рабочие таблицы `*.xlsx` проверки G0.
 
 ## own_data/ (собственный корпус, 771 файл)
 
@@ -182,7 +184,7 @@
 | `DIAG_RESOLVE_RATE.md` | диагностика доли решённых | актуально |
 | `GOLD_VALIDATION.md`, `gold_validation.py`, `gold_validation.json`, `gold_validation_pre.csv` | валидация окружения эталонными патчами (версия 1.2: 65 из 65) | актуально |
 | `LABEL_AUDIT_REQUESTS.md`, `label_audit_corpus.csv` | аудит меток `psf/requests` (httpbin.org) | актуально |
-| `runs_own.parquet`, `steps_own.parquet`, `scores_own.csv` | таблицы прогонов, шагов, рисков | актуально; `in_analysis = 1` у трёх прогонов `requests-1766` (`CLEANUP_FINDINGS.md` 2.1) |
+| `runs_own.parquet`, `steps_own.parquet`, `scores_own.csv` | таблицы прогонов, шагов, рисков | актуально (`in_analysis` у `requests-1766` исправлен 2026-11-10, `LOG.md`) |
 | `tasks_pool.json`, `tasks_pilot.json`, `tasks_main.json`, `select_main_tasks.py`, `forecast_main.json` | пул задач, выбор, прогноз стоимости | актуально |
 | `eval_summary.json`, `make_eval_summary.py` | сводка `report.json` для наглядного ноутбука | вспомогательное |
 | `images_main.log`, `main_console.log`, `process_status.json` | журналы основного сбора | вспомогательное |
