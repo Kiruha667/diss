@@ -1,0 +1,408 @@
+{
+ "population_cells": {
+  "claim=1|resolved=1": 1877,
+  "claim=1|resolved=0": 996,
+  "claim=0|resolved=1": 3389,
+  "claim=0|resolved=0": 1602
+ },
+ "rows_with_claim_level": 100,
+ "rows_without_claim_level": 0,
+ "claim_level_counts": {
+  "2": 76,
+  "0": 14,
+  "1": 10
+ },
+ "unsure": 20,
+ "claim_strict_all": {
+  "n_rows": 100,
+  "point": {
+   "1": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.44,
+    "recall": 0.5572775640112109,
+    "true_share": 0.6396050132928218
+   },
+   "0": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.6,
+    "recall": 0.5088902513795218,
+    "true_share": 0.7533487297921477
+   },
+   "diff_true_share_resolved_minus_unresolved": -0.11374371649932591
+  },
+  "ci": {
+   "precision_1": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_1": {
+    "ci_lo": 0.4639195642072586,
+    "ci_hi": 0.6976761474300837,
+    "undefined_draws": 0
+   },
+   "true_share_1": {
+    "ci_lo": 0.5108925180402583,
+    "ci_hi": 0.7683175085453855,
+    "undefined_draws": 0
+   },
+   "precision_0": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_0": {
+    "ci_lo": 0.4373024236037934,
+    "ci_hi": 0.6085043988269794,
+    "undefined_draws": 0
+   },
+   "true_share_0": {
+    "ci_lo": 0.6300230946882218,
+    "ci_hi": 0.8766743648960741,
+    "undefined_draws": 0
+   },
+   "diff": {
+    "ci_lo": -0.28750391197529324,
+    "ci_hi": 0.06214428873535305,
+    "undefined_draws": 0
+   }
+  },
+  "cell_rows": {
+   "claim=1|resolved=1": 25,
+   "claim=1|resolved=0": 25,
+   "claim=0|resolved=1": 25,
+   "claim=0|resolved=0": 25
+  }
+ },
+ "claim_strict_without_unsure": {
+  "n_rows": 80,
+  "point": {
+   "1": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.6,
+    "recall": 0.48000204582651396,
+    "true_share": 0.7425750094948727
+   },
+   "0": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.7222222222222222,
+    "recall": 0.46261031119368323,
+    "true_share": 0.8287143956889915
+   },
+   "diff_true_share_resolved_minus_unresolved": -0.08613938619411887
+  },
+  "ci": {
+   "precision_1": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_1": {
+    "ci_lo": 0.4090928904581317,
+    "ci_hi": 0.6242793791574279,
+    "undefined_draws": 0
+   },
+   "true_share_1": {
+    "ci_lo": 0.5709583491581213,
+    "ci_hi": 0.8712875047474365,
+    "undefined_draws": 0
+   },
+   "precision_0": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_0": {
+    "ci_lo": 0.39697090474292546,
+    "ci_hi": 0.5542570951585977,
+    "undefined_draws": 0
+   },
+   "true_share_0": {
+    "ci_lo": 0.6916859122401847,
+    "ci_hi": 0.9657428791377983,
+    "undefined_draws": 0
+   },
+   "diff": {
+    "ci_lo": -0.28336612317108567,
+    "ci_hi": 0.102440306560862,
+    "undefined_draws": 0
+   }
+  },
+  "cell_rows": {
+   "claim=1|resolved=1": 24,
+   "claim=1|resolved=0": 23,
+   "claim=0|resolved=1": 15,
+   "claim=0|resolved=0": 18
+  }
+ },
+ "detector_agreement_strict": {
+  "n": 100,
+  "p_o": 0.6881536113936928,
+  "kappa": 0.4306465477389976,
+  "pabak": 0.3763072227873856,
+  "positives": [
+   76,
+   50
+  ]
+ },
+ "claim_broad_all": {
+  "n_rows": 100,
+  "point": {
+   "1": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.72,
+    "recall": 0.43478462293957953,
+    "true_share": 0.819802506646411
+   },
+   "0": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.72,
+    "recall": 0.4633765073693613,
+    "true_share": 0.8273441108545034
+   },
+   "diff_true_share_resolved_minus_unresolved": -0.007541604208092467
+  },
+  "ci": {
+   "precision_1": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_1": {
+    "ci_lo": 0.3862680375031898,
+    "ci_hi": 0.4972396181030189,
+    "undefined_draws": 0
+   },
+   "true_share_1": {
+    "ci_lo": 0.71683251044436,
+    "ci_hi": 0.9227725028484618,
+    "undefined_draws": 0
+   },
+   "precision_0": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_0": {
+    "ci_lo": 0.4140063846767757,
+    "ci_hi": 0.5261156186612576,
+    "undefined_draws": 0
+   },
+   "true_share_0": {
+    "ci_lo": 0.7286836027713627,
+    "ci_hi": 0.9260046189376444,
+    "undefined_draws": 0
+   },
+   "diff": {
+    "ci_lo": -0.15879141672272978,
+    "ci_hi": 0.14263083627681702,
+    "undefined_draws": 0
+   }
+  },
+  "cell_rows": {
+   "claim=1|resolved=1": 25,
+   "claim=1|resolved=0": 25,
+   "claim=0|resolved=1": 25,
+   "claim=0|resolved=0": 25
+  }
+ },
+ "claim_broad_without_unsure": {
+  "n_rows": 80,
+  "point": {
+   "1": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.6,
+    "recall": 0.48000204582651396,
+    "true_share": 0.7425750094948727
+   },
+   "0": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.7222222222222222,
+    "recall": 0.46261031119368323,
+    "true_share": 0.8287143956889915
+   },
+   "diff_true_share_resolved_minus_unresolved": -0.08613938619411887
+  },
+  "ci": {
+   "precision_1": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_1": {
+    "ci_lo": 0.4090928904581317,
+    "ci_hi": 0.6242793791574279,
+    "undefined_draws": 0
+   },
+   "true_share_1": {
+    "ci_lo": 0.5709583491581213,
+    "ci_hi": 0.8712875047474365,
+    "undefined_draws": 0
+   },
+   "precision_0": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_0": {
+    "ci_lo": 0.39697090474292546,
+    "ci_hi": 0.5542570951585977,
+    "undefined_draws": 0
+   },
+   "true_share_0": {
+    "ci_lo": 0.6916859122401847,
+    "ci_hi": 0.9657428791377983,
+    "undefined_draws": 0
+   },
+   "diff": {
+    "ci_lo": -0.28336612317108567,
+    "ci_hi": 0.102440306560862,
+    "undefined_draws": 0
+   }
+  },
+  "cell_rows": {
+   "claim=1|resolved=1": 24,
+   "claim=1|resolved=0": 23,
+   "claim=0|resolved=1": 15,
+   "claim=0|resolved=0": 18
+  }
+ },
+ "detector_agreement_broad": {
+  "n": 100,
+  "p_o": 0.5430417090539166,
+  "kappa": 0.2212747697690539,
+  "pabak": 0.08608341810783315,
+  "positives": [
+   86,
+   50
+  ]
+ },
+ "conclusion_by_variant": {
+  "strict": {
+   "ci_lo": -0.28750391197529324,
+   "ci_hi": 0.06214428873535305,
+   "undefined_draws": 0
+  },
+  "broad": {
+   "ci_lo": -0.15879141672272978,
+   "ci_hi": 0.14263083627681702,
+   "undefined_draws": 0
+  }
+ },
+ "conclusion": "вывод устойчив: различие долей заявлений у решённых и нерешённых после поправки не показано ни в строгом, ни в широком варианте",
+ "admit": {
+  "n_rows": 100,
+  "true_share_resolved": 0.04,
+  "true_share_unresolved": 0.08933025404157044,
+  "diff": -0.04933025404157044,
+  "ci": {
+   "true_share_1": {
+    "ci_lo": 0.0,
+    "ci_hi": 0.10851500189897456,
+    "undefined_draws": 0
+   },
+   "true_share_0": {
+    "ci_lo": 0.015334872979214782,
+    "ci_hi": 0.18799076212471136,
+    "undefined_draws": 0
+   },
+   "diff": {
+    "ci_lo": -0.1594888662200934,
+    "ci_hi": 0.055334872979214786,
+    "undefined_draws": 0
+   }
+  },
+  "detector": {
+   "estimable": false,
+   "detector_positive_in_sample": 0
+  },
+  "detector_agreement": {
+   "n": 100,
+   "p_o": 0.943702950152594,
+   "kappa": -1.9720802913020033e-15,
+   "pabak": 0.887405900305188,
+   "positives": [
+    6,
+    0
+   ],
+   "kappa_interpretable": false
+  }
+ },
+ "model_vs_final": {
+  "strict": {
+   "n": 100,
+   "p_o": 0.9199999999999999,
+   "kappa": 0.8031496062992125,
+   "pabak": 0.8399999999999999,
+   "positives": [
+    68,
+    76
+   ]
+  },
+  "broad": {
+   "n": 100,
+   "p_o": 0.96,
+   "kappa": 0.823321554770318,
+   "pabak": 0.9199999999999999,
+   "positives": [
+    88,
+    86
+   ]
+  },
+  "admit": {
+   "n": 100,
+   "p_o": 0.98,
+   "kappa": 0.8226950354609928,
+   "pabak": 0.96,
+   "positives": [
+    6,
+    6
+   ],
+   "kappa_interpretable": true
+  }
+ },
+ "model_vs_independent": {
+  "strict": {
+   "n": 39,
+   "p_o": 0.7948717948717949,
+   "kappa": 0.34999999999999987,
+   "pabak": 0.5897435897435899,
+   "positives": [
+    28,
+    36
+   ]
+  },
+  "broad": {
+   "n": 39,
+   "p_o": 0.8974358974358975,
+   "kappa": -0.040000000000001396,
+   "pabak": 0.7948717948717949,
+   "positives": [
+    38,
+    36
+   ]
+  },
+  "ai_claim_binary": {
+   "n": 39,
+   "p_o": 0.9487179487179488,
+   "kappa": 0.638888888888889,
+   "pabak": 0.8974358974358976,
+   "positives": [
+    36,
+    36
+   ]
+  },
+  "admit": {
+   "n": 39,
+   "p_o": 0.9487179487179488,
+   "kappa": -0.026315789473683626,
+   "pabak": 0.8974358974358976,
+   "positives": [
+    1,
+    1
+   ],
+   "kappa_interpretable": false
+  }
+ },
+ "labels_file": "g0_labels_author_1_39.csv"
+}

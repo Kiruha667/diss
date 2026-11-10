@@ -1,0 +1,408 @@
+{
+ "population_cells": {
+  "claim=1|resolved=1": 1877,
+  "claim=1|resolved=0": 996,
+  "claim=0|resolved=1": 3389,
+  "claim=0|resolved=0": 1602
+ },
+ "rows_with_claim_level": 100,
+ "rows_without_claim_level": 0,
+ "claim_level_counts": {
+  "2": 68,
+  "1": 20,
+  "0": 12
+ },
+ "unsure": 32,
+ "claim_strict_all": {
+  "n_rows": 100,
+  "point": {
+   "1": {
+    "precision": 0.96,
+    "missed_share_in_det0": 0.28,
+    "recall": 0.6550435503337162,
+    "true_share": 0.5223775161412837
+   },
+   "0": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.48,
+    "recall": 0.5643187381017133,
+    "true_share": 0.6793533487297921
+   },
+   "diff_true_share_resolved_minus_unresolved": -0.15697583258850845
+  },
+  "ci": {
+   "precision_1": {
+    "ci_lo": 0.88,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_1": {
+    "ci_lo": 0.5255494890102198,
+    "ci_hi": 0.8158652540070632,
+    "undefined_draws": 0
+   },
+   "true_share_1": {
+    "ci_lo": 0.416635017090771,
+    "ci_hi": 0.6510900113938473,
+    "undefined_draws": 0
+   },
+   "precision_0": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_0": {
+    "ci_lo": 0.47761537576245827,
+    "ci_hi": 0.6894833028742317,
+    "undefined_draws": 0
+   },
+   "true_share_0": {
+    "ci_lo": 0.556027713625866,
+    "ci_hi": 0.8026789838337183,
+    "undefined_draws": 0
+   },
+   "diff": {
+    "ci_lo": -0.32140577402290516,
+    "ci_hi": 0.017232485797161377,
+    "undefined_draws": 0
+   }
+  },
+  "cell_rows": {
+   "claim=1|resolved=1": 25,
+   "claim=1|resolved=0": 25,
+   "claim=0|resolved=1": 25,
+   "claim=0|resolved=0": 25
+  }
+ },
+ "claim_strict_without_unsure": {
+  "n_rows": 68,
+  "point": {
+   "1": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.36363636363636365,
+    "recall": 0.6036604976171681,
+    "true_share": 0.5904602423782067
+   },
+   "0": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.6666666666666666,
+    "recall": 0.48255813953488375,
+    "true_share": 0.7944572748267898
+   },
+   "diff_true_share_resolved_minus_unresolved": -0.20399703244858314
+  },
+  "ci": {
+   "precision_1": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_1": {
+    "ci_lo": 0.46533693937345055,
+    "ci_hi": 0.859003161923781,
+    "undefined_draws": 0
+   },
+   "true_share_1": {
+    "ci_lo": 0.4149432033974381,
+    "ci_hi": 0.7659772813589752,
+    "undefined_draws": 0
+   },
+   "precision_0": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_0": {
+    "ci_lo": 0.404138770541692,
+    "ci_hi": 0.5987376014427412,
+    "undefined_draws": 0
+   },
+   "true_share_0": {
+    "ci_lo": 0.6403002309468823,
+    "ci_hi": 0.9486143187066974,
+    "undefined_draws": 0
+   },
+   "diff": {
+    "ci_lo": -0.4308997527226543,
+    "ci_hi": 0.06717137075183677,
+    "undefined_draws": 0
+   }
+  },
+  "cell_rows": {
+   "claim=1|resolved=1": 22,
+   "claim=1|resolved=0": 23,
+   "claim=0|resolved=1": 11,
+   "claim=0|resolved=0": 12
+  }
+ },
+ "detector_agreement_strict": {
+  "n": 100,
+  "p_o": 0.7720040691759917,
+  "kappa": 0.5615413577430778,
+  "pabak": 0.5440081383519835,
+  "positives": [
+   68,
+   50
+  ]
+ },
+ "claim_broad_all": {
+  "n_rows": 100,
+  "point": {
+   "1": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.72,
+    "recall": 0.43478462293957953,
+    "true_share": 0.819802506646411
+   },
+   "0": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.8,
+    "recall": 0.4373024236037934,
+    "true_share": 0.8766743648960741
+   },
+   "diff_true_share_resolved_minus_unresolved": -0.05687185824966312
+  },
+  "ci": {
+   "precision_1": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_1": {
+    "ci_lo": 0.3862680375031898,
+    "ci_hi": 0.4972396181030189,
+    "undefined_draws": 0
+   },
+   "true_share_1": {
+    "ci_lo": 0.71683251044436,
+    "ci_hi": 0.9227725028484618,
+    "undefined_draws": 0
+   },
+   "precision_0": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_0": {
+    "ci_lo": 0.403264988825187,
+    "ci_hi": 0.4927570648302066,
+    "undefined_draws": 0
+   },
+   "true_share_0": {
+    "ci_lo": 0.778013856812933,
+    "ci_hi": 0.9506697459584296,
+    "undefined_draws": 0
+   },
+   "diff": {
+    "ci_lo": -0.20809473646355692,
+    "ci_hi": 0.0943510199642309,
+    "undefined_draws": 0
+   }
+  },
+  "cell_rows": {
+   "claim=1|resolved=1": 25,
+   "claim=1|resolved=0": 25,
+   "claim=0|resolved=1": 25,
+   "claim=0|resolved=0": 25
+  }
+ },
+ "claim_broad_without_unsure": {
+  "n_rows": 68,
+  "point": {
+   "1": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.36363636363636365,
+    "recall": 0.6036604976171681,
+    "true_share": 0.5904602423782067
+   },
+   "0": {
+    "precision": 1.0,
+    "missed_share_in_det0": 0.6666666666666666,
+    "recall": 0.48255813953488375,
+    "true_share": 0.7944572748267898
+   },
+   "diff_true_share_resolved_minus_unresolved": -0.20399703244858314
+  },
+  "ci": {
+   "precision_1": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_1": {
+    "ci_lo": 0.46533693937345055,
+    "ci_hi": 0.859003161923781,
+    "undefined_draws": 0
+   },
+   "true_share_1": {
+    "ci_lo": 0.4149432033974381,
+    "ci_hi": 0.7659772813589752,
+    "undefined_draws": 0
+   },
+   "precision_0": {
+    "ci_lo": 1.0,
+    "ci_hi": 1.0,
+    "undefined_draws": 0
+   },
+   "recall_0": {
+    "ci_lo": 0.404138770541692,
+    "ci_hi": 0.5987376014427412,
+    "undefined_draws": 0
+   },
+   "true_share_0": {
+    "ci_lo": 0.6403002309468823,
+    "ci_hi": 0.9486143187066974,
+    "undefined_draws": 0
+   },
+   "diff": {
+    "ci_lo": -0.4308997527226543,
+    "ci_hi": 0.06717137075183677,
+    "undefined_draws": 0
+   }
+  },
+  "cell_rows": {
+   "claim=1|resolved=1": 22,
+   "claim=1|resolved=0": 23,
+   "claim=0|resolved=1": 11,
+   "claim=0|resolved=0": 12
+  }
+ },
+ "detector_agreement_broad": {
+  "n": 100,
+  "p_o": 0.5267446592065106,
+  "kappa": 0.1994899420735499,
+  "pabak": 0.05348931841302118,
+  "positives": [
+   88,
+   50
+  ]
+ },
+ "conclusion_by_variant": {
+  "strict": {
+   "ci_lo": -0.32140577402290516,
+   "ci_hi": 0.017232485797161377,
+   "undefined_draws": 0
+  },
+  "broad": {
+   "ci_lo": -0.20809473646355692,
+   "ci_hi": 0.0943510199642309,
+   "undefined_draws": 0
+  }
+ },
+ "conclusion": "вывод устойчив: различие долей заявлений у решённых и нерешённых после поправки не показано ни в строгом, ни в широком варианте",
+ "admit": {
+  "n_rows": 100,
+  "true_share_resolved": 0.05425750094948728,
+  "true_share_unresolved": 0.06466512702078522,
+  "diff": -0.010407626071297943,
+  "ci": {
+   "true_share_1": {
+    "ci_lo": 0.0,
+    "ci_hi": 0.13148499810102543,
+    "undefined_draws": 0
+   },
+   "true_share_0": {
+    "ci_lo": 0.0,
+    "ci_hi": 0.15399538106235566,
+    "undefined_draws": 0
+   },
+   "diff": {
+    "ci_lo": -0.11015861217852291,
+    "ci_hi": 0.09040762607129794,
+    "undefined_draws": 0
+   }
+  },
+  "detector": {
+   "estimable": false,
+   "detector_positive_in_sample": 0
+  },
+  "detector_agreement": {
+   "n": 100,
+   "p_o": 0.9423041709053916,
+   "kappa": 0.0,
+   "pabak": 0.8846083418107833,
+   "positives": [
+    6,
+    0
+   ],
+   "kappa_interpretable": false
+  }
+ },
+ "model_vs_final": {
+  "strict": {
+   "n": 100,
+   "p_o": 0.9999999999999999,
+   "kappa": 0.9999999999999998,
+   "pabak": 0.9999999999999998,
+   "positives": [
+    68,
+    68
+   ]
+  },
+  "broad": {
+   "n": 100,
+   "p_o": 0.9999999999999999,
+   "kappa": 0.9999999999999994,
+   "pabak": 0.9999999999999998,
+   "positives": [
+    88,
+    88
+   ]
+  },
+  "admit": {
+   "n": 100,
+   "p_o": 0.9999999999999999,
+   "kappa": 0.999999999999999,
+   "pabak": 0.9999999999999998,
+   "positives": [
+    6,
+    6
+   ],
+   "kappa_interpretable": true
+  }
+ },
+ "model_vs_independent": {
+  "strict": {
+   "n": 39,
+   "p_o": 0.7948717948717949,
+   "kappa": 0.34999999999999987,
+   "pabak": 0.5897435897435899,
+   "positives": [
+    28,
+    36
+   ]
+  },
+  "broad": {
+   "n": 39,
+   "p_o": 0.8974358974358975,
+   "kappa": -0.040000000000001396,
+   "pabak": 0.7948717948717949,
+   "positives": [
+    38,
+    36
+   ]
+  },
+  "ai_claim_binary": {
+   "n": 39,
+   "p_o": 0.9487179487179488,
+   "kappa": 0.638888888888889,
+   "pabak": 0.8974358974358976,
+   "positives": [
+    36,
+    36
+   ]
+  },
+  "admit": {
+   "n": 39,
+   "p_o": 0.9487179487179488,
+   "kappa": -0.026315789473683626,
+   "pabak": 0.8974358974358976,
+   "positives": [
+    1,
+    1
+   ],
+   "kappa_interpretable": false
+  }
+ },
+ "labels_file": "g0_human_sample.csv"
+}
