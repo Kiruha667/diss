@@ -18,3 +18,11 @@ outputs/features.csv
 
 # pause request for own_data/infra/main.ps1 (main_lib.py STOP_FILE)
 .own_main_stop
+
+# blind key of the G0 human check (reports/G0_HUMAN_CHECK_PROTOCOL.md): never published before the author's marks are
+# returned; commit afterwards with git add -f outputs/g0_human_key.csv
+outputs/g0_human_key.csv
+# pytest cache, author's private documents
+.pytest_cache/
+*.docx
+*.pdf
