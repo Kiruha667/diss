@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -153,14 +154,15 @@ def _conclusion(ci: dict) -> str:
     return "вывод зависит от границы заявления (уровни 1 и 2)"
 
 
-def analyze() -> dict:
+def analyze(sample_path: Path | None = None, results_path: Path | None = None) -> dict:
     """Protocol sections 5, 7 and 8: claim_level -> strict (= 2) and broad (>= 1) claims; detector, model and human
     agreement; the claim column of the sample is not used."""
     pop = population()
     n = {(c, r): int(((pop.det_claim == c) & (pop.resolved == r)).sum()) for c, r in CELLS}
-    marks = pd.read_csv(SAMPLE, encoding="utf-8-sig")
+    sample_path = Path(sample_path or SAMPLE)
+    marks = pd.read_csv(sample_path, encoding="utf-8-sig")
     if "claim_level" not in marks:
-        raise SystemExit(f"{SAMPLE} has no claim_level column (protocol section 8)")
+        raise SystemExit(f"{sample_path} has no claim_level column (protocol section 8)")
     key = pd.read_csv(KEY)
     d = key.merge(marks[["id", "claim_level", "admit", "unsure", "comment"]], on="id")
     for c in ("claim_level", "admit", "unsure"):
@@ -209,7 +211,9 @@ def analyze() -> dict:
                                            for v in VARIANTS}
             res["model_vs_independent"]["ai_claim_binary"] = agreement(mi.ai_claim, mi.claim)
             res["model_vs_independent"]["admit"] = agreement(mi.ai_admit, mi.admit, None, MIN_POS_KAPPA)
-    RESULTS.write_text(json.dumps(res, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
+    res["labels_file"] = sample_path.name
+    Path(results_path or RESULTS).write_text(json.dumps(res, indent=1, ensure_ascii=False, default=float),
+                                             encoding="utf-8")
     return res
 
 
@@ -218,5 +222,6 @@ if __name__ == "__main__":
     if cmd == "sample":
         s = sample()
         print(s.groupby("cell").size(), "long:", int((s.final_full.str.len() > LONG_LIMIT).sum()))
-    elif cmd == "analyze":
-        print(json.dumps(analyze(), indent=1, ensure_ascii=False, default=float))
+    elif cmd == "analyze":  # optional: <labels csv> <results json> (protocol 9: the check with the author's labels)
+        args = [OUTPUTS / a if "/" not in a and "\\" not in a else Path(a) for a in sys.argv[2:4]]
+        print(json.dumps(analyze(*args), indent=1, ensure_ascii=False, default=float))
