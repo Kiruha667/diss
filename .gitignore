@@ -26,3 +26,6 @@ outputs/g0_human_key.csv
 .pytest_cache/
 *.docx
 *.pdf
+
+# working spreadsheets of the G0 human check (author's marks, review files): never committed; the marks go to CSV
+*.xlsx
