@@ -35,13 +35,13 @@
 | E8 | `python -m src.e8_repeats check`, `build`, `run` | повторы ASSERT-KTH, 1.9 ГБ | HF `ASSERT-KTH/agentic-evals-artifacts@5db0c4b` | `build` ≈ 7 мин (`build_info.json`: 424 с), `run` ≈ 6 с | не измерялась | нет |
 | E9 | `python -m src.e9_best_of_k` | данные E8 | — | ≈ 43 с | — | нет |
 | E10 | `python -m src.e10_check_outcomes checks`, `parser-check`; затем `python -m src.e10_block_o` | `trajectories.jsonl.gz`, данные E8 | — | `e10_block_o` ≈ 3.6 мин; разбор — дольше | `data/interim/e10/commands.parquet` ≈ 157 МБ | нет |
-| E11 | `python -m src.e11_elicitation sample`, `cost`, `check`, `ask`, `analyze` | KTH devstral-2512 (данные E8); токенизатор Devstral 2 только для `cost` | OpenRouter → Mistral | `ask` ≈ 80 мин, 800 запросов | — | **да**: `OPENROUTER_API_KEY`; расход $3.37 |
+| E11 | `python -m src.e11_elicitation sample`, `cost`, `check`, `ask`, `analyze` | KTH devstral-2512 (данные E8); токенизатор Devstral 2 только для `cost` | OpenRouter → Mistral | `ask` ≈ 50 мин, 800 запросов (журнал `data/interim/e11/ask2.log`) | — | **да**: `OPENROUTER_API_KEY`; расход $3.37 |
 | E11b | `python -m src.e11b_finished_pairs sample`, `cost`, `ask`, `analyze` | как E11 | OpenRouter → Mistral | ≈ 17 мин, 244 запроса | — | **да**: `OPENROUTER_API_KEY`; расход $1.46 |
 | E12 | `python -m src.e12_task_difficulty` | как E7 + all-MiniLM-L6-v2 | HF | ≈ 4 мин | — | нет |
 | E13 | `python -m src.e13_generations_patch patches` (скачивает 7 864 `patch.diff`), затем `run` | как E7; `logs/<task>/patch.diff`; данные E8 | бакет | `run` ≈ 1 мин | — | нет |
 | E14 | `python -m src.e14_new_models` | `data/raw/swebench_bashonly_new/`: 4 прогона февраля 2026 (ниже) | бакет | ≈ 2.5 мин | — | нет |
 | G0, ручная проверка | `python -m src.g0_human_check sample` (сделано), `analyze` (после разметки автора) | `runs.parquet`, `e7_texts.parquet`, `outputs/g0_final_messages.csv` | — | секунды | — | нет |
-| собственный корпус | `own_data/infra/` (PowerShell + WSL2 + Docker), протокол `own_data/PROTOCOL.md` | API z.ai (glm-4.6), образы SWE-bench | z.ai, Docker Hub | ≈ 20–90 мин на прогон | Docker в WSL2 | **да**: `ZAI_API_KEY`; расход $4.88 |
+| собственный корпус | `own_data/infra/` (PowerShell + WSL2 + Docker), протокол `own_data/PROTOCOL.md` | API z.ai (glm-4.6), образы SWE-bench | z.ai, Docker Hub | не сведено; по прогонам — `own_data/LOG.md` | Docker в WSL2 | **да**: `ZAI_API_KEY`; расход $4.88 |
 
 **Скачать четыре новых прогона для E14.** Отдельного скрипта в репозитории нет: скачивание шло вспомогательным
 скриптом (`CLEANUP_FINDINGS.md`). Эквивалент через адаптер:
