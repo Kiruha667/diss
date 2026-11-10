@@ -1,0 +1,5 @@
+684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1  data/raw/swebench_verified/.cache/huggingface/.gitignore
+90bc4ec214406fd250b39cd29383275f6462977fce5bae6112d4da325f5689f6  data/raw/swebench_verified/.cache/huggingface/download/data/test-00000-of-00001.parquet.metadata
+a45b1fe4e2f0c8390b2b2938ac83e92ed5979000856808f3679c07812e9e6dcd  data/raw/swebench_verified/data/test-00000-of-00001.parquet
+da15415b44eea02e4074740d74da288038a0502522ef81553f2952e89f1e25e5  data/raw/swebench_verified/tasks.parquet
+84fa258e3b0e4ea15c19c33956e296048990c1807a82120d2288ed7bfcbb4374  data/raw/swebench_verified/tasks_meta.json
