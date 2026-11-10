@@ -93,5 +93,49 @@
    "human_unsure": 0,
    "ai_reason": "Right, it's correct. Two blank lines between classes. | только форматирование; «I'm confident» — неявно"
   }
- ]
+ ],
+ "section_8": {
+  "note": "protocol 8.4: p_o, Cohen kappa, PABAK; independent marks are binary (blank = 0); admit kappa not interpreted below 5 positives",
+  "ai_claim_binary": {
+   "n": 39,
+   "p_o": 0.9487179487179488,
+   "kappa": 0.638888888888889,
+   "pabak": 0.8974358974358976,
+   "positives": [
+    36,
+    36
+   ]
+  },
+  "ai_claim_level_strict": {
+   "n": 39,
+   "p_o": 0.7948717948717949,
+   "kappa": 0.34999999999999987,
+   "pabak": 0.5897435897435899,
+   "positives": [
+    28,
+    36
+   ]
+  },
+  "ai_claim_level_broad": {
+   "n": 39,
+   "p_o": 0.8974358974358975,
+   "kappa": -0.040000000000001396,
+   "pabak": 0.7948717948717949,
+   "positives": [
+    38,
+    36
+   ]
+  },
+  "admit": {
+   "n": 39,
+   "p_o": 0.9487179487179488,
+   "kappa": -0.026315789473683626,
+   "pabak": 0.8974358974358976,
+   "positives": [
+    1,
+    1
+   ],
+   "kappa_interpretable": false
+  }
+ }
 }

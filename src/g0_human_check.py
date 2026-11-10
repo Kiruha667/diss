@@ -6,7 +6,9 @@
 Population: the 7864 submitted leaderboard runs; final message = full G0 text (e7_texts final_full); detector =
 has_claim / has_admit of outputs/g0_final_messages.csv. Sample: 25 per cell (detector claim x resolved), seed 47,
 without the runs of outputs/g0_manual_sample.csv. Estimates: precision, recall and the true claim share per class
-with the cell weights; stratified bootstrap (1000, seed 42).
+with the cell weights; stratified bootstrap (1000, seed 42). Section 8 of the protocol: the author's claim_level
+(2 explicit result, 1 approval only, 0 none) gives a strict (= 2) and a broad (>= 1) claim; agreement = p_o, Cohen's
+kappa, PABAK.
 """
 from __future__ import annotations
 
@@ -27,6 +29,10 @@ PER_CELL = 25
 CELLS = [(1, 1), (1, 0), (0, 1), (0, 0)]  # (detector claim, resolved)
 LONG_LIMIT, LONG_KEEP = 32_000, 30_000
 N_BOOT = 1000
+AI_LABELS = OUTPUTS / "g0_ai_labels.csv"
+INDEPENDENT = OUTPUTS / "g0_human_independent.csv"
+VARIANTS = {"strict": lambda lv: lv == 2, "broad": lambda lv: lv >= 1}  # protocol section 8.3
+MIN_POS_KAPPA = 5  # protocol 8.4: admit kappa is not interpreted below this number of positives
 
 
 def population() -> pd.DataFrame:
@@ -62,8 +68,8 @@ def sample() -> pd.DataFrame:
             (LONG_DIR / f"{i}.txt").write_text(txt, encoding="utf-8")
             txt = txt[:LONG_KEEP] + f"\n\n[УСЕЧЕНО: полный текст в outputs/g0_human_long/{i}.txt]"
         texts.append(txt)
-    pd.DataFrame({"id": s.id, "final_message": texts, "claim": "", "admit": "", "unsure": "", "comment": ""}).to_csv(
-        SAMPLE, index=False, encoding="utf-8-sig")
+    pd.DataFrame({"id": s.id, "final_message": texts, "claim": "", "claim_level": "", "admit": "", "unsure": "",
+                  "comment": ""}).to_csv(SAMPLE, index=False, encoding="utf-8-sig")
     s[["id", "run_id", "cell", "det_claim", "det_admit", "resolved", "model", "task_id"]].to_csv(KEY, index=False)
     return s
 
@@ -113,42 +119,96 @@ def _admit_detector(d: pd.DataFrame, w: pd.Series) -> dict:
             "recall_weighted": float(tp / (w * (d.admit == 1)).sum()) if (d.admit == 1).any() else None}
 
 
+def agreement(a, b, w=None, min_pos: int | None = None) -> dict:
+    """Protocol 8.4: share of agreement p_o, Cohen's kappa and PABAK = 2 p_o - 1 of two binary raters (optionally
+    weighted); with min_pos, kappa is marked not interpretable when either rater has fewer positives (unweighted)."""
+    a, b = np.asarray(a, float), np.asarray(b, float)
+    w = np.ones(len(a)) if w is None else np.asarray(w, float)
+    w = w / w.sum()
+    po = float((w * (a == b)).sum())
+    pa, pb = float((w * a).sum()), float((w * b).sum())
+    pe = pa * pb + (1 - pa) * (1 - pb)
+    out = {"n": len(a), "p_o": po, "kappa": (po - pe) / (1 - pe) if pe < 1 else float("nan"), "pabak": 2 * po - 1,
+           "positives": [int(a.sum()), int(b.sum())]}
+    if min_pos is not None:
+        out["kappa_interpretable"] = bool(min(a.sum(), b.sum()) >= min_pos)
+    return out
+
+
+def _weights(dd: pd.DataFrame, n: dict) -> pd.Series:
+    """Cell weights N / n of the sample rows (section 5)."""
+    size = dd.groupby(["det_claim", "resolved"]).id.transform("size")
+    return pd.Series([n[(c, r)] for c, r in zip(dd.det_claim, dd.resolved)], index=dd.index) / size
+
+
+def _conclusion(ci: dict) -> str:
+    """Protocol 8.3: one sentence from the CIs of the difference in both variants."""
+    zero = {v: c["ci_lo"] <= 0 <= c["ci_hi"] for v, c in ci.items()}
+    if all(zero.values()):
+        return ("вывод устойчив: различие долей заявлений у решённых и нерешённых после поправки не показано "
+                "ни в строгом, ни в широком варианте")
+    sides = {c["ci_lo"] > 0 for c in ci.values()}
+    if not any(zero.values()) and len(sides) == 1:
+        return f"вывод не остаётся: у {'решённых' if sides.pop() else 'нерешённых'} заявлений больше (в обоих вариантах)"
+    return "вывод зависит от границы заявления (уровни 1 и 2)"
+
+
 def analyze() -> dict:
+    """Protocol sections 5, 7 and 8: claim_level -> strict (= 2) and broad (>= 1) claims; detector, model and human
+    agreement; the claim column of the sample is not used."""
     pop = population()
     n = {(c, r): int(((pop.det_claim == c) & (pop.resolved == r)).sum()) for c, r in CELLS}
     marks = pd.read_csv(SAMPLE, encoding="utf-8-sig")
+    if "claim_level" not in marks:
+        raise SystemExit(f"{SAMPLE} has no claim_level column (protocol section 8)")
     key = pd.read_csv(KEY)
-    d = key.merge(marks[["id", "claim", "admit", "unsure", "comment"]], on="id")
-    for c in ("claim", "admit", "unsure"):
+    d = key.merge(marks[["id", "claim_level", "admit", "unsure", "comment"]], on="id")
+    for c in ("claim_level", "admit", "unsure"):
         d[c] = pd.to_numeric(d[c], errors="coerce")
+    has = d.claim_level.notna()
+    for c in ("admit", "unsure"):  # a blank in a marked row is 0 (protocol 8.2)
+        d.loc[has & d[c].isna(), c] = 0
+    for v, f in VARIANTS.items():
+        d[v] = np.where(has, f(d.claim_level.fillna(-1)).astype(float), np.nan)
     res = {"population_cells": {f"claim={c}|resolved={r}": v for (c, r), v in n.items()},
-           "marked_claim": int(d.claim.notna().sum()), "unmarked_claim": int(d.claim.isna().sum()),
+           "rows_with_claim_level": int(has.sum()), "rows_without_claim_level": int((~has).sum()),
+           "claim_level_counts": {int(k): int(v) for k, v in d.claim_level.value_counts().items()},
            "unsure": int((d.unsure == 1).sum())}
-    for variant, keep in (("all", d.claim.notna()), ("without_unsure", d.claim.notna() & (d.unsure != 1))):
-        dd = d[keep]
-        cells = {(c, r): dd[(dd.det_claim == c) & (dd.resolved == r)] for c, r in CELLS}
-        est = _estimates(cells, n, "claim")
-        ci = _boot(cells, n, "claim")
-        res[f"claim_{variant}"] = {"n_rows": len(dd), "point": est, "ci": ci,
-                                   "cell_rows": {f"claim={c}|resolved={r}": len(v) for (c, r), v in cells.items()}}
-    diff = res["claim_all"]["ci"]["diff"]
-    res["conclusion"] = ("вывод остаётся: различие долей заявлений после поправки не показано"
-                         if diff["ci_lo"] <= 0 <= diff["ci_hi"] else
-                         "не остаётся: у решённых заявлений больше" if diff["ci_lo"] > 0 else
-                         "не остаётся: у нерешённых заявлений больше")
+    for v in VARIANTS:
+        for subset, keep in (("all", has), ("without_unsure", has & (d.unsure != 1))):
+            dd = d[keep]
+            cells = {(c, r): dd[(dd.det_claim == c) & (dd.resolved == r)] for c, r in CELLS}
+            res[f"claim_{v}_{subset}"] = {"n_rows": len(dd), "point": _estimates(cells, n, v),
+                                          "ci": _boot(cells, n, v),
+                                          "cell_rows": {f"claim={c}|resolved={r}": len(x) for (c, r), x in cells.items()}}
+        dd = d[has]
+        res[f"detector_agreement_{v}"] = agreement(dd[v], dd.det_claim, _weights(dd, n))
+    res["conclusion_by_variant"] = {v: res[f"claim_{v}_all"]["ci"]["diff"] for v in VARIANTS}
+    res["conclusion"] = _conclusion(res["conclusion_by_variant"])
     da = d[d.admit.notna()]
     cells_a = {(c, r): da[(da.det_claim == c) & (da.resolved == r)] for c, r in CELLS}
-    w = da.apply(lambda x: n[(x.det_claim, x.resolved)] / len(cells_a[(x.det_claim, x.resolved)]), axis=1)
     est_a = _estimates(cells_a, n, "admit")
     res["admit"] = {"n_rows": len(da), "true_share_resolved": est_a[1]["true_share"],
                     "true_share_unresolved": est_a[0]["true_share"],
                     "diff": est_a["diff_true_share_resolved_minus_unresolved"],
                     "ci": {k: v for k, v in _boot(cells_a, n, "admit").items() if k.startswith(("true_share", "diff"))},
-                    "detector": _admit_detector(da, w)}
-    dc = d[d.claim.notna()]
-    wc = dc.apply(lambda x: n[(x.det_claim, x.resolved)] / len(dc[(dc.det_claim == x.det_claim) &
-                                                                   (dc.resolved == x.resolved)]), axis=1)
-    res["claim_agreement_weighted"] = float((wc * (dc.claim == dc.det_claim)).sum() / wc.sum())
+                    "detector": _admit_detector(da, _weights(da, n)),
+                    "detector_agreement": agreement(da.admit, da.det_admit, _weights(da, n), MIN_POS_KAPPA)}
+    if AI_LABELS.exists():  # model pre-labels against the author's final and independent labels (protocol 7, 8.4)
+        ai = pd.read_csv(AI_LABELS, encoding="utf-8-sig")
+        m = d.merge(ai, on="id")
+        mm, ma = m[m.claim_level.notna()], m[m.admit.notna()]
+        res["model_vs_final"] = {v: agreement(VARIANTS[v](mm.ai_claim_level).astype(int), mm[v]) for v in VARIANTS}
+        res["model_vs_final"]["admit"] = agreement(ma.ai_admit, ma.admit, None, MIN_POS_KAPPA)
+        if INDEPENDENT.exists():
+            ind = pd.read_csv(INDEPENDENT, encoding="utf-8-sig")
+            for c in ("claim", "admit"):
+                ind[c] = pd.to_numeric(ind[c], errors="coerce").fillna(0)
+            mi = ind.merge(ai, on="id")
+            res["model_vs_independent"] = {v: agreement(VARIANTS[v](mi.ai_claim_level).astype(int), mi.claim)
+                                           for v in VARIANTS}
+            res["model_vs_independent"]["ai_claim_binary"] = agreement(mi.ai_claim, mi.claim)
+            res["model_vs_independent"]["admit"] = agreement(mi.ai_admit, mi.admit, None, MIN_POS_KAPPA)
     RESULTS.write_text(json.dumps(res, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
     return res
 
