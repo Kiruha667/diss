@@ -1,0 +1,24 @@
+{
+ "submitted_7864": {
+  "n": 7864,
+  "mutual_information_bits": 0.0004976362377475674,
+  "outcome_entropy_bits": 0.9153001064204176,
+  "normalized_mi": 0.0005436864196309752,
+  "claim_share_by_outcome": {
+   "0": 0.3833718244803695,
+   "1": 0.3564375237371819
+  },
+  "outcome": "resolved (1 = resolved)"
+ },
+ "g0_population_7975": {
+  "n": 7975,
+  "mutual_information_bits": 0.00011302494855680578,
+  "outcome_entropy_bits": 0.9245184105756035,
+  "normalized_mi": 0.00012225278292342135,
+  "claim_share_by_outcome": {
+   "0": 0.3564375237371819,
+   "1": 0.36913990402362495
+  },
+  "outcome": "label (1 = failed)"
+ }
+}
