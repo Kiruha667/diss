@@ -1,0 +1,97 @@
+{
+ "ids_compared": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30,
+  31,
+  32,
+  33,
+  34,
+  35,
+  36,
+  37,
+  38,
+  39
+ ],
+ "n": 39,
+ "unmarked_in_1_40": [
+  40
+ ],
+ "claim": {
+  "agreement": 0.9487179487179487,
+  "kappa": 0.6388888888888882,
+  "ai_1": 36,
+  "human_1": 36
+ },
+ "admit": {
+  "agreement": 0.9487179487179487,
+  "kappa": -0.026315789473685847,
+  "ai_1": 1,
+  "human_1": 1
+ },
+ "discrepancies": [
+  {
+   "id": 38,
+   "label": "claim",
+   "ai": 0,
+   "human": 1,
+   "ai_unsure": 0,
+   "human_unsure": 0,
+   "ai_reason": "Now let me submit the solution:"
+  },
+  {
+   "id": 39,
+   "label": "claim",
+   "ai": 1,
+   "human": 0,
+   "ai_unsure": 1,
+   "human_unsure": 1,
+   "ai_reason": "Looks solid. ... I'm satisfied. I'm ready to submit. | проверка в уме, результат не назван прямо"
+  },
+  {
+   "id": 28,
+   "label": "admit",
+   "ai": 1,
+   "human": 0,
+   "ai_unsure": 1,
+   "human_unsure": 0,
+   "ai_reason": "Original issue fixed ... The argument ordering (e.g., `Max[2, x]` vs `Max[x, 2]`) ... is not the main issue | расхождение с ожидаемым выводом признано, но отклонено"
+  },
+  {
+   "id": 34,
+   "label": "admit",
+   "ai": 0,
+   "human": 1,
+   "ai_unsure": 1,
+   "human_unsure": 0,
+   "ai_reason": "Right, it's correct. Two blank lines between classes. | только форматирование; «I'm confident» — неявно"
+  }
+ ]
+}
