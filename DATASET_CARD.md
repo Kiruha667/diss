@@ -75,7 +75,7 @@
 | что | значение |
 |---|---|
 | что | glm-4.6 (z.ai), mini-SWE-agent 1.17.1, оценка swebench 4.1.0 в Docker / WSL2; протокол `own_data/PROTOCOL.md` |
-| таблицы | `own_data/runs_own.parquet` `4edb2d283a56b809dd000f3aa9140a829205dd54638758f6aca0489969fb0603`; `own_data/steps_own.parquet` `f1e22e746380d1d46fb854bd1d5117d1e1a9a5623aeb4eb585f17bf1acecacd6` |
+| таблицы | `own_data/runs_own.parquet` `9d0c27cf92b8786e658396dabd6d2f35b72ce94bb9e76fea0f9a17bd2c3da90e` (после исправления `in_analysis` 2026-11-10; было `4edb2d28…`, `own_data/LOG.md`); `own_data/steps_own.parquet` `f1e22e746380d1d46fb854bd1d5117d1e1a9a5623aeb4eb585f17bf1acecacd6` |
 | аудит меток `psf/requests` (логи оценки корпуса) | `data/raw/label_audit/`: 592 файла, 29.9 МБ, хеш набора `8af9332673c04936e065d664abc9e5d6385c0bd0305868eb63f2b6ffad23d898` (2026-10-28) |
 | дата сбора | 2026-10-26 … 28 (`own_data/LOG.md`) |
 
