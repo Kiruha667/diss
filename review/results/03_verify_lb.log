@@ -1,0 +1,8 @@
+﻿1000 records, 0 mismatches
+2000 records, 0 mismatches
+3000 records, 0 mismatches
+4000 records, 0 mismatches
+5000 records, 0 mismatches
+6000 records, 0 mismatches
+7000 records, 0 mismatches
+{'records': 7975, 'runs_parquet_rows': 7975, 'all_rows_seen': True, 'feature_or_field_mismatches': 0, 'final_message_mismatches': 0, 'examples': []}

@@ -1,0 +1,142 @@
+{
+ "verification_share": [
+  {
+   "setting": "nano-agent-Qwen_Qwen3-32B",
+   "runs": 4247,
+   "verif_strict": 0.006,
+   "verif_broad": 0.03,
+   "python_steps_per_run": 0.051,
+   "steps_per_run": 9.156,
+   "unresolved_if_broad_verified": 0.827,
+   "unresolved_if_not_broad_verified": 0.807
+  },
+  {
+   "setting": "nano-agent-agentica-org_DeepSWE-Preview",
+   "runs": 4553,
+   "verif_strict": 0.019,
+   "verif_broad": 0.069,
+   "python_steps_per_run": 0.119,
+   "steps_per_run": 11.089,
+   "unresolved_if_broad_verified": 0.745,
+   "unresolved_if_not_broad_verified": 0.649
+  },
+  {
+   "setting": "nano-agent-mistral_devstral-2512",
+   "runs": 4978,
+   "verif_strict": 0.93,
+   "verif_broad": 0.996,
+   "python_steps_per_run": 21.237,
+   "steps_per_run": 68.974,
+   "unresolved_if_broad_verified": 0.362,
+   "unresolved_if_not_broad_verified": 0.286
+  }
+ ],
+ "strict_features_reproduce_runs_parquet_max_abs_diff": 0.0,
+ "within_unit": {
+  "S strict, within-setting": {
+   "qwen": {
+    "auroc": 0.4989,
+    "ci": [
+     0.4569,
+     0.5393
+    ],
+    "pairs": 2176,
+    "units": 146
+   },
+   "deepswe": {
+    "auroc": 0.4733,
+    "ci": [
+     0.4424,
+     0.5042
+    ],
+    "pairs": 3731,
+    "units": 252
+   },
+   "devstral": {
+    "auroc": 0.5606,
+    "ci": [
+     0.5218,
+     0.5981
+    ],
+    "pairs": 2920,
+    "units": 180
+   },
+   "all": {
+    "auroc": 0.5085,
+    "ci": [
+     0.4868,
+     0.5293
+    ],
+    "pairs": 8827,
+    "units": 578
+   }
+  },
+  "S broad verify, within-setting": {
+   "qwen": {
+    "auroc": 0.509,
+    "ci": [
+     0.4648,
+     0.5488
+    ],
+    "pairs": 2176,
+    "units": 146
+   },
+   "deepswe": {
+    "auroc": 0.4715,
+    "ci": [
+     0.4405,
+     0.5013
+    ],
+    "pairs": 3731,
+    "units": 252
+   },
+   "devstral": {
+    "auroc": 0.5274,
+    "ci": [
+     0.4893,
+     0.5677
+    ],
+    "pairs": 2920,
+    "units": 180
+   },
+   "all": {
+    "auroc": 0.4992,
+    "ci": [
+     0.4777,
+     0.5191
+    ],
+    "pairs": 8827,
+    "units": 578
+   }
+  },
+  "flag 'no broad verification' alone": {
+   "qwen": {
+    "auroc": 0.5005,
+    "ci": [
+     0.4939,
+     0.5073
+    ],
+    "pairs": 2176,
+    "units": 146
+   },
+   "deepswe": {
+    "auroc": 0.4944,
+    "ci": [
+     0.4832,
+     0.5047
+    ],
+    "pairs": 3731,
+    "units": 252
+   },
+   "devstral": {
+    "auroc": 0.4976,
+    "ci": [
+     0.4941,
+     0.5002
+    ],
+    "pairs": 2920,
+    "units": 180
+   }
+  }
+ }
+}
