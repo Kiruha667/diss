@@ -1,0 +1,8 @@
+{
+ "records": 7975,
+ "runs_parquet_rows": 7975,
+ "all_rows_seen": true,
+ "feature_or_field_mismatches": 0,
+ "final_message_mismatches": 0,
+ "examples": []
+}

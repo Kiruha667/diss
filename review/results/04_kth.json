@@ -1,0 +1,623 @@
+{
+ "A_within_unit": {
+  "S pooled (E8 P2)": {
+   "qwen": {
+    "auroc": 0.531,
+    "ci": [
+     0.4918,
+     0.5692
+    ],
+    "pairs": 2176,
+    "units": 146
+   },
+   "deepswe": {
+    "auroc": 0.4991,
+    "ci": [
+     0.4685,
+     0.5313
+    ],
+    "pairs": 3731,
+    "units": 252
+   },
+   "devstral": {
+    "auroc": 0.5781,
+    "ci": [
+     0.5375,
+     0.616
+    ],
+    "pairs": 2920,
+    "units": 180
+   },
+   "all": {
+    "auroc": 0.5331,
+    "ci": [
+     0.5123,
+     0.5545
+    ],
+    "pairs": 8827,
+    "units": 578
+   }
+  },
+  "LEN pooled (E8 P3)": {
+   "qwen": {
+    "auroc": 0.4897,
+    "ci": [
+     0.4486,
+     0.531
+    ],
+    "pairs": 2176,
+    "units": 146
+   },
+   "deepswe": {
+    "auroc": 0.4882,
+    "ci": [
+     0.4593,
+     0.5184
+    ],
+    "pairs": 3731,
+    "units": 252
+   },
+   "devstral": {
+    "auroc": 0.511,
+    "ci": [
+     0.4726,
+     0.5496
+    ],
+    "pairs": 2920,
+    "units": 180
+   },
+   "all": {
+    "auroc": 0.4961,
+    "ci": [
+     0.4771,
+     0.5171
+    ],
+    "pairs": 8827,
+    "units": 578
+   }
+  },
+  "S within-setting (E10 S)": {
+   "qwen": {
+    "auroc": 0.4989,
+    "ci": [
+     0.4569,
+     0.5393
+    ],
+    "pairs": 2176,
+    "units": 146
+   },
+   "deepswe": {
+    "auroc": 0.4733,
+    "ci": [
+     0.4424,
+     0.5042
+    ],
+    "pairs": 3731,
+    "units": 252
+   },
+   "devstral": {
+    "auroc": 0.5606,
+    "ci": [
+     0.5218,
+     0.5981
+    ],
+    "pairs": 2920,
+    "units": 180
+   },
+   "all": {
+    "auroc": 0.5085,
+    "ci": [
+     0.4868,
+     0.5293
+    ],
+    "pairs": 8827,
+    "units": 578
+   }
+  },
+  "S unit-FE trained": {
+   "qwen": {
+    "auroc": 0.4883,
+    "ci": [
+     0.4476,
+     0.532
+    ],
+    "pairs": 2176,
+    "units": 146
+   },
+   "deepswe": {
+    "auroc": 0.517,
+    "ci": [
+     0.4892,
+     0.5475
+    ],
+    "pairs": 3731,
+    "units": 252
+   },
+   "devstral": {
+    "auroc": 0.5764,
+    "ci": [
+     0.5386,
+     0.6144
+    ],
+    "pairs": 2920,
+    "units": 180
+   },
+   "all": {
+    "auroc": 0.5296,
+    "ci": [
+     0.5083,
+     0.5504
+    ],
+    "pairs": 8827,
+    "units": 578
+   }
+  },
+  "S w/o verification feats, within-setting": {
+   "qwen": {
+    "auroc": 0.5007,
+    "ci": [
+     0.4578,
+     0.5412
+    ],
+    "pairs": 2176,
+    "units": 146
+   },
+   "deepswe": {
+    "auroc": 0.4712,
+    "ci": [
+     0.4409,
+     0.5018
+    ],
+    "pairs": 3731,
+    "units": 252
+   },
+   "devstral": {
+    "auroc": 0.5428,
+    "ci": [
+     0.505,
+     0.5798
+    ],
+    "pairs": 2920,
+    "units": 180
+   },
+   "all": {
+    "auroc": 0.5022,
+    "ci": [
+     0.4799,
+     0.5227
+    ],
+    "pairs": 8827,
+    "units": 578
+   }
+  },
+  "S+fin within-setting": {
+   "qwen": {
+    "auroc": 0.4998,
+    "ci": [
+     0.4569,
+     0.5404
+    ],
+    "pairs": 2176,
+    "units": 146
+   },
+   "deepswe": {
+    "auroc": 0.4717,
+    "ci": [
+     0.4406,
+     0.5015
+    ],
+    "pairs": 3731,
+    "units": 252
+   },
+   "devstral": {
+    "auroc": 0.5616,
+    "ci": [
+     0.5222,
+     0.6009
+    ],
+    "pairs": 2920,
+    "units": 180
+   },
+   "all": {
+    "auroc": 0.5084,
+    "ci": [
+     0.4861,
+     0.5289
+    ],
+    "pairs": 8827,
+    "units": 578
+   }
+  },
+  "S pooled, bootstrap over TASKS, all": {
+   "auroc": 0.5331,
+   "ci": [
+    0.5137,
+    0.5535
+   ],
+   "pairs": 8827,
+   "units": 578
+  },
+  "S within-setting, bootstrap over TASKS, all": {
+   "auroc": 0.5085,
+   "ci": [
+    0.4877,
+    0.5289
+   ],
+   "pairs": 8827,
+   "units": 578
+  }
+ },
+ "B_finished": {
+  "qwen": {
+   "runs": 4247,
+   "share_finished": 0.9842,
+   "unresolved_if_finished": 0.8043,
+   "unresolved_if_not_finished": 0.9851,
+   "not_finished_alone_within": {
+    "auroc": 0.5023,
+    "ci": [
+     0.5,
+     0.5052
+    ],
+    "pairs": 2176,
+    "units": 146
+   },
+   "n_steps_alone_within": {
+    "auroc": 0.5225,
+    "ci": [
+     0.4849,
+     0.5562
+    ],
+    "pairs": 2176,
+    "units": 146
+   },
+   "S pooled (E8 P2) | finished attempts only": {
+    "auroc": 0.5298,
+    "ci": [
+     0.4906,
+     0.5682
+    ],
+    "pairs": 2162,
+    "units": 145
+   },
+   "S within-setting (E10 S) | finished attempts only": {
+    "auroc": 0.4984,
+    "ci": [
+     0.4564,
+     0.5387
+    ],
+    "pairs": 2162,
+    "units": 145
+   },
+   "S unit-FE trained | finished attempts only": {
+    "auroc": 0.4877,
+    "ci": [
+     0.4472,
+     0.5304
+    ],
+    "pairs": 2162,
+    "units": 145
+   }
+  },
+  "deepswe": {
+   "runs": 4553,
+   "share_finished": 0.7957,
+   "unresolved_if_finished": 0.6197,
+   "unresolved_if_not_finished": 0.7946,
+   "not_finished_alone_within": {
+    "auroc": 0.4941,
+    "ci": [
+     0.4776,
+     0.5088
+    ],
+    "pairs": 3731,
+    "units": 252
+   },
+   "n_steps_alone_within": {
+    "auroc": 0.4893,
+    "ci": [
+     0.4618,
+     0.5157
+    ],
+    "pairs": 3731,
+    "units": 252
+   },
+   "S pooled (E8 P2) | finished attempts only": {
+    "auroc": 0.5035,
+    "ci": [
+     0.4716,
+     0.5391
+    ],
+    "pairs": 2733,
+    "units": 221
+   },
+   "S within-setting (E10 S) | finished attempts only": {
+    "auroc": 0.4812,
+    "ci": [
+     0.4486,
+     0.5119
+    ],
+    "pairs": 2733,
+    "units": 221
+   },
+   "S unit-FE trained | finished attempts only": {
+    "auroc": 0.498,
+    "ci": [
+     0.4654,
+     0.5337
+    ],
+    "pairs": 2733,
+    "units": 221
+   }
+  },
+  "devstral": {
+   "runs": 4978,
+   "share_finished": 0.8055,
+   "unresolved_if_finished": 0.3045,
+   "unresolved_if_not_finished": 0.5992,
+   "not_finished_alone_within": {
+    "auroc": 0.5437,
+    "ci": [
+     0.5185,
+     0.5704
+    ],
+    "pairs": 2920,
+    "units": 180
+   },
+   "n_steps_alone_within": {
+    "auroc": 0.512,
+    "ci": [
+     0.4712,
+     0.5544
+    ],
+    "pairs": 2920,
+    "units": 180
+   },
+   "S pooled (E8 P2) | finished attempts only": {
+    "auroc": 0.5305,
+    "ci": [
+     0.4829,
+     0.5834
+    ],
+    "pairs": 1493,
+    "units": 144
+   },
+   "S within-setting (E10 S) | finished attempts only": {
+    "auroc": 0.5104,
+    "ci": [
+     0.457,
+     0.5625
+    ],
+    "pairs": 1493,
+    "units": 144
+   },
+   "S unit-FE trained | finished attempts only": {
+    "auroc": 0.5332,
+    "ci": [
+     0.485,
+     0.5826
+    ],
+    "pairs": 1493,
+    "units": 144
+   }
+  },
+  "all": {
+   "runs": 13778,
+   "share_finished": 0.8574,
+   "unresolved_if_finished": 0.578,
+   "unresolved_if_not_finished": 0.7048,
+   "not_finished_alone_within": {
+    "auroc": 0.5125,
+    "ci": [
+     0.501,
+     0.5243
+    ],
+    "pairs": 8827,
+    "units": 578
+   },
+   "n_steps_alone_within": {
+    "auroc": 0.505,
+    "ci": [
+     0.4862,
+     0.5242
+    ],
+    "pairs": 8827,
+    "units": 578
+   },
+   "S pooled (E8 P2) | finished attempts only": {
+    "auroc": 0.5187,
+    "ci": [
+     0.4947,
+     0.5414
+    ],
+    "pairs": 6388,
+    "units": 510
+   },
+   "S within-setting (E10 S) | finished attempts only": {
+    "auroc": 0.4938,
+    "ci": [
+     0.4712,
+     0.517
+    ],
+    "pairs": 6388,
+    "units": 510
+   },
+   "S unit-FE trained | finished attempts only": {
+    "auroc": 0.5027,
+    "ci": [
+     0.4807,
+     0.5274
+    ],
+    "pairs": 6388,
+    "units": 510
+   }
+  },
+  "retrained on finished only": {
+   "qwen": {
+    "S within-setting": {
+     "auroc": 0.4993,
+     "ci": [
+      0.4573,
+      0.5394
+     ],
+     "pairs": 2162,
+     "units": 145
+    },
+    "S unit-FE": {
+     "auroc": 0.4938,
+     "ci": [
+      0.4521,
+      0.5396
+     ],
+     "pairs": 2162,
+     "units": 145
+    }
+   },
+   "deepswe": {
+    "S within-setting": {
+     "auroc": 0.4815,
+     "ci": [
+      0.4471,
+      0.5131
+     ],
+     "pairs": 2733,
+     "units": 221
+    },
+    "S unit-FE": {
+     "auroc": 0.491,
+     "ci": [
+      0.4562,
+      0.5231
+     ],
+     "pairs": 2733,
+     "units": 221
+    }
+   },
+   "devstral": {
+    "S within-setting": {
+     "auroc": 0.503,
+     "ci": [
+      0.4553,
+      0.5511
+     ],
+     "pairs": 1493,
+     "units": 144
+    },
+    "S unit-FE": {
+     "auroc": 0.5405,
+     "ci": [
+      0.4994,
+      0.5861
+     ],
+     "pairs": 1493,
+     "units": 144
+    }
+   }
+  }
+ },
+ "C_devstral_single_feature_within": {
+  "share_verify": 0.5918,
+  "n_verifications": 0.5901,
+  "phase_bigram_entropy": 0.563,
+  "share_other": 0.5589,
+  "n_verif_after_last_edit": 0.5514,
+  "has_any_verification": 0.5474,
+  "fin": 0.5437,
+  "distinct_cmd_ratio": 0.542,
+  "n_file_switches": 0.5373,
+  "n_files_edited": 0.5356,
+  "verif_after_last_edit": 0.5353,
+  "seg_len_sent": 0.5332,
+  "repeat_ratio": 0.5202,
+  "n_edits": 0.5188,
+  "nonzero_rc_share": 0.5158,
+  "n_steps": 0.512,
+  "n_steps_after_last_edit": 0.5111,
+  "seg_len_steps": 0.5111,
+  "share_edit": 0.5106,
+  "verified_before_first_edit": 0.5058,
+  "n_transitions": 0.5027,
+  "share_before_first_edit": 0.5002
+ },
+ "C_devstral_only_runs_with_verification": {
+  "auroc": 0.5281,
+  "ci": [
+   0.4867,
+   0.5695
+  ],
+  "pairs": 2363,
+  "units": 167
+ },
+ "C_devstral_no_verification_flag_alone": {
+  "auroc": 0.5474,
+  "ci": [
+   0.528,
+   0.5694
+  ],
+  "pairs": 2920,
+  "units": 180
+ },
+ "D_unit_level": {
+  "qwen": {
+   "auroc_loo_unit_difficulty": 0.9363,
+   "auroc_S_within_setting_overall": 0.6909,
+   "units": 496,
+   "units_all_solved": 25,
+   "units_none_solved": 325,
+   "units_mixed": 146
+  },
+  "deepswe": {
+   "auroc_loo_unit_difficulty": 0.9126,
+   "auroc_S_within_setting_overall": 0.651,
+   "units": 497,
+   "units_all_solved": 38,
+   "units_none_solved": 207,
+   "units_mixed": 252
+  },
+  "devstral": {
+   "auroc_loo_unit_difficulty": 0.9555,
+   "auroc_S_within_setting_overall": 0.6823,
+   "units": 500,
+   "units_all_solved": 217,
+   "units_none_solved": 103,
+   "units_mixed": 180
+  },
+  "all": {
+   "auroc_loo_unit_difficulty": 0.9485,
+   "auroc_S_within_setting_overall": 0.7666,
+   "units": 1493,
+   "units_all_solved": 280,
+   "units_none_solved": 635,
+   "units_mixed": 578
+  }
+ },
+ "E_block_O_devstral": {
+  "S+O all attempts": {
+   "auroc": 0.5849,
+   "ci": [
+    0.5484,
+    0.6195
+   ],
+   "pairs": 2920,
+   "units": 180
+  },
+  "S+O finished only": {
+   "auroc": 0.5486,
+   "ci": [
+    0.5022,
+    0.5956
+   ],
+   "pairs": 1493,
+   "units": 144
+  },
+  "S finished only": {
+   "auroc": 0.5104,
+   "ci": [
+    0.457,
+    0.5625
+   ],
+   "pairs": 1493,
+   "units": 144
+  }
+ }
+}

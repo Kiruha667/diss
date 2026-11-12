@@ -1,0 +1,51 @@
+file,verdict,detail
+e10_checks.csv.gz,identical,max |diff| 0.00e+00
+e10_descriptive.csv,identical,max |diff| 0.00e+00
+e10_features.csv.gz,identical,max |diff| 0.00e+00
+e10_kth.csv,identical,max |diff| 0.00e+00
+e10_kth_risks.csv.gz,identical,max |diff| 0.00e+00
+e10_leaderboard.csv,identical,max |diff| 0.00e+00
+e10_oof_risk.csv.gz,identical,max |diff| 0.00e+00
+e10_selection.csv,identical,max |diff| 0.00e+00
+e10_summary.json,identical,
+e10_unknown.csv,identical,max |diff| 0.00e+00
+e11_attempts.csv,identical,max |diff| 0.00e+00
+e11_groups.csv,identical,max |diff| 0.00e+00
+e11_metrics.csv,identical,max |diff| 0.00e+00
+e11_parsed.csv,identical,max |diff| 0.00e+00
+e11_summary.json,identical,
+e11b_attempts.csv,identical,max |diff| 0.00e+00
+e11b_metrics.csv,identical,max |diff| 0.00e+00
+e11b_parsed.csv,identical,max |diff| 0.00e+00
+e11b_summary.json,identical,
+e12_diffs.csv,identical,max |diff| 0.00e+00
+e12_metrics.csv,identical,max |diff| 0.00e+00
+e12_oof_risk.csv.gz,identical,max |diff| 0.00e+00
+e12_summary.json,identical,
+e13_combos.csv,identical,max |diff| 0.00e+00
+e13_format.csv,identical,max |diff| 0.00e+00
+e13_kth_patch.csv,identical,max |diff| 0.00e+00
+e13_patch_diffs.csv,identical,max |diff| 0.00e+00
+e13_patch_features.csv.gz,identical,max |diff| 0.00e+00
+e13_patch_metrics.csv,identical,max |diff| 0.00e+00
+e13_summary.json,identical,
+e13_transfer.csv,identical,max |diff| 0.00e+00
+e14_combos.csv,identical,max |diff| 0.00e+00
+e14_metrics.csv,identical,max |diff| 0.00e+00
+e14_parse.csv,identical,max |diff| 0.00e+00
+e14_runs.csv,identical,max |diff| 0.00e+00
+e14_summary.json,identical,
+e7_addendum.csv,identical,max |diff| 0.00e+00
+e8_metrics.csv,identical,max |diff| 0.00e+00
+e8_runs.csv.gz,identical,max |diff| 0.00e+00
+e8_summary.json,identical,
+e9_link_e8.csv,identical,max |diff| 0.00e+00
+e9_per_task.csv.gz,identical,max |diff| 0.00e+00
+e9_results.csv,identical,max |diff| 0.00e+00
+e9_risks.csv.gz,identical,max |diff| 0.00e+00
+e9_summary.json,identical,
+g0_human_results.json,identical,
+e7_diffs.csv,identical,max |diff| 0.00e+00
+e7_metrics.csv,identical,max |diff| 0.00e+00
+e7_oof_risk.csv.gz,identical,max |diff| 0.00e+00
+e7_summary.json,identical,

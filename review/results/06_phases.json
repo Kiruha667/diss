@@ -1,0 +1,177 @@
+{
+ "phase_shares_of_steps": {
+  "other": 0.729,
+  "edit": 0.1921,
+  "verify": 0.0789
+ },
+ "other_steps_that_execute_python": {
+  "all_other_steps": 0.2119,
+  "other_steps_after_last_edit": 0.191,
+  "n_other_after_last_edit": 43561,
+  "other_steps_after_first_edit": 0.2528
+ },
+ "first_word_of_other_after_last_edit_top15": {
+  "git": 8730,
+  "echo": 7922,
+  "python": 6054,
+  "cat": 4037,
+  "grep": 3606,
+  "sed": 2880,
+  "rm": 2797,
+  "python3": 1992,
+  "?": 822,
+  "head": 813,
+  "pip": 808,
+  "ls": 756,
+  "find": 672,
+  "nl": 400,
+  "cp": 196
+ },
+ "verification_share_by_combo": [
+  {
+   "combo": "gemini-2.5-pro | 1.0.0",
+   "runs": 497,
+   "verif_strict": 0.117,
+   "verif_broad": 0.547,
+   "resolved": 0.539
+  },
+  {
+   "combo": "GLM-4.5 | 1.9.1",
+   "runs": 498,
+   "verif_strict": 0.313,
+   "verif_broad": 0.992,
+   "resolved": 0.544
+  },
+  {
+   "combo": "glm-4.6 | 1.17.1",
+   "runs": 495,
+   "verif_strict": 0.661,
+   "verif_broad": 0.943,
+   "resolved": 0.56
+  },
+  {
+   "combo": "gemini-3-pro-preview@high | 2.0.0",
+   "runs": 478,
+   "verif_strict": 0.703,
+   "verif_broad": 0.998,
+   "resolved": 0.738
+  },
+  {
+   "combo": "gemini-3-flash-preview@high | 2.0.0",
+   "runs": 496,
+   "verif_strict": 0.714,
+   "verif_broad": 0.996,
+   "resolved": 0.764
+  },
+  {
+   "combo": "gemini-3-pro-preview | 1.15.0",
+   "runs": 500,
+   "verif_strict": 0.836,
+   "verif_broad": 0.998,
+   "resolved": 0.742
+  },
+  {
+   "combo": "kimi-k2.5@high | 2.0.0",
+   "runs": 499,
+   "verif_strict": 0.85,
+   "verif_broad": 0.992,
+   "resolved": 0.709
+  },
+  {
+   "combo": "devstral-2512 | 1.17.2",
+   "runs": 480,
+   "verif_strict": 0.856,
+   "verif_broad": 0.873,
+   "resolved": 0.56
+  },
+  {
+   "combo": "claude-sonnet-4-5-20250929@high | 2.0.0",
+   "runs": 497,
+   "verif_strict": 0.863,
+   "verif_broad": 1.0,
+   "resolved": 0.716
+  },
+  {
+   "combo": "minimax-m2.5@high | 2.0.0",
+   "runs": 497,
+   "verif_strict": 0.885,
+   "verif_broad": 0.998,
+   "resolved": 0.763
+  },
+  {
+   "combo": "minimax-m2 | 1.17.0",
+   "runs": 486,
+   "verif_strict": 0.907,
+   "verif_broad": 1.0,
+   "resolved": 0.628
+  },
+  {
+   "combo": "claude-haiku-4-5-20251001@high | 2.0.0",
+   "runs": 500,
+   "verif_strict": 0.91,
+   "verif_broad": 1.0,
+   "resolved": 0.67
+  },
+  {
+   "combo": "glm-5@high | 2.0.0",
+   "runs": 490,
+   "verif_strict": 0.918,
+   "verif_broad": 1.0,
+   "resolved": 0.743
+  },
+  {
+   "combo": "deepseek-v3.2@high | 2.0.0",
+   "runs": 499,
+   "verif_strict": 0.924,
+   "verif_broad": 1.0,
+   "resolved": 0.701
+  },
+  {
+   "combo": "claude-sonnet-4-5-20250929 | 1.13.3",
+   "runs": 497,
+   "verif_strict": 0.958,
+   "verif_broad": 0.99,
+   "resolved": 0.71
+  },
+  {
+   "combo": "devstral-small-2512 | 1.17.2",
+   "runs": 455,
+   "verif_strict": 0.982,
+   "verif_broad": 1.0,
+   "resolved": 0.62
+  }
+ ],
+ "verification_share_all": {
+  "strict": 0.7735,
+  "broad": 0.9578
+ },
+ "resolved_if_verified_strict": 0.6969,
+ "resolved_if_not_verified_strict": 0.5766,
+ "n_not_verified_strict": 1781,
+ "resolved_if_verified_broad": 0.6819,
+ "resolved_if_not_verified_broad": 0.3916,
+ "n_not_verified_broad": 332,
+ "strict_features_reproduce_runs_parquet_max_abs_diff": 0.0,
+ "leaderboard_auroc": {
+  "S strict (author)": [
+   0.6621,
+   0.6396
+  ],
+  "S broad verify": [
+   0.6654,
+   0.6399
+  ],
+  "M+S strict (author)": [
+   0.6851,
+   0.6893
+  ],
+  "M+S broad verify": [
+   0.6876,
+   0.6837
+  ]
+ },
+ "share_verify_mean": {
+  "strict": 0.0792,
+  "broad": 0.2302
+ }
+}

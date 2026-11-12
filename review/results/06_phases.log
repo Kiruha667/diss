@@ -1,0 +1,23 @@
+﻿steps 442271 runs 7864
+                                         runs  verif_strict  verif_broad  resolved
+combo                                                                             
+gemini-2.5-pro | 1.0.0                    497         0.117        0.547     0.539
+GLM-4.5 | 1.9.1                           498         0.313        0.992     0.544
+glm-4.6 | 1.17.1                          495         0.661        0.943     0.560
+gemini-3-pro-preview@high | 2.0.0         478         0.703        0.998     0.738
+gemini-3-flash-preview@high | 2.0.0       496         0.714        0.996     0.764
+gemini-3-pro-preview | 1.15.0             500         0.836        0.998     0.742
+kimi-k2.5@high | 2.0.0                    499         0.850        0.992     0.709
+devstral-2512 | 1.17.2                    480         0.856        0.873     0.560
+claude-sonnet-4-5-20250929@high | 2.0.0   497         0.863        1.000     0.716
+minimax-m2.5@high | 2.0.0                 497         0.885        0.998     0.763
+minimax-m2 | 1.17.0                       486         0.907        1.000     0.628
+claude-haiku-4-5-20251001@high | 2.0.0    500         0.910        1.000     0.670
+glm-5@high | 2.0.0                        490         0.918        1.000     0.743
+deepseek-v3.2@high | 2.0.0                499         0.924        1.000     0.701
+claude-sonnet-4-5-20250929 | 1.13.3       497         0.958        0.990     0.710
+devstral-small-2512 | 1.17.2              455         0.982        1.000     0.620
+{'phase_shares_of_steps': {'other': 0.729, 'edit': 0.1921, 'verify': 0.0789}, 'other_steps_that_execute_python': {'all_other_steps': 0.2119, 'other_steps_after_last_edit': 0.191, 'n_other_after_last_edit': 43561, 'other_steps_after_first_edit': 0.2528}, 'verification_share_all': {'strict': 0.7735, 'broad': 0.9578}, 'resolved_if_verified_strict': 0.6969, 'resolved_if_not_verified_strict': 0.5766, 'n_not_verified_strict': 1781, 'resolved_if_verified_broad': 0.6819, 'resolved_if_not_verified_broad': 0.3916, 'n_not_verified_broad': 332}
+{'git': 8730, 'echo': 7922, 'python': 6054, 'cat': 4037, 'grep': 3606, 'sed': 2880, 'rm': 2797, 'python3': 1992, '?': 822, 'head': 813, 'pip': 808, 'ls': 756, 'find': 672, 'nl': 400, 'cp': 196}
+strict features vs runs.parquet max abs diff: 0.0
+leaderboard (overall AUROC, within-task): {'S strict (author)': (0.6621, np.float64(0.6396)), 'S broad verify': (0.6654, np.float64(0.6399)), 'M+S strict (author)': (0.6851, np.float64(0.6893)), 'M+S broad verify': (0.6876, np.float64(0.6837))}
