@@ -1,0 +1,37 @@
+{
+ "provider": "openrouter",
+ "status": 200,
+ "error": "",
+ "response": "OK",
+ "tool_calls": null,
+ "finish_reason": "stop",
+ "model": "mistralai/devstral-2512",
+ "served_by": "Mistral",
+ "usage": {
+  "prompt_tokens": 22,
+  "completion_tokens": 2,
+  "total_tokens": 24,
+  "cost": 1.28e-05,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 1.28e-05,
+   "upstream_inference_prompt_cost": 8.8e-06,
+   "upstream_inference_completions_cost": 4e-06
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost_usd": 1.28e-05,
+ "cost_source": "usage.cost",
+ "identity_ok": true,
+ "time": "2026-11-12T18:10:30"
+}

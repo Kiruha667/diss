@@ -7,6 +7,7 @@ all finished attempts of the devstral units that have both a solved and an unres
   python -m src.e16_c3_confirm check    -> outputs/e16_check.json (one minimal request: devstral-2512 by Mistral?)
   python -m src.e16_c3_confirm ask      -> outputs/e16_responses.jsonl (resumable; never passes the $10 budget)
   python -m src.e16_c3_confirm analyze  -> outputs/e16_parsed.csv, e16_attempts.csv, e16_metrics.csv, e16_summary.json
+  python -m src.e16_c3_confirm extra    -> outputs/e16_extra.csv (descriptive, outside the protocol, after the results)
 
 Requests exactly as in E11 / E11b (src.e11_elicitation.request(dp, "C3"): the full nano-agent conversation + the C3
 question; OpenRouter, provider Mistral without fallbacks, temperature 0, tool_choice none, max_tokens 2048). The API key
@@ -349,9 +350,38 @@ def analyze() -> dict:
     return summ
 
 
+def extra() -> pd.DataFrame:
+    """Descriptive tables outside the protocol (added after the results; criteria untouched): within-unit AUROC by pair
+    type (both answers from E11/E11b = the 112 E11b pairs; one old, one new; both new) and the C3 answer distribution by
+    class and answer source (denominator: parsed answers). Reads outputs/e16_attempts.csv written by analyze."""
+    att = pd.read_csv(OUTPUTS / "e16_attempts.csv", keep_default_na=False, na_values=[""])
+    a = att[att.answered.astype(str) == "True"].copy()
+    new = lambda g: g.is_new.to_numpy(int)  # noqa: E731
+    types = {"old-old": lambda f, s: (new(f)[:, None] == 0) & (new(s)[None, :] == 0),
+             "mixed": lambda f, s: (new(f)[:, None] + new(s)[None, :]) == 1,
+             "new-new": lambda f, s: (new(f)[:, None] == 1) & (new(s)[None, :] == 1)}
+    rows = []
+    for name, mk in types.items():
+        for risk in ("C3", "S+O", "G0"):
+            w = pooled_within(a, risk, mk)
+            rows.append({"table": "pair_type", "group": name, "predictor": risk,
+                         **{k: v for k, v in w.items() if k != "boot"}})
+    src = a.answer_source.map({"E16": "E16", "E11": "E11+E11b", "E11b": "E11+E11b"})
+    for name, g0 in (("all", a), ("E16", a[src == "E16"]), ("E11+E11b", a[src == "E11+E11b"])):
+        for lab, g in g0.groupby("label"):
+            v = g.C3_number.dropna()
+            rows.append({"table": "c3_distribution", "group": name, "predictor": f"label={lab}", "n": len(v),
+                         "mean": v.mean(), "median": v.median(), "share_100": (v == 100).mean(),
+                         "share_95": (v == 95).mean(), "share_ge90": (v >= 90).mean(), "n_lt90": int((v < 90).sum()),
+                         "n_le50": int((v <= 50).sum())})
+    out = pd.DataFrame(rows)
+    out.to_csv(OUTPUTS / "e16_extra.csv", index=False)
+    return out
+
+
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("cmd", choices=["sample", "cost", "check", "ask", "analyze"])
+    p.add_argument("cmd", choices=["sample", "cost", "check", "ask", "analyze", "extra"])
     a = p.parse_args()
     if a.cmd == "sample":
         smp = sample()
@@ -365,6 +395,8 @@ def main() -> None:
         ask()
     elif a.cmd == "analyze":
         print(json.dumps(analyze(), indent=1, ensure_ascii=False, default=float))
+    elif a.cmd == "extra":
+        print(extra().round(4).to_string())
 
 
 if __name__ == "__main__":
