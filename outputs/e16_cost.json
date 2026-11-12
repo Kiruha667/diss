@@ -1,0 +1,22 @@
+{
+ "requests": 826,
+ "prompt_tokens": 21693350,
+ "prompt_tokens_mean": 26263.13559322034,
+ "prompt_tokens_max": 57624,
+ "expected_output_tokens_mean": 23.581749049429657,
+ "price_usd_per_1M": {
+  "input": 0.39999999999999997,
+  "output": 2.0,
+  "cache_read": 0.04,
+  "endpoints": [
+   "Mistral"
+  ],
+  "status": 0,
+  "read": "2026-11-12T16:57:47"
+ },
+ "usd_input": 8.67734,
+ "usd_expected": 8.716297049429658,
+ "usd_upper_bound": 12.060635999999999,
+ "budget_usd": 10.0,
+ "e11b_actual_usd_per_C3_request": 0.010742058360655738
+}

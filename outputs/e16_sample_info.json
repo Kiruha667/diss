@@ -1,0 +1,18 @@
+{
+ "devstral_submitted_evaluated": 4978,
+ "finished": 4000,
+ "units": 142,
+ "attempts": 1081,
+ "asked_before": 254,
+ "asked_before_by_source": {
+  "E11": 132,
+  "E11b": 122
+ },
+ "new_attempts": 827,
+ "within_unit_pairs": 1476,
+ "attempts_in_e11b_pairs": 224,
+ "e11b_attempts_not_in_sample": 0,
+ "new_not_representable": [
+  "nano-agent-mistral_devstral-2512/run_8/matplotlib__matplotlib-23299"
+ ]
+}
