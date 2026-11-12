@@ -1,0 +1,25 @@
+scope,predictor,baseline,pairs,diff,ci_lo,ci_hi
+nano-agent-Qwen_Qwen3-32B,S-T1,not finished,all,0.028722,-0.01026,0.067403
+nano-agent-Qwen_Qwen3-32B,S-T2,not finished,all,-0.003447,-0.046101,0.037123
+nano-agent-Qwen_Qwen3-32B,S+O-T2,S-T2,FF,0.0,-0.001406,0.001311
+nano-agent-Qwen_Qwen3-32B,S+O-T1,S-T1,FF,-0.00185,-0.00706,0.002768
+nano-agent-Qwen_Qwen3-32B,S-T1,S-T2,all,0.032169,0.002494,0.06161
+nano-agent-Qwen_Qwen3-32B,S-T1,S-T2,FF,0.031452,0.002115,0.060584
+nano-agent-agentica-org_DeepSWE-Preview,S-T1,not finished,all,0.004958,-0.024819,0.036879
+nano-agent-agentica-org_DeepSWE-Preview,S-T2,not finished,all,-0.020772,-0.047264,0.006247
+nano-agent-agentica-org_DeepSWE-Preview,S+O-T2,S-T2,FF,-0.002927,-0.008078,0.00188
+nano-agent-agentica-org_DeepSWE-Preview,S+O-T1,S-T1,FF,0.000732,-0.003969,0.00608
+nano-agent-agentica-org_DeepSWE-Preview,S-T1,S-T2,all,0.02573,-0.001649,0.054969
+nano-agent-agentica-org_DeepSWE-Preview,S-T1,S-T2,FF,0.02232,-0.010118,0.055478
+nano-agent-mistral_devstral-2512,S-T1,not finished,all,0.034418,-0.004898,0.07276
+nano-agent-mistral_devstral-2512,S-T2,not finished,all,0.016952,-0.021266,0.057138
+nano-agent-mistral_devstral-2512,S+O-T2,S-T2,FF,0.038178,0.011005,0.069349
+nano-agent-mistral_devstral-2512,S+O-T1,S-T1,FF,0.03081,0.0,0.060569
+nano-agent-mistral_devstral-2512,S-T1,S-T2,all,0.017466,-0.004204,0.041725
+nano-agent-mistral_devstral-2512,S-T1,S-T2,FF,0.020094,-0.011271,0.055342
+all,S-T1,not finished,all,0.020562,0.001155,0.040462
+all,S-T2,not finished,all,-0.004022,-0.02573,0.016844
+all,S+O-T2,S-T2,FF,0.007671,0.000857,0.015278
+all,S+O-T1,S-T1,FF,0.006888,-0.000611,0.014056
+all,S-T1,S-T2,all,0.024584,0.008971,0.041725
+all,S-T1,S-T2,FF,0.02489,0.006435,0.043673

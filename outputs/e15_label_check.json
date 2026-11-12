@@ -1,0 +1,30 @@
+{
+ "Qwen3-32B": {
+  "result_files_first": "nano-agent-hosted_vllm__Qwen__Qwen3-32B.nano-agent-Qwen_Qwen3-32B__run_0__xjoahx74.json",
+  "result_files_named_nano_agent": 10,
+  "labelled_attempts": 4247,
+  "labelled_with_empty_generated_diff": 0,
+  "unresolved_if_empty_generated_diff": null,
+  "identical_patch_pairs": 2276,
+  "identical_patch_label_disagreement": 0.001757
+ },
+ "DeepSWE-Preview": {
+  "result_files_first": "deepswe_32b_agent_swebv_eval_temp_0.0_run_0.deepswe_32b__r2egym__run_0__3il2hr30.json",
+  "result_files_named_nano_agent": 0,
+  "labelled_attempts": 4553,
+  "labelled_with_empty_generated_diff": 968,
+  "unresolved_if_empty_generated_diff": 0.8006198347107438,
+  "identical_patch_pairs": 2437,
+  "identical_patch_label_disagreement": 0.184653
+ },
+ "devstral-2512": {
+  "result_files_first": "nano-agent-mistral__devstral-2512.nano-agent-devstral-2512__run_0__onhj7i8w.json",
+  "result_files_named_nano_agent": 10,
+  "labelled_attempts": 4978,
+  "labelled_with_empty_generated_diff": 0,
+  "unresolved_if_empty_generated_diff": null,
+  "identical_patch_pairs": 2609,
+  "identical_patch_label_disagreement": 0.0
+ },
+ "DeepSWE-Preview__temp0_result_file_first": "nano-agent-hosted_vllm__agentica-org__DeepSWE-Preview.run_0__preds.jsonl__izle6ck3.json"
+}
