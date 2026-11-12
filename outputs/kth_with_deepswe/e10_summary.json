@@ -1,0 +1,128 @@
+{
+ "criteria": {
+  "K1": {
+   "ci_lo": 0.0008047720530287352,
+   "met": true
+  },
+  "K2": {
+   "within_auroc_S+O": {
+    "nano-agent-Qwen_Qwen3-32B": 0.49885110294117646,
+    "nano-agent-agentica-org_DeepSWE-Preview": 0.4730635218440096,
+    "nano-agent-mistral_devstral-2512": 0.584931506849315
+   },
+   "met": false
+  },
+  "K3": {
+   "auroc_diff_ci_lo": -0.006114415181621868,
+   "pairs_diff": 0.003522898842476141,
+   "met": false
+  },
+  "K4": {
+   "delta_diff_ci_lo": {
+    "nano-agent-Qwen_Qwen3-32B": 0.0,
+    "nano-agent-agentica-org_DeepSWE-Preview": -0.5860249999999978,
+    "nano-agent-mistral_devstral-2512": 0.06974999999998095
+   },
+   "met": true
+  }
+ },
+ "checks": {
+  "lb_claim_vs_g0": {
+   "runs": 7864,
+   "agree": 7864,
+   "claim_share": 0.3653357070193286
+  },
+  "lb_runs_without_commands": 0,
+  "kth_runs_without_commands": 9,
+  "attempts_without_O": 0,
+  "S_vs_e9_P2_max_abs_diff": 4.999566649566134e-09,
+  "S_vs_e9_P2_n": 13812,
+  "convergence_warnings": 0,
+  "reproduced": {
+   "S": [
+    0.662,
+    0.64
+   ],
+   "M+S": 0.685
+  },
+  "pairs_similar": 1987,
+  "pairs_tasks": 304,
+  "within_pairs": 10852,
+  "K3": {
+   "auroc_diff_ci_lo": -0.006114415181621868,
+   "pairs_diff": 0.003522898842476141,
+   "met": false
+  },
+  "reproduced_delta_S_k5": {
+   "nano-agent-Qwen_Qwen3-32B": -0.61,
+   "nano-agent-agentica-org_DeepSWE-Preview": -1.25,
+   "nano-agent-mistral_devstral-2512": 0.77
+  }
+ },
+ "kth_desc": {
+  "nano-agent-Qwen_Qwen3-32B": {
+   "runs": 4247,
+   "units": 496,
+   "units_with_both": 146,
+   "within_pairs": 2176
+  },
+  "nano-agent-agentica-org_DeepSWE-Preview": {
+   "runs": 4553,
+   "units": 497,
+   "units_with_both": 252,
+   "within_pairs": 3731
+  },
+  "nano-agent-mistral_devstral-2512": {
+   "runs": 4978,
+   "units": 500,
+   "units_with_both": 180,
+   "within_pairs": 2920
+  },
+  "all": {
+   "runs": 13778,
+   "units": 1493,
+   "units_with_both": 578,
+   "within_pairs": 8827
+  }
+ },
+ "o_main": [
+  "o_ran_project_tests",
+  "o_last_status_pass",
+  "o_last_status_fail",
+  "o_last_status_error_env",
+  "o_last_status_error_code",
+  "o_last_status_script_ok",
+  "o_last_status_script_fail",
+  "o_last_status_unknown",
+  "o_last_project_status_pass",
+  "o_last_project_status_fail",
+  "o_last_project_status_error_env",
+  "o_last_project_status_error_code",
+  "o_last_project_status_unknown",
+  "o_n_fail",
+  "o_share_fail",
+  "o_unresolved_fail",
+  "o_edit_after_last_pass",
+  "o_last_fail_count",
+  "o_contradiction"
+ ],
+ "o_merged": [
+  "o_ran_project_tests",
+  "om_last_status_pass",
+  "om_last_status_fail",
+  "om_last_status_error",
+  "om_last_status_unknown",
+  "om_last_project_status_pass",
+  "om_last_project_status_fail",
+  "om_last_project_status_error",
+  "om_last_project_status_unknown",
+  "om_n_fail",
+  "om_share_fail",
+  "om_unresolved_fail",
+  "om_edit_after_last_pass",
+  "om_last_fail_count",
+  "om_contradiction"
+ ],
+ "n_boot": 1000,
+ "seconds": 215.2
+}

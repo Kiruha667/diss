@@ -1,0 +1,234 @@
+{
+ "settings": {
+  "nano-agent-Qwen_Qwen3-32B": {
+   "result_files": 10,
+   "result_files_named_nano_agent": 10,
+   "result_file_example": "nano-agent-hosted_vllm__Qwen__Qwen3-32B.nano-agent-Qwen_Qwen3-32B__run_0__xjoahx74.json",
+   "trajectory_patch_x_result_status": {
+    "empty|empty_patch": 742,
+    "patch|eval_error": 11,
+    "patch|resolved": 819,
+    "patch|unresolved": 3428
+   },
+   "labelled_with_empty_patch": 0,
+   "labelled_with_empty_patch_resolved": 0,
+   "labelled_with_empty_patch_unresolved": 0,
+   "identical_patch_pairs": 2276,
+   "identical_patch_pairs_discordant": 4,
+   "identical_patch_disagreement": 0.0017574692442882249,
+   "per_run": [
+    {
+     "run": "run_0",
+     "empty_patch_in_trajectories": 71,
+     "empty_patch_ids_in_result_file": 71
+    },
+    {
+     "run": "run_1",
+     "empty_patch_in_trajectories": 82,
+     "empty_patch_ids_in_result_file": 82
+    },
+    {
+     "run": "run_2",
+     "empty_patch_in_trajectories": 82,
+     "empty_patch_ids_in_result_file": 82
+    },
+    {
+     "run": "run_3",
+     "empty_patch_in_trajectories": 69,
+     "empty_patch_ids_in_result_file": 69
+    },
+    {
+     "run": "run_4",
+     "empty_patch_in_trajectories": 75,
+     "empty_patch_ids_in_result_file": 75
+    },
+    {
+     "run": "run_5",
+     "empty_patch_in_trajectories": 78,
+     "empty_patch_ids_in_result_file": 78
+    },
+    {
+     "run": "run_6",
+     "empty_patch_in_trajectories": 67,
+     "empty_patch_ids_in_result_file": 67
+    },
+    {
+     "run": "run_7",
+     "empty_patch_in_trajectories": 69,
+     "empty_patch_ids_in_result_file": 69
+    },
+    {
+     "run": "run_8",
+     "empty_patch_in_trajectories": 77,
+     "empty_patch_ids_in_result_file": 77
+    },
+    {
+     "run": "run_9",
+     "empty_patch_in_trajectories": 72,
+     "empty_patch_ids_in_result_file": 72
+    }
+   ]
+  },
+  "nano-agent-agentica-org_DeepSWE-Preview": {
+   "result_files": 10,
+   "result_files_named_nano_agent": 0,
+   "result_file_example": "deepswe_32b_agent_swebv_eval_temp_0.0_run_0.deepswe_32b__r2egym__run_0__3il2hr30.json",
+   "trajectory_patch_x_result_status": {
+    "empty|empty_patch": 179,
+    "empty|resolved": 193,
+    "empty|unresolved": 775,
+    "patch|empty_patch": 246,
+    "patch|eval_error": 22,
+    "patch|resolved": 1376,
+    "patch|unresolved": 2209
+   },
+   "labelled_with_empty_patch": 968,
+   "labelled_with_empty_patch_resolved": 193,
+   "labelled_with_empty_patch_unresolved": 775,
+   "identical_patch_pairs": 2437,
+   "identical_patch_pairs_discordant": 450,
+   "identical_patch_disagreement": 0.18465326220763234,
+   "per_run": [
+    {
+     "run": "run_0",
+     "empty_patch_in_trajectories": 122,
+     "empty_patch_ids_in_result_file": 54
+    },
+    {
+     "run": "run_1",
+     "empty_patch_in_trajectories": 105,
+     "empty_patch_ids_in_result_file": 41
+    },
+    {
+     "run": "run_2",
+     "empty_patch_in_trajectories": 106,
+     "empty_patch_ids_in_result_file": 42
+    },
+    {
+     "run": "run_3",
+     "empty_patch_in_trajectories": 123,
+     "empty_patch_ids_in_result_file": 39
+    },
+    {
+     "run": "run_4",
+     "empty_patch_in_trajectories": 108,
+     "empty_patch_ids_in_result_file": 40
+    },
+    {
+     "run": "run_5",
+     "empty_patch_in_trajectories": 120,
+     "empty_patch_ids_in_result_file": 42
+    },
+    {
+     "run": "run_6",
+     "empty_patch_in_trajectories": 114,
+     "empty_patch_ids_in_result_file": 40
+    },
+    {
+     "run": "run_7",
+     "empty_patch_in_trajectories": 126,
+     "empty_patch_ids_in_result_file": 39
+    },
+    {
+     "run": "run_8",
+     "empty_patch_in_trajectories": 111,
+     "empty_patch_ids_in_result_file": 45
+    },
+    {
+     "run": "run_9",
+     "empty_patch_in_trajectories": 112,
+     "empty_patch_ids_in_result_file": 43
+    }
+   ]
+  },
+  "nano-agent-mistral_devstral-2512": {
+   "result_files": 10,
+   "result_files_named_nano_agent": 10,
+   "result_file_example": "nano-agent-mistral__devstral-2512.nano-agent-devstral-2512__run_0__onhj7i8w.json",
+   "trajectory_patch_x_result_status": {
+    "empty|empty_patch": 21,
+    "patch|eval_error": 1,
+    "patch|resolved": 3177,
+    "patch|unresolved": 1801
+   },
+   "labelled_with_empty_patch": 0,
+   "labelled_with_empty_patch_resolved": 0,
+   "labelled_with_empty_patch_unresolved": 0,
+   "identical_patch_pairs": 2609,
+   "identical_patch_pairs_discordant": 0,
+   "identical_patch_disagreement": 0.0,
+   "per_run": [
+    {
+     "run": "run_0",
+     "empty_patch_in_trajectories": 1,
+     "empty_patch_ids_in_result_file": 1
+    },
+    {
+     "run": "run_1",
+     "empty_patch_in_trajectories": 2,
+     "empty_patch_ids_in_result_file": 2
+    },
+    {
+     "run": "run_2",
+     "empty_patch_in_trajectories": 4,
+     "empty_patch_ids_in_result_file": 4
+    },
+    {
+     "run": "run_3",
+     "empty_patch_in_trajectories": 0,
+     "empty_patch_ids_in_result_file": 0
+    },
+    {
+     "run": "run_4",
+     "empty_patch_in_trajectories": 1,
+     "empty_patch_ids_in_result_file": 1
+    },
+    {
+     "run": "run_5",
+     "empty_patch_in_trajectories": 3,
+     "empty_patch_ids_in_result_file": 3
+    },
+    {
+     "run": "run_6",
+     "empty_patch_in_trajectories": 1,
+     "empty_patch_ids_in_result_file": 1
+    },
+    {
+     "run": "run_7",
+     "empty_patch_in_trajectories": 3,
+     "empty_patch_ids_in_result_file": 3
+    },
+    {
+     "run": "run_8",
+     "empty_patch_in_trajectories": 4,
+     "empty_patch_ids_in_result_file": 4
+    },
+    {
+     "run": "run_9",
+     "empty_patch_in_trajectories": 2,
+     "empty_patch_ids_in_result_file": 2
+    }
+   ]
+  }
+ },
+ "temp0_result_files": {
+  "nano-agent-Qwen_Qwen3-32B-temp0": {
+   "result_files": 10,
+   "named_nano_agent": 10,
+   "example": "nano-agent-hosted_vllm__Qwen__Qwen3-32B.nano-agent-Qwen_Qwen3-32B-temp0__run_0__x4rdnfzp.json",
+   "runs_with_trajectories": 0
+  },
+  "nano-agent-agentica-org_DeepSWE-Preview__temp0": {
+   "result_files": 10,
+   "named_nano_agent": 10,
+   "example": "nano-agent-hosted_vllm__agentica-org__DeepSWE-Preview.run_0__preds.jsonl__izle6ck3.json",
+   "runs_with_trajectories": 0
+  },
+  "nano-agent-mistral_devstral-2512__temp0": {
+   "result_files": 10,
+   "named_nano_agent": 10,
+   "example": "nano-agent-mistral__devstral-2512.nano-agent-devstral-2512__run_0__0c4okuez.json",
+   "runs_with_trajectories": 0
+  }
+ }
+}

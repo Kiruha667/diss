@@ -5,6 +5,8 @@
   python -m src.e15_consolidation variance  -> outputs/e15_variance.csv, e15_noise.csv
   python -m src.e15_consolidation all       -> all three
 Each part adds its section to outputs/e15_summary.json.
+Parts 2 and 3 cover ANALYSIS_SETTINGS (since 2026-11-12 without DeepSWE-Preview, reports/KTH_DEEPSWE_LABELS.md);
+KTH_WITH_DEEPSWE=1 -> the earlier three-setting run, outputs of parts 2 and 3 in outputs/kth_with_deepswe/.
 
 Ported from the reviewer's scripts (review/scripts/01_leaderboard.py: difficulty from the other models, length
 baselines, boosting settings, D+M; 04_kth.py: the finished / cut-off split; 10_misc.py: empty patches). Metrics, folds
@@ -14,7 +16,7 @@ Part 1 (leaderboard): populations P_all (E7, 7864) and P_ne (without the 132 emp
 M, M+N, M+N gbm, M+LEN, S, M+S, D+M, D+M+S; overall AUROC, within-task AUROC (pooled; macro), precision@5/10/20% and
 recall@10% with ties at the cut-off counted by expectation; cluster bootstrap over tasks (1000, default_rng(42)).
 Part 2 (KTH): within-unit AUROC on all pairs and on pairs of finished attempts (+ mixed, both cut off), training over
-the three settings (T1, E8) and within the setting (T2, E9/E10), T3 = T2 fitted on finished attempts; best-of-k with the
+the settings pooled (T1, E8) and within the setting (T2, E9/E10), T3 = T2 fitted on finished attempts; best-of-k with the
 base "random among finished attempts".
 Part 3 (KTH): mixed logistic model logit P(fail) = mu_setting + a_task + c_task x setting, ML by nested Gauss-Hermite
 quadrature; variance shares on the latent and on the observed scale; evaluation noise from identical patches within a
@@ -37,7 +39,8 @@ from scipy.special import expit, logsumexp
 from src import e7_sources as e7
 from src import e8_repeats as e8
 from src import e9_best_of_k as e9
-from src.adapters.agentic_evals import SETTINGS, iter_raw, run_dirs, to_record
+from src.adapters.agentic_evals import (ANALYSIS_SETTINGS, KTH_OUTPUTS, SETTINGS, WITH_DEEPSWE, iter_raw, run_dirs,
+                                       to_record)
 from src.common import INTERIM, OUTPUTS, ROOT, SEED, get_logger, load_leak_markers
 from src.e10_block_o import O_MAIN
 from src.segment import compile_markers
@@ -58,11 +61,12 @@ CACHE = INTERIM / "e15"
 SUMMARY = OUTPUTS / "e15_summary.json"
 
 
-def _update_summary(section: str, value: dict) -> None:
-    s = json.loads(SUMMARY.read_text(encoding="utf-8")) if SUMMARY.exists() else {}
+def _update_summary(section: str, value: dict, out_dir=OUTPUTS) -> None:
+    path = out_dir / SUMMARY.name
+    s = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
     s[section] = value
-    OUTPUTS.mkdir(parents=True, exist_ok=True)
-    SUMMARY.write_text(json.dumps(s, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(s, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
 
 
 def _ci(v: np.ndarray) -> tuple[float, float]:
@@ -251,12 +255,12 @@ def part_leaderboard() -> dict:
 # ================================================================================ KTH raw pass (parts 2 and 3)
 
 def kth_raw() -> pd.DataFrame:
-    """One row per attempt of the three settings: hash of the stripped generated_diff; for the evaluation-error
+    """One row per attempt of all three settings: hash of the stripped generated_diff; for the evaluation-error
     attempts also `fin` and the S features (E9 code path: to_record + trajectory_features). Cached."""
     path = CACHE / "kth_raw.parquet"
     if path.exists():
         return pd.read_parquet(path)
-    att = e9.attempts()
+    att = e9.attempts(settings=SETTINGS)
     err = set(att.run_id[att.eval_error])
     mre = compile_markers(load_leak_markers())
     rows = []
@@ -297,11 +301,20 @@ EXPECTED_SEL = {("S-T2", "nano-agent-Qwen_Qwen3-32B"): -0.61, ("S-T2", "nano-age
                 ("S-T2", "nano-agent-mistral_devstral-2512"): 0.77, ("S+O-T2", "nano-agent-mistral_devstral-2512"): 1.58}
 
 
+def _expected(d: dict) -> dict:
+    """Reproduction checks: all with DeepSWE-Preview; without it only those that do not depend on the other settings
+    (training within the setting, T2, of a kept setting)."""
+    if WITH_DEEPSWE:
+        return d
+    return {k: v for k, v in d.items() if k[1] in ANALYSIS_SETTINGS and k[0].endswith("-T2")}
+
+
 def kth_tables() -> tuple[pd.DataFrame, pd.DataFrame]:
     """(E8 population with S, O, fin; submitted attempts of E9 with S, O, fin, solved)."""
-    pop = pd.read_parquet(e8.OUT_DIR / "runs.parquet").sort_values("run_id").reset_index(drop=True)
+    pop = pd.read_parquet(e8.OUT_DIR / "runs.parquet")
+    pop = pop[pop.setting.isin(ANALYSIS_SETTINGS)].sort_values("run_id").reset_index(drop=True)
     pop["fin"] = pop.ended_by_final_message.astype(int)
-    fe = pd.read_csv(OUTPUTS / "e10_features.csv.gz")
+    fe = pd.read_csv(KTH_OUTPUTS / "e10_features.csv.gz")
     fe = fe[fe.corpus == "kth"][["run_id"] + O_MAIN]
     pop = pop.merge(fe, on="run_id", how="left")
     pop[O_MAIN] = pop[O_MAIN].fillna(0)
@@ -316,7 +329,7 @@ def kth_tables() -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def kth_risks(pop: pd.DataFrame, sub: pd.DataFrame) -> pd.DataFrame:
-    """Out-of-fold risks for every submitted attempt: T1 over the three settings (E8 folds), T2 within the setting
+    """Out-of-fold risks for every submitted attempt: T1 over the settings pooled (E8 folds), T2 within the setting
     (E9 folds), T3 = T2 fitted on finished attempts only; evaluation-error attempts by the fold model of their task."""
     from sklearn.model_selection import GroupKFold
 
@@ -324,7 +337,7 @@ def kth_risks(pop: pd.DataFrame, sub: pd.DataFrame) -> pd.DataFrame:
     for r in KTH_RISKS:
         out[r] = np.nan
     groups = {"T1": [(pop.index, out.index)]}
-    groups["T2"] = [(pop.index[pop.setting == s], out.index[out.setting == s]) for s in SETTINGS]
+    groups["T2"] = [(pop.index[pop.setting == s], out.index[out.setting == s]) for s in ANALYSIS_SETTINGS]
     for scheme in ("T1", "T2", "T3"):
         for pidx, sidx in groups["T2" if scheme == "T3" else scheme]:
             ps = pop.loc[pidx].reset_index(drop=True)
@@ -376,7 +389,7 @@ def kth_within(risk_tab: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, dict
     rows, drows, desc = [], [], {}
     diffs = [("S-T1", "not finished", "all"), ("S-T2", "not finished", "all"), ("S+O-T2", "S-T2", "FF"),
              ("S+O-T1", "S-T1", "FF"), ("S-T1", "S-T2", "all"), ("S-T1", "S-T2", "FF")]
-    for scope in list(SETTINGS) + ["all"]:
+    for scope in list(ANALYSIS_SETTINGS) + ["all"]:
         sub = lab if scope == "all" else lab[lab.setting == scope]
         idx = sub.index.to_numpy()
         units = [idx[g] for g in pd.Series(np.arange(len(sub))).groupby(sub.unit.to_numpy()).apply(np.array)]
@@ -405,10 +418,11 @@ def kth_within(risk_tab: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, dict
                        else None, "units": len(units),
                        **{f"pairs_{ps}": int(cnt["S-T1"][ps][1].sum()) for ps in PAIR_SETS}}
     res = pd.DataFrame(rows)
+    want = _expected(EXPECTED_KTH)
     got = {key: round(float(res[(res.predictor == key[0]) & (res.scope == key[1]) & (res.pairs == "all")]
-                            .value.iloc[0]), 3) for key in EXPECTED_KTH}
-    if got != EXPECTED_KTH:
-        raise SystemExit(f"STOP: KTH within-unit reproduction {got}, expected {EXPECTED_KTH}")
+                            .value.iloc[0]), 3) for key in want}
+    if got != want:
+        raise SystemExit(f"STOP: KTH within-unit reproduction {got}, expected {want}")
     return res, pd.DataFrame(drows), {"descriptives": desc, "reproduced": {f"{k[0]}|{k[1]}": v for k, v in got.items()}}
 
 
@@ -444,7 +458,7 @@ def kth_selection(risk_tab: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     att["fin"] = att.fin.fillna(0).astype(int)
     subs = e9.subsets()
     rows = []
-    for setting in SETTINGS:
+    for setting in ANALYSIS_SETTINGS:
         a = att[att.setting == setting].sort_values(["task_id", "j"])
         tasks = a.task_id.unique()
         shape = (500, e9.N_RUNS)
@@ -458,7 +472,7 @@ def kth_selection(risk_tab: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     base_of = {**{r: "submitted-random" for r in ["random", "finished-random", *SEL_RISK, "oracle"]},
                **{f"{p} | finished": "finished-random" for p in SEL_FIN}}
     out = []
-    for scope in list(SETTINGS) + ["all"]:
+    for scope in list(ANALYSIS_SETTINGS) + ["all"]:
         d = pt if scope == "all" else pt[pt.setting == scope]
         wide = d.pivot_table(index=["setting", "task_id"], columns=["k", "rule"], values="value")
         utask, tix = np.unique(wide.index.get_level_values("task_id").to_numpy(), return_inverse=True)
@@ -479,10 +493,11 @@ def kth_selection(risk_tab: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
                             "solved_lo": _ci(boot[(k, rule)])[0], "solved_hi": _ci(boot[(k, rule)])[1],
                             "delta_pp": (point[(k, rule)] - point[(k, b)]) * 100, "ci_lo": lo, "ci_hi": hi})
     res = pd.DataFrame(out)
+    want = _expected(EXPECTED_SEL)
     got = {key: round(float(res[(res.scope == key[1]) & (res.k == 5) & (res.rule == key[0])].delta_pp.iloc[0]), 2)
-           for key in EXPECTED_SEL}
-    if got != EXPECTED_SEL:
-        raise SystemExit(f"STOP: selection reproduction {got}, expected {EXPECTED_SEL}")
+           for key in want}
+    if got != want:
+        raise SystemExit(f"STOP: selection reproduction {got}, expected {want}")
     return res, {"reproduced": {f"{k[0]}|{k[1]}": v for k, v in got.items()},
                  "attempts_finished_share_submitted": float(att.fin[att.submitted].mean())}
 
@@ -498,19 +513,20 @@ def part_kth() -> dict:
     log.info("KTH within (%.0f s)", time.time() - t0)
     sel, sinfo = kth_selection(risk_tab)
     log.info("KTH selection (%.0f s)", time.time() - t0)
-    win.round(6).to_csv(OUTPUTS / "e15_kth_within.csv", index=False)
-    wdiff.round(6).to_csv(OUTPUTS / "e15_kth_within_diffs.csv", index=False)
-    sel.round(6).to_csv(OUTPUTS / "e15_kth_selection.csv", index=False)
-    info = {**winfo, "selection": sinfo, "seconds": round(time.time() - t0, 1)}
-    _update_summary("kth", info)
+    KTH_OUTPUTS.mkdir(parents=True, exist_ok=True)
+    win.round(6).to_csv(KTH_OUTPUTS / "e15_kth_within.csv", index=False)
+    wdiff.round(6).to_csv(KTH_OUTPUTS / "e15_kth_within_diffs.csv", index=False)
+    sel.round(6).to_csv(KTH_OUTPUTS / "e15_kth_selection.csv", index=False)
+    info = {**winfo, "selection": sinfo, "settings": list(ANALYSIS_SETTINGS), "seconds": round(time.time() - t0, 1)}
+    _update_summary("kth", info, KTH_OUTPUTS)
     return info
 
 
 # ================================================================================ part 3: variance and noise
 
 def unit_counts_matrix(df: pd.DataFrame, ycol: str) -> tuple[np.ndarray, np.ndarray, list[str]]:
-    """(failures, attempts) as (tasks, settings) matrices; settings in SETTINGS order."""
-    sets = list(SETTINGS)
+    """(failures, attempts) as (tasks, settings) matrices; settings in ANALYSIS_SETTINGS order."""
+    sets = list(ANALYSIS_SETTINGS)
     g = df.groupby(["task_id", "setting"])[ycol].agg(["sum", "size"]).reset_index()
     tasks = sorted(df.task_id.unique())
     ti = {t: i for i, t in enumerate(tasks)}
@@ -598,20 +614,23 @@ def variance_population(name: str, s: np.ndarray, n: np.ndarray) -> tuple[list[d
     t0 = time.time()
     th = glmm_fit(s, n, Q_POINT)
     th60 = glmm_fit(s, n, Q_CHECK, x0=th)
+    ns = s.shape[1]
     info = {"theta_q40": th.tolist(), "theta_q60": th60.tolist(),
-            "q60_max_abs_diff": float(np.abs(np.r_[th[:3], np.exp(th[3:])] - np.r_[th60[:3], np.exp(th60[3:])]).max()),
-            "sigma_task": float(np.exp(th[3])), "sigma_task_x_model": float(np.exp(th[4])),
-            "mu": dict(zip([SHORT[k] for k in SETTINGS], th[:3].tolist())), "fit_seconds": round(time.time() - t0, 1)}
+            "q60_max_abs_diff": float(np.abs(np.r_[th[:ns], np.exp(th[ns:])] - np.r_[th60[:ns], np.exp(th60[ns:])])
+                                      .max()),
+            "sigma_task": float(np.exp(th[ns])), "sigma_task_x_model": float(np.exp(th[ns + 1])),
+            "mu": dict(zip([SHORT[k] for k in ANALYSIS_SETTINGS], th[:ns].tolist())),
+            "fit_seconds": round(time.time() - t0, 1)}
     # recovery: one sample simulated from the estimates with the same attempt counts
     rng = np.random.default_rng(SEED)
-    a = rng.normal(0, np.exp(th[3]), s.shape[0])
-    c = rng.normal(0, np.exp(th[4]), s.shape)
-    s_sim = rng.binomial(n.astype(int), expit(th[None, :3] + a[:, None] + c))
+    a = rng.normal(0, np.exp(th[ns]), s.shape[0])
+    c = rng.normal(0, np.exp(th[ns + 1]), s.shape)
+    s_sim = rng.binomial(n.astype(int), expit(th[None, :ns] + a[:, None] + c))
     info["recovery_theta"] = glmm_fit(s_sim.astype(float), n, Q_POINT).tolist()
     lat, obs = latent_shares(th, n), observed_shares(s, n)
     # per-setting attempt share (model mu + u_t)
     per = {}
-    for j, st in enumerate(SETTINGS):
+    for j, st in enumerate(ANALYSIS_SETTINGS):
         ok = n[:, j] > 0
         t1 = glmm1_fit(s[ok, j], n[ok, j], Q_POINT)
         su2 = float(np.exp(t1[1]) ** 2)
@@ -640,11 +659,11 @@ def variance_population(name: str, s: np.ndarray, n: np.ndarray) -> tuple[list[d
     return rows, info
 
 
-def identical_patch_noise(lab: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
+def identical_patch_noise(lab: pd.DataFrame, settings=None) -> tuple[pd.DataFrame, dict]:
     """Protocol 3.6 (1)-(3): label disagreement on byte-identical patches within a unit; share s of within-unit
     (unresolved, resolved) pairs with identical patches; eps of the symmetric noise model."""
     rows, per_scope = [], {}
-    for scope in list(SETTINGS) + ["all"]:
+    for scope in list(ANALYSIS_SETTINGS if settings is None else settings) + ["all"]:
         d = lab if scope == "all" else lab[lab.setting == scope]
         units = list(d.groupby("unit"))
         pairs_same = np.zeros(len(units))
@@ -685,11 +704,11 @@ def simulate_ceiling(theta: np.ndarray, settings: list[int], eps: float, n_sim: 
     rng = np.random.default_rng(seed)
     w_auc, o_auc = [], []
     for _ in range(n_sim):
-        a = rng.normal(0, np.exp(theta[3]), n_tasks)
+        a = rng.normal(0, np.exp(theta[-2]), n_tasks)
         ys, ts, ps = [], [], []
         for j in settings:
             if sigma_unit is None:
-                eta = theta[j] + a + rng.normal(0, np.exp(theta[4]), n_tasks)
+                eta = theta[j] + a + rng.normal(0, np.exp(theta[-1]), n_tasks)
             else:
                 mu_j, su = sigma_unit[j]
                 eta = mu_j + rng.normal(0, su, n_tasks)
@@ -711,7 +730,8 @@ def simulate_ceiling(theta: np.ndarray, settings: list[int], eps: float, n_sim: 
 
 def part_variance() -> dict:
     t0 = time.time()
-    pop = pd.read_parquet(e8.OUT_DIR / "runs.parquet").sort_values("run_id").reset_index(drop=True)
+    pop = pd.read_parquet(e8.OUT_DIR / "runs.parquet")
+    pop = pop[pop.setting.isin(ANALYSIS_SETTINGS)].sort_values("run_id").reset_index(drop=True)
     att = e9.attempts()
     att["fail"] = (~att.solved).astype(int)
     rows, info = [], {}
@@ -720,7 +740,8 @@ def part_variance() -> dict:
         r, inf = variance_population(name, s, n)
         rows += r
         info[name] = inf
-    pd.DataFrame(rows).round(6).to_csv(OUTPUTS / "e15_variance.csv", index=False)
+    KTH_OUTPUTS.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows).round(6).to_csv(KTH_OUTPUTS / "e15_variance.csv", index=False)
     # noise and ceiling on the E8 population
     raw = kth_raw()
     lab = pop.merge(raw[["run_id", "diff_hash", "diff_len"]], on="run_id", how="left")
@@ -729,9 +750,9 @@ def part_variance() -> dict:
     noise_tab, noise = identical_patch_noise(lab)
     th = np.array(info["E8_labelled"]["theta_q40"])
     per = info["E8_labelled"]["per_setting"]
-    sig1 = {j: (per[SHORT[st]]["mu"], per[SHORT[st]]["sigma_unit"]) for j, st in enumerate(SETTINGS)}
+    sig1 = {j: (per[SHORT[st]]["mu"], per[SHORT[st]]["sigma_unit"]) for j, st in enumerate(ANALYSIS_SETTINGS)}
     sims = []
-    scopes = [(st, [j]) for j, st in enumerate(SETTINGS)] + [("all", [0, 1, 2])]
+    scopes = [(st, [j]) for j, st in enumerate(ANALYSIS_SETTINGS)] + [("all", list(range(len(ANALYSIS_SETTINGS))))]
     for scope, js in scopes:
         nz = noise[scope]
         eps_list = [("eps_hat", nz["eps"]), ("eps_lo", nz["eps_ci"][0]), ("eps_hi", nz["eps_ci"][1])] + \
@@ -744,11 +765,12 @@ def part_variance() -> dict:
                      **simulate_ceiling(th, js, nz["eps"], sigma_unit=sig1)})
         log.info("ceiling %s done (%.0f s)", scope, time.time() - t0)
     sim = pd.DataFrame(sims)
-    noise_tab.round(6).to_csv(OUTPUTS / "e15_noise.csv", index=False)
-    sim.round(6).to_csv(OUTPUTS / "e15_ceiling.csv", index=False)
+    noise_tab.round(6).to_csv(KTH_OUTPUTS / "e15_noise.csv", index=False)
+    sim.round(6).to_csv(KTH_OUTPUTS / "e15_ceiling.csv", index=False)
     info["noise"] = noise
+    info["settings"] = list(ANALYSIS_SETTINGS)
     info["seconds"] = round(time.time() - t0, 1)
-    _update_summary("variance", info)
+    _update_summary("variance", info, KTH_OUTPUTS)
     return info
 
 
@@ -756,13 +778,15 @@ def label_check() -> dict:
     """Exploratory, outside the protocol (found while reading part 3): do the harness result files of a setting belong to
     its nano-agent trajectories? Per setting: the name of the result file, labelled attempts with an empty
     generated_diff (an empty patch would be in empty_patch_ids, not labelled) and label disagreement on identical
-    patches (from e15_noise.csv) -> outputs/e15_label_check.json."""
+    patches (identical_patch_noise over all three settings) -> outputs/e15_label_check.json. Fuller evidence:
+    src.kth_deepswe_labels, reports/KTH_DEEPSWE_LABELS.md."""
     from src.adapters.agentic_evals import RAW_DIR
 
     pop = pd.read_parquet(e8.OUT_DIR / "runs.parquet")
     raw = kth_raw()
     lab = pop.merge(raw[["run_id", "diff_hash"]], on="run_id")
-    noise = pd.read_csv(OUTPUTS / "e15_noise.csv").set_index("scope")
+    lab["unit"] = lab.setting + "|" + lab.task_id
+    noise = identical_patch_noise(lab, list(SETTINGS))[0].set_index("scope")
     out = {}
     for s in SETTINGS:
         x = lab[lab.setting == s]
@@ -773,7 +797,7 @@ def label_check() -> dict:
                          "labelled_attempts": len(x), "labelled_with_empty_generated_diff": len(e),
                          "unresolved_if_empty_generated_diff": float(e.label.mean()) if len(e) else None,
                          "identical_patch_pairs": int(noise.loc[s, "identical_pairs"]),
-                         "identical_patch_label_disagreement": float(noise.loc[s, "d"])}
+                         "identical_patch_label_disagreement": round(float(noise.loc[s, "d"]), 6)}
     tmp = RAW_DIR / "nano-agent-agentica-org_DeepSWE-Preview__temp0"
     out["DeepSWE-Preview__temp0_result_file_first"] = sorted(p.name for p in tmp.glob("run_*/*.json"))[0]
     (OUTPUTS / "e15_label_check.json").write_text(json.dumps(out, indent=1), encoding="utf-8")

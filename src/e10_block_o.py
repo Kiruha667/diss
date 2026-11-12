@@ -3,6 +3,8 @@ No LLM calls, no downloads.
 
   python -m src.e10_block_o  -> outputs/e10_checks.csv.gz, e10_features.csv.gz, e10_leaderboard.csv, e10_kth.csv,
                                 e10_selection.csv, e10_unknown.csv, e10_descriptive.csv, e10_summary.json
+KTH part: settings ANALYSIS_SETTINGS (since 2026-11-12 without DeepSWE-Preview, reports/KTH_DEEPSWE_LABELS.md);
+KTH_WITH_DEEPSWE=1 -> the earlier three-setting run, every output in outputs/kth_with_deepswe/.
 
 Input: data/interim/e10/commands.parquet (python -m src.e10_check_outcomes checks). Block O of a run (protocol 11.4,
 11.5): main set O (19 features, separate categories; criteria K1-K4) and merged set Om (the 15 features of section 6
@@ -28,7 +30,7 @@ from src import e7_sources as e7
 from src import e8_repeats as e8
 from src import e9_best_of_k as e9
 from src import g0_false_success as g0
-from src.adapters.agentic_evals import SETTINGS
+from src.adapters.agentic_evals import ANALYSIS_SETTINGS, KTH_OUTPUTS
 from src.common import CONFIG, OUTPUTS, ROOT, SEED, get_logger
 from src.e10_check_outcomes import CATS, OUT_DIR, kth_records
 
@@ -247,7 +249,8 @@ def kth_risks(kfe: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     from sklearn.model_selection import GroupKFold
 
     att = e9.attempts()
-    pop = pd.read_parquet(e8.OUT_DIR / "runs.parquet").sort_values("run_id").reset_index(drop=True)
+    pop = pd.read_parquet(e8.OUT_DIR / "runs.parquet")
+    pop = pop[pop.setting.isin(ANALYSIS_SETTINGS)].sort_values("run_id").reset_index(drop=True)
     s = pd.concat([pop[["run_id"] + FEATURES], e9.eval_error_features(att)], ignore_index=True)
     feats = s.merge(kfe, on="run_id", how="left")
     info = {"attempts_without_O": int(feats[O_MAIN[0]].isna().sum())}
@@ -257,7 +260,7 @@ def kth_risks(kfe: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     for m in KTH_MODELS:
         sub[m] = np.nan
     sub["fold"] = -1
-    for setting in SETTINGS:
+    for setting in ANALYSIS_SETTINGS:
         ps = pop[pop.setting == setting].reset_index(drop=True)
         y = ps.label.to_numpy()
         fold_of = {}
@@ -277,7 +280,7 @@ def kth_risks(kfe: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
             if orphan.any():
                 m = e8.new_model().fit(ps[cols].to_numpy(float), y)
                 sub.loc[orphan, name] = m.predict_proba(sub.loc[orphan, cols].to_numpy(float))[:, 1]
-    e9r = pd.read_csv(OUTPUTS / "e9_risks.csv.gz")
+    e9r = pd.read_csv(KTH_OUTPUTS / "e9_risks.csv.gz")
     e9r["run_id"] = e9r.setting + "/" + e9r.run + "/" + e9r.task_id
     chk = sub[["run_id", "S"]].merge(e9r[["run_id", "P2"]], on="run_id")
     info["S_vs_e9_P2_max_abs_diff"] = float((chk.S - chk.P2).abs().max())
@@ -289,13 +292,13 @@ def kth_risks(kfe: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
 
 
 def kth_within(att: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
-    """Within-unit AUROC per setting and for the three together (E8 code: bootstrap over units, permutations)."""
+    """Within-unit AUROC per setting and for the settings together (E8 code: bootstrap over units, permutations)."""
     pop = att[att.label >= 0].sort_values("run_id").reset_index(drop=True)
     pop["unit"] = pop.setting + "|" + pop.task_id
     y = pop.label.to_numpy()
     risk = {m: pop[m].to_numpy(float) for m in KTH_MODELS}
     rows, desc = [], {}
-    for scope in list(SETTINGS) + ["all"]:
+    for scope in list(ANALYSIS_SETTINGS) + ["all"]:
         sub = pop if scope == "all" else pop[pop.setting == scope]
         idx = sub.index.to_numpy()
         unit_rows = [idx[g] for g in pd.Series(np.arange(len(sub))).groupby(sub.unit.to_numpy()).apply(np.array)]
@@ -350,7 +353,7 @@ def selection(att: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     """Δ of the share solved to submitted-random (E9 subsets and bootstrap), and Δ(S+O) − Δ(S)."""
     subs = e9.subsets()
     rows = []
-    for setting in SETTINGS:
+    for setting in ANALYSIS_SETTINGS:
         a = att[att.setting == setting].sort_values(["task_id", "j"])
         tasks = a.task_id.unique()
         shape = (500, e9.N_RUNS)
@@ -361,7 +364,7 @@ def selection(att: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
                 rows.append(pd.DataFrame({"setting": setting, "task_id": tasks, "k": k, "rule": rule, "value": v}))
     pt = pd.concat(rows, ignore_index=True)
     out = []
-    for scope in list(SETTINGS) + ["all"]:
+    for scope in list(ANALYSIS_SETTINGS) + ["all"]:
         d = pt if scope == "all" else pt[pt.setting == scope]
         wide = d.pivot_table(index=["setting", "task_id"], columns=["k", "rule"], values="value")
         utask, tix = np.unique(wide.index.get_level_values("task_id").to_numpy(), return_inverse=True)
@@ -387,9 +390,10 @@ def selection(att: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
                             "ci_hi": np.percentile(dd, 97.5)})
     res = pd.DataFrame(out)
     got = {s: round(float(res[(res.scope == s) & (res.k == K_MAIN) & (res.rule == "S")].delta_pp.iloc[0]), 2)
-           for s in SETTINGS}
-    if got != EXPECTED["e9_delta_S_k5"]:
-        raise SystemExit(f"STOP: Δ(S) at k = 5 {got}, E9 {EXPECTED['e9_delta_S_k5']}")
+           for s in ANALYSIS_SETTINGS}
+    want = {s: v for s, v in EXPECTED["e9_delta_S_k5"].items() if s in ANALYSIS_SETTINGS}
+    if got != want:
+        raise SystemExit(f"STOP: Δ(S) at k = 5 {got}, E9 {want}")
     return res, {"reproduced_delta_S_k5": got}
 
 
@@ -413,7 +417,8 @@ def descriptive(lb: pd.DataFrame, kth: pd.DataFrame) -> pd.DataFrame:
     rows = []
     kl = kth[kth.label >= 0]
     scopes = [("leaderboard", lb, lb.resolved.astype(float))] + \
-             [(s, kl[kl.setting == s], (kl[kl.setting == s].label == 0).astype(float)) for s in SETTINGS] + \
+             [(s, kl[kl.setting == s], (kl[kl.setting == s].label == 0).astype(float))
+              for s in ANALYSIS_SETTINGS] + \
              [("kth_all", kl, (kl.label == 0).astype(float))]
     for scope, d, solved in scopes:
         base = {"scope": scope, "runs": len(d)}
@@ -455,9 +460,9 @@ def run() -> dict:
     # criteria (section 9), main set
     w = kres.set_index(["scope", "model", "baseline", "metric"])
     k1_lo = float(w.loc[("all", "S+O", "S", "within_unit_auroc_diff"), "ci_lo"])
-    k2 = {s: float(w.loc[(s, "S+O", "", "within_unit_auroc"), "value"]) for s in SETTINGS}
+    k2 = {s: float(w.loc[(s, "S+O", "", "within_unit_auroc"), "value"]) for s in ANALYSIS_SETTINGS}
     k4 = {s: float(sres[(sres.scope == s) & (sres.k == K_MAIN) & (sres.rule == "S+O - S")].ci_lo.iloc[0])
-          for s in SETTINGS}
+          for s in ANALYSIS_SETTINGS}
     crit = {"K1": {"ci_lo": k1_lo, "met": k1_lo > 0},
             "K2": {"within_auroc_S+O": k2, "met": any(v >= 0.60 for v in k2.values())},
             "K3": linfo["K3"],
@@ -465,11 +470,12 @@ def run() -> dict:
     unk = unknown_shares(cmds)
     kth = att[att.submitted].merge(kfe, on="run_id", how="left")
     desc = descriptive(lb, kth)
-    OUTPUTS.mkdir(parents=True, exist_ok=True)
+    out_dir = KTH_OUTPUTS
+    out_dir.mkdir(parents=True, exist_ok=True)
     chk = cmds[cmds.is_check]
     chk.assign(command=chk.command.str.slice(0, 200))[
         ["corpus", "group", "run_id", "step_idx", "pos", "command", "is_runner", "is_project", "category", "rule",
-         "kind", "n_failed"]].to_csv(OUTPUTS / "e10_checks.csv.gz", index=False)
+         "kind", "n_failed"]].to_csv(out_dir / "e10_checks.csv.gz", index=False)
     o_cols = list(dict.fromkeys(O_MAIN + O_MERGED))
     fe = pd.concat([lb.assign(corpus="leaderboard", group=lb.combo, y_unresolved=1 - lb.resolved)[
                         ["corpus", "group", "run_id", "task_id", "y_unresolved", "has_claim", "has_code_edit",
@@ -477,18 +483,18 @@ def run() -> dict:
                     kth.assign(corpus="kth", group=kth.setting, y_unresolved=kth.label)[
                         ["corpus", "group", "run_id", "task_id", "y_unresolved", "has_claim", "has_code_edit",
                          "n_checks"] + o_cols]], ignore_index=True)
-    fe.round(6).to_csv(OUTPUTS / "e10_features.csv.gz", index=False)
-    lres.round(6).to_csv(OUTPUTS / "e10_leaderboard.csv", index=False)
-    kres.round(6).to_csv(OUTPUTS / "e10_kth.csv", index=False)
-    sres.round(6).to_csv(OUTPUTS / "e10_selection.csv", index=False)
-    unk.round(6).to_csv(OUTPUTS / "e10_unknown.csv", index=False)
-    desc.round(6).to_csv(OUTPUTS / "e10_descriptive.csv", index=False)
-    loof.round(8).to_csv(OUTPUTS / "e10_oof_risk.csv.gz", index=False)
+    fe.round(6).to_csv(out_dir / "e10_features.csv.gz", index=False)
+    lres.round(6).to_csv(out_dir / "e10_leaderboard.csv", index=False)
+    kres.round(6).to_csv(out_dir / "e10_kth.csv", index=False)
+    sres.round(6).to_csv(out_dir / "e10_selection.csv", index=False)
+    unk.round(6).to_csv(out_dir / "e10_unknown.csv", index=False)
+    desc.round(6).to_csv(out_dir / "e10_descriptive.csv", index=False)
+    loof.round(8).to_csv(out_dir / "e10_oof_risk.csv.gz", index=False)
     att[["setting", "task_id", "run", "submitted", "solved", "eval_error", "fold"] + list(KTH_MODELS)].round(8).to_csv(
-        OUTPUTS / "e10_kth_risks.csv.gz", index=False)
+        out_dir / "e10_kth_risks.csv.gz", index=False)
     summary = {"criteria": crit, "checks": {**info, **linfo, **sinfo}, "kth_desc": kdesc,
                "o_main": O_MAIN, "o_merged": O_MERGED, "n_boot": N_BOOT, "seconds": round(time.time() - t0, 1)}
-    (OUTPUTS / "e10_summary.json").write_text(json.dumps(summary, indent=1, ensure_ascii=False, default=float),
+    (out_dir / "e10_summary.json").write_text(json.dumps(summary, indent=1, ensure_ascii=False, default=float),
                                               encoding="utf-8")
     log.info("E10 done in %.0f s; criteria %s", time.time() - t0, crit)
     return summary

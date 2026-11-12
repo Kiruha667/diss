@@ -3,6 +3,8 @@
   python -m src.e8_repeats check  -> reports/E8_adapter_check.md: step listing of 20 trajectories (seed 42)
   python -m src.e8_repeats build  -> data/interim/agentic_evals/runs.parquet, steps.parquet (features, phases)
   python -m src.e8_repeats run    -> outputs/e8_runs.csv.gz, outputs/e8_metrics.csv, outputs/e8_summary.json
+Since 2026-11-12 `run` covers the settings in ANALYSIS_SETTINGS (without DeepSWE-Preview, reports/KTH_DEEPSWE_LABELS.md);
+KTH_WITH_DEEPSWE=1 -> the earlier three-setting run, outputs in outputs/kth_with_deepswe/.
 
 Data: src.adapters.agentic_evals (three nano-agent settings). Unit = setting x task. Features: demo_lib (S = the 21
 FEATURES, length = LEN), n_sent from src.segment as in notebooks/build_demo_data.py.
@@ -24,9 +26,9 @@ import numpy as np
 import pandas as pd
 from scipy.stats import rankdata
 
-from src.adapters.agentic_evals import (REPO, REVISION, SETTINGS, _lit, iter_raw, labels_of, run_dirs, to_record,
-                                       tool_calls_of)
-from src.common import INTERIM, OUTPUTS, REPORTS, ROOT, SEED, get_logger, load_leak_markers
+from src.adapters.agentic_evals import (ANALYSIS_SETTINGS, KTH_OUTPUTS, REPO, REVISION, SETTINGS, _lit, iter_raw,
+                                       labels_of, run_dirs, to_record, tool_calls_of)
+from src.common import INTERIM, REPORTS, ROOT, SEED, get_logger, load_leak_markers
 from src.segment import compile_markers, segment
 
 sys.path.insert(0, str(ROOT))
@@ -306,17 +308,18 @@ def scope_metrics(pop: pd.DataFrame, risk: dict[str, np.ndarray], scope: str) ->
 
 def run() -> dict:
     t0 = time.time()
-    pop = pd.read_parquet(OUT_DIR / "runs.parquet").sort_values("run_id").reset_index(drop=True)
+    pop = pd.read_parquet(OUT_DIR / "runs.parquet")
+    pop = pop[pop.setting.isin(ANALYSIS_SETTINGS)].sort_values("run_id").reset_index(drop=True)
     pop["unit"] = pop.setting + "|" + pop.task_id
     risk, fold, info = predictors(pop)
     rows, desc = [], {}
-    for scope in list(SETTINGS) + ["all"]:
+    for scope in list(ANALYSIS_SETTINGS) + ["all"]:
         r, d = scope_metrics(pop, risk, scope)
         rows += r
         desc[scope] = d
         log.info("%s: %s", scope, d)
     met = pd.DataFrame(rows)
-    # Holm over the three settings, for every predictor
+    # Holm over the settings, for every predictor
     met["perm_p_holm"] = np.nan
     for p in risk:
         sel = (met.metric == "within_unit_auroc") & (met.predictor == p) & (met.scope != "all")
@@ -324,24 +327,25 @@ def run() -> dict:
         met.loc[sel, "perm_p_holm"] = met.loc[sel, "scope"].map(adj)
     # criteria (protocol, section 6), on P2
     crit = {}
-    for scope in list(SETTINGS) + ["all"]:
+    for scope in list(ANALYSIS_SETTINGS) + ["all"]:
         w = met[(met.scope == scope) & (met.predictor == "P2") & (met.metric == "within_unit_auroc")].iloc[0]
         dd = met[(met.scope == scope) & (met.metric == "within_unit_auroc_diff")].iloc[0]
         p_used = w.perm_p if scope == "all" else w.perm_p_holm
         crit[scope] = {"signal": bool(w.ci_lo > 0.5 and p_used < 0.05), "practical": bool(w.value >= 0.60),
                        "struct_over_length": bool(dd.ci_lo > 0)}
-    OUTPUTS.mkdir(parents=True, exist_ok=True)
-    met.round(6).to_csv(OUTPUTS / "e8_metrics.csv", index=False)
+    KTH_OUTPUTS.mkdir(parents=True, exist_ok=True)
+    met.round(6).to_csv(KTH_OUTPUTS / "e8_metrics.csv", index=False)
     keep = ["run_id", "setting", "run", "task_id", "label", "ended_by_final_message"] + FEATURES
     out = pop[keep].copy()
     out["fold"] = fold
     for p, r in risk.items():
         out[f"risk_{p}"] = r
-    out.round(8).to_csv(OUTPUTS / "e8_runs.csv.gz", index=False)
+    out.round(8).to_csv(KTH_OUTPUTS / "e8_runs.csv.gz", index=False)
     build_info = json.loads((OUT_DIR / "build_info.json").read_text(encoding="utf-8"))
-    summary = {"dataset": {"repo": REPO, "revision": REVISION, "settings": list(SETTINGS)}, "build": build_info,
+    summary = {"dataset": {"repo": REPO, "revision": REVISION, "settings": list(ANALYSIS_SETTINGS),
+                           "excluded": [s for s in SETTINGS if s not in ANALYSIS_SETTINGS]}, "build": build_info,
                "descriptives": desc, "criteria": crit, **info, "seconds": round(time.time() - t0, 1)}
-    (OUTPUTS / "e8_summary.json").write_text(json.dumps(summary, indent=1, ensure_ascii=False, default=float),
+    (KTH_OUTPUTS / "e8_summary.json").write_text(json.dumps(summary, indent=1, ensure_ascii=False, default=float),
                                              encoding="utf-8")
     log.info("E8 done in %.0f s; criteria %s", time.time() - t0, crit)
     return summary

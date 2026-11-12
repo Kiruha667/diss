@@ -107,7 +107,7 @@
 | `e5_claims.py` | E5; `process_record` строит признаки `S` (демо-данные, E14) | актуально (модуль), постановка E5 устарела |
 | `e6_refine.py`, `e6_external.py` | E6 | устарело (итоговая модель — `M+S`); код не перенесён: на него ссылаются `src/cli.py` и тесты |
 | `e7_sources.py`, `e7_addendum.py` | E7 | актуально |
-| `e8_repeats.py` | E8 | актуально |
+| `e8_repeats.py` | E8 (с 12.11.2026 — две настройки KTH; `KTH_WITH_DEEPSWE=1` — прежний расчёт) | актуально |
 | `e9_best_of_k.py` | E9 | актуально |
 | `e10_check_outcomes.py`, `e10_block_o.py` | E10 | актуально |
 | `e11_elicitation.py` | E11 | актуально |
@@ -115,6 +115,10 @@
 | `e12_task_difficulty.py` | E12 | актуально |
 | `e13_generations_patch.py` | E13 | актуально |
 | `e14_new_models.py` | E14 | актуально |
+| `e15_consolidation.py` | E15 (части 2, 3 — две настройки KTH) | актуально |
+| `e16_c3_confirm.py` | E16 | актуально |
+| `kth_deepswe_labels.py` | доказательства по меткам DeepSWE-Preview в KTH (`reports/KTH_DEEPSWE_LABELS.md`) | актуально |
+| `paper_figures.py`, `paper_kit/` | рисунки и сборка набора для статьи `paper_kit/` (шаблоны, индекс чисел, проверка) | актуально |
 
 ## notebooks/
 
@@ -169,6 +173,10 @@
 | `e12_metrics.csv`, `e12_diffs.csv`, `e12_oof_risk.csv.gz`, `e12_summary.json` | E12 | актуально |
 | `e13_inventory.csv`, `e13_transfer.csv`, `e13_format.csv`, `e13_combos.csv`, `e13_patch_metrics.csv`, `e13_patch_diffs.csv`, `e13_patch_features.csv.gz`, `e13_kth_patch.csv`, `e13_summary.json` | E13 | актуально (код инвентаризации — вне репозитория, `CLEANUP_FINDINGS.md` 3.5) |
 | `e14_runs.csv`, `e14_parse.csv`, `e14_metrics.csv`, `e14_combos.csv`, `e14_summary.json` | E14 | актуально |
+| `e15_*` | E15 (части 2, 3 — две настройки KTH с 12.11.2026) | актуально |
+| `e16_*` | E16 | актуально |
+| `kth_deepswe_labels.json`, `e15_label_check.json` | проверка меток DeepSWE-Preview | актуально |
+| `kth_with_deepswe/` | прежние выходы E8, E9, E10, E15 по трём настройкам (приложения отчётов) | архив |
 
 Не в git: `outputs/features.csv` (109 МБ; есть `.gz`) и рабочие таблицы `*.xlsx` проверки G0.
 

@@ -70,19 +70,6 @@
     "pairs_FU": 14,
     "pairs_UU": 0
    },
-   "nano-agent-agentica-org_DeepSWE-Preview": {
-    "attempts": 4553,
-    "share_finished": 0.7957390731385899,
-    "unresolved_if_finished": 0.6196522219155396,
-    "unresolved_if_not_finished": 0.7946236559139785,
-    "median_steps_finished": 8.0,
-    "median_steps_not_finished": 16.0,
-    "units": 497,
-    "pairs_all": 3731,
-    "pairs_FF": 2733,
-    "pairs_FU": 738,
-    "pairs_UU": 260
-   },
    "nano-agent-mistral_devstral-2512": {
     "attempts": 4978,
     "share_finished": 0.8055443953394937,
@@ -97,81 +84,76 @@
     "pairs_UU": 368
    },
    "all": {
-    "attempts": 13778,
-    "share_finished": 0.8573813325591523,
-    "unresolved_if_finished": 0.5780072801151274,
-    "unresolved_if_not_finished": 0.7048346055979644,
-    "median_steps_finished": 12.0,
-    "median_steps_not_finished": 40.0,
-    "units": 1493,
-    "pairs_all": 8827,
-    "pairs_FF": 6388,
-    "pairs_FU": 1811,
-    "pairs_UU": 628
+    "attempts": 9225,
+    "share_finished": 0.8878048780487805,
+    "unresolved_if_finished": 0.5595848595848596,
+    "unresolved_if_not_finished": 0.6241545893719807,
+    "median_steps_finished": 23.0,
+    "median_steps_not_finished": 87.0,
+    "units": 996,
+    "pairs_all": 5096,
+    "pairs_FF": 3655,
+    "pairs_FU": 1073,
+    "pairs_UU": 368
    }
   },
   "reproduced": {
-   "S-T1|nano-agent-mistral_devstral-2512": 0.578,
-   "S-T1|all": 0.533,
-   "LEN-T1|all": 0.496,
    "S-T2|nano-agent-mistral_devstral-2512": 0.561,
-   "S-T2|all": 0.508,
    "S+O-T2|nano-agent-mistral_devstral-2512": 0.585
   },
   "selection": {
    "reproduced": {
     "S-T2|nano-agent-Qwen_Qwen3-32B": -0.61,
-    "S-T2|nano-agent-agentica-org_DeepSWE-Preview": -1.25,
     "S-T2|nano-agent-mistral_devstral-2512": 0.77,
     "S+O-T2|nano-agent-mistral_devstral-2512": 1.58
    },
-   "attempts_finished_share_submitted": 0.8576600057920649
+   "attempts_finished_share_submitted": 0.8878423730648479
   },
-  "seconds": 33.2
+  "settings": [
+   "nano-agent-Qwen_Qwen3-32B",
+   "nano-agent-mistral_devstral-2512"
+  ],
+  "seconds": 12.6
  },
  "variance": {
   "E8_labelled": {
    "theta_q40": [
-    4.364646715448641,
-    2.1790868728552413,
-    -1.5076437670558445,
-    1.3744675139920624,
-    0.42899108732454244
+    4.837305479251085,
+    -1.7678764199143575,
+    1.4736763722587791,
+    0.7975297009335002
    ],
    "theta_q60": [
-    4.358918843174648,
-    2.1732365735735675,
-    -1.5138098042228736,
-    1.3760943283284741,
-    0.42823820058797696
+    4.843895587344355,
+    -1.7626333433115149,
+    1.4736442150503957,
+    0.7978645381427666
    ],
-   "q60_max_abs_diff": 0.006435983974120152,
-   "sigma_task": 3.952971260519685,
-   "sigma_task_x_model": 1.5357073470751719,
+   "q60_max_abs_diff": 0.00659010809327043,
+   "sigma_task": 4.365253976040355,
+   "sigma_task_x_model": 2.2200499617716667,
    "mu": {
-    "Qwen3-32B": 4.364646715448641,
-    "DeepSWE-Preview": 2.1790868728552413,
-    "devstral-2512": -1.5076437670558445
+    "Qwen3-32B": 4.837305479251085,
+    "devstral-2512": -1.7678764199143575
    },
-   "fit_seconds": 38.2,
+   "fit_seconds": 19.8,
    "recovery_theta": [
-    4.10697164891455,
-    2.0704989974562324,
-    -1.709119060657513,
-    1.3310165133717478,
-    0.4680365596991734
+    4.620880456594587,
+    -1.9117197371604258,
+    1.4492628601286461,
+    0.747854865993359
    ],
    "observed": {
-    "var_y": 0.24076570787238766,
-    "tasks_in_anova": 483,
-    "var_model": 0.03732673765973637,
-    "var_task": 0.07928391995274398,
-    "var_task_x_model": 0.047122140587001364,
-    "var_attempt": 0.0748779663908949,
-    "share_model": 0.156433586405103,
-    "share_task": 0.3322730225052955,
-    "share_task_x_model": 0.19748539286522132,
-    "share_attempt": 0.3138079982243802
+    "var_y": 0.2455338488994646,
+    "tasks_in_anova": 487,
+    "var_model": 0.0542096991669373,
+    "var_task": 0.056842254073091056,
+    "var_task_x_model": 0.07002387044733195,
+    "var_attempt": 0.06348319347993828,
+    "share_model": 0.22166305620149504,
+    "share_task": 0.23242755360848646,
+    "share_task_x_model": 0.2863270848010885,
+    "share_attempt": 0.25958230538893
    },
    "per_setting": {
     "Qwen3-32B": {
@@ -179,61 +161,52 @@
      "sigma_unit": 4.01886590721264,
      "share_attempt": 0.16922187789116697
     },
-    "DeepSWE-Preview": {
-     "mu": 1.6095208291835639,
-     "sigma_unit": 3.360352217658589,
-     "share_attempt": 0.22561413549827966
-    },
     "devstral-2512": {
      "mu": -1.2802057241772766,
      "sigma_unit": 5.006919518375509,
      "share_attempt": 0.11600744856992865
     }
    },
-   "seconds": 815.1
+   "seconds": 465.6
   },
   "all_attempts": {
    "theta_q40": [
-    4.55310585953607,
-    2.4041878492392206,
-    -1.482797016446718,
-    1.3637404669558504,
-    0.4429559149612238
+    5.078909383253704,
+    -1.7482036090413524,
+    1.4749052555795716,
+    0.7897388617125874
    ],
    "theta_q60": [
-    4.547489598047238,
-    2.398357768928338,
-    -1.4889005937195257,
-    1.3645963948724955,
-    0.44291510035786436
+    5.084353373089595,
+    -1.744834802289675,
+    1.4741026146258154,
+    0.7904529568233001
    ],
-   "q60_max_abs_diff": 0.0061035772728077475,
-   "sigma_task": 3.910794174110887,
-   "sigma_task_x_model": 1.557303679035378,
+   "q60_max_abs_diff": 0.0054439898358911165,
+   "sigma_task": 4.3706216612964734,
+   "sigma_task_x_model": 2.2028211102084865,
    "mu": {
-    "Qwen3-32B": 4.55310585953607,
-    "DeepSWE-Preview": 2.4041878492392206,
-    "devstral-2512": -1.482797016446718
+    "Qwen3-32B": 5.078909383253704,
+    "devstral-2512": -1.7482036090413524
    },
-   "fit_seconds": 36.1,
+   "fit_seconds": 19.5,
    "recovery_theta": [
-    4.207794093101094,
-    2.358612980273851,
-    -1.6893760514067273,
-    1.3005611080451074,
-    0.5097257869702629
+    4.7259158768041845,
+    -1.833920778855654,
+    1.3806135393510857,
+    0.6598619850356845
    ],
    "observed": {
-    "var_y": 0.233359,
+    "var_y": 0.23991984,
     "tasks_in_anova": 500,
-    "var_model": 0.038703679999999956,
-    "var_task": 0.07484720106880427,
-    "var_task_x_model": 0.04720012024048097,
-    "var_attempt": 0.07286666666666666,
-    "share_model": 0.16567103137072678,
-    "share_task": 0.3203833071243091,
-    "share_task_x_model": 0.2020400282625013,
-    "share_attempt": 0.3119056332424627
+    "var_model": 0.05560163999999994,
+    "var_task": 0.054450380761523046,
+    "var_task_x_model": 0.06952789579158318,
+    "var_attempt": 0.0606,
+    "share_model": 0.23149995552482366,
+    "share_task": 0.22670663535468222,
+    "share_task_x_model": 0.28948255453411265,
+    "share_attempt": 0.25231085458638147
    },
    "per_setting": {
     "Qwen3-32B": {
@@ -241,18 +214,13 @@
      "sigma_unit": 4.063310011643458,
      "share_attempt": 0.16615196564266715
     },
-    "DeepSWE-Preview": {
-     "mu": 1.860566109697716,
-     "sigma_unit": 3.1956454545920656,
-     "share_attempt": 0.24365751345030645
-    },
     "devstral-2512": {
      "mu": -1.2143206824615282,
      "sigma_unit": 5.045296916224749,
      "share_attempt": 0.11445054185111699
     }
    },
-   "seconds": 803.3
+   "seconds": 488.8
   },
   "noise": {
    "nano-agent-Qwen_Qwen3-32B": {
@@ -282,33 +250,6 @@
     ],
     "share_attempts_with_empty_diff": 0.0
    },
-   "nano-agent-agentica-org_DeepSWE-Preview": {
-    "identical_pairs": 2437,
-    "units_with_identical_pairs": 232,
-    "discordant_identical_pairs": 450,
-    "d": 0.18465326220763234,
-    "d_ci": [
-     0.14675142885383535,
-     0.23253852481139228
-    ],
-    "eps": 0.10291893913687622,
-    "eps_ci": [
-     0.0797330781835402,
-     0.13430786500896158
-    ],
-    "within_pairs": 3731,
-    "s": 0.12061109622085232,
-    "s_ci": [
-     0.09134058676072654,
-     0.15357109721635726
-    ],
-    "ceiling_direct": 0.9396944518895738,
-    "ceiling_direct_ci": [
-     0.9232144513918213,
-     0.9543297066196368
-    ],
-    "share_attempts_with_empty_diff": 0.21260707226004832
-   },
    "nano-agent-mistral_devstral-2512": {
     "identical_pairs": 2609,
     "units_with_identical_pairs": 237,
@@ -337,33 +278,37 @@
     "share_attempts_with_empty_diff": 0.0
    },
    "all": {
-    "identical_pairs": 7322,
-    "units_with_identical_pairs": 708,
-    "discordant_identical_pairs": 454,
-    "d": 0.06200491668942912,
+    "identical_pairs": 4885,
+    "units_with_identical_pairs": 476,
+    "discordant_identical_pairs": 4,
+    "d": 0.0008188331627430911,
     "d_ci": [
-     0.04701243166829111,
-     0.07931287929530996
+     0.0,
+     0.002081679401667119
     ],
-    "eps": 0.03202826831603872,
+    "eps": 0.00040958434070370586,
     "eps_ci": [
-     0.02408636900604072,
-     0.04136772861872767
+     0.0,
+     0.0010419253091835112
     ],
-    "within_pairs": 8827,
-    "s": 0.05143310297949473,
+    "within_pairs": 5096,
+    "s": 0.0007849293563579278,
     "s_ci": [
-     0.03865026081336808,
-     0.06498630921520582
+     0.0,
+     0.0019752308792798153
     ],
-    "ceiling_direct": 0.9742834485102526,
+    "ceiling_direct": 0.999607535321821,
     "ceiling_direct_ci": [
-     0.9675068453923971,
-     0.980674869593316
+     0.9990123845603601,
+     1.0
     ],
-    "share_attempts_with_empty_diff": 0.0702569313398171
+    "share_attempts_with_empty_diff": 0.0
    }
   },
-  "seconds": 1644.7
+  "settings": [
+   "nano-agent-Qwen_Qwen3-32B",
+   "nano-agent-mistral_devstral-2512"
+  ],
+  "seconds": 978.7
  }
 }

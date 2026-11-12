@@ -1,0 +1,4 @@
+setting,delta_P2_k5_pp,delta_lo,delta_hi,e8_within_auroc_P2_pooled,within_auroc_P2_in_setting,within_auroc_P3_in_setting
+nano-agent-Qwen_Qwen3-32B,-0.611917,-1.649946,0.441243,0.53102,0.498851,0.522289
+nano-agent-agentica-org_DeepSWE-Preview,-1.253433,-2.612163,0.111564,0.499062,0.473332,0.477486
+nano-agent-mistral_devstral-2512,0.768733,-0.31251,1.853525,0.578082,0.560616,0.527055

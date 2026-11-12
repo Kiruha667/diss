@@ -46,7 +46,7 @@
 | что | значение |
 |---|---|
 | источник | Hugging Face `ASSERT-KTH/agentic-evals-artifacts`, ревизия `5db0c4b69382d160a313d7ceaded915398c63e13`; лицензия CC BY 4.0 (по E8_REPORT); статья arXiv 2602.07150 |
-| использовано | три настройки nano-agent при t = 0.6: Qwen3-32B, DeepSWE-Preview, devstral-2512; по 10 прогонов на задачу |
+| использовано | скачаны три настройки nano-agent при t = 0.6 (Qwen3-32B, DeepSWE-Preview, devstral-2512), по 10 прогонов на задачу; в анализе с 12.11.2026 две — DeepSWE-Preview исключена: её метки относятся к другой системе (`reports/KTH_DEEPSWE_LABELS.md`) |
 | локально | `data/raw/agentic_evals/`: 185 файлов, 2.02 ГБ, хеш набора `69a976c71be18090ac58a7204c026a3a0c34d15284ecd1fda8bf89167e20e28c` |
 | разобрано | `data/interim/agentic_evals/runs.parquet` `4d6638d1bbee888168399b0f0694b1ace8f3143a3228ead995cb2ac2785d857f`; `steps.parquet` `2567b782371541fb5018394b02d0d694880fa277457217ec4418f04650876709`; `build_info.json` `4c136f6de0ba8b87d4492d5bda0c02186f4cb315b564a0cac25ffaa5b1a5b781` |
 | дата | 2026-11-03 |

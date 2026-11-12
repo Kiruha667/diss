@@ -4,8 +4,10 @@
   "revision": "5db0c4b69382d160a313d7ceaded915398c63e13",
   "settings": [
    "nano-agent-Qwen_Qwen3-32B",
-   "nano-agent-agentica-org_DeepSWE-Preview",
    "nano-agent-mistral_devstral-2512"
+  ],
+  "excluded": [
+   "nano-agent-agentica-org_DeepSWE-Preview"
   ]
  },
  "build": {
@@ -38,23 +40,6 @@
    "nonzero_rc_share_mean": 0.13275090413522536,
    "runs_per_unit_median": 9.5
   },
-  "nano-agent-agentica-org_DeepSWE-Preview": {
-   "runs": 4553,
-   "tasks": 497,
-   "units": 497,
-   "units_with_both": 252,
-   "within_pairs": 3731,
-   "all_pairs": 4681896,
-   "same_unit_share": 0.0007968993758084332,
-   "unresolved_share": 0.6553920491983307,
-   "ended_by_final_message": 0.7957390731385899,
-   "median_n_steps": 10.0,
-   "has_any_verification": 0.018888644849549746,
-   "share_edit_mean": 0.22142263593241507,
-   "share_verify_mean": 0.002644209162579358,
-   "nonzero_rc_share_mean": 0.15803030930116016,
-   "runs_per_unit_median": 10.0
-  },
   "nano-agent-mistral_devstral-2512": {
    "runs": 4978,
    "tasks": 500,
@@ -73,30 +58,25 @@
    "runs_per_unit_median": 10.0
   },
   "all": {
-   "runs": 13778,
+   "runs": 9225,
    "tasks": 500,
-   "units": 1493,
-   "units_with_both": 578,
-   "within_pairs": 8827,
-   "all_pairs": 45705345,
-   "same_unit_share": 0.00019312839668970882,
-   "unresolved_share": 0.5960952242705763,
-   "ended_by_final_message": 0.8573813325591523,
-   "median_n_steps": 14.0,
-   "has_any_verification": 0.34526056031354335,
-   "share_edit_mean": 0.21961951266530724,
-   "share_verify_mean": 0.04002928193165326,
-   "nonzero_rc_share_mean": 0.13276909622142355,
+   "units": 996,
+   "units_with_both": 326,
+   "within_pairs": 5096,
+   "all_pairs": 20895084,
+   "same_unit_share": 0.00024388511670974858,
+   "unresolved_share": 0.5668292682926829,
+   "ended_by_final_message": 0.8878048780487805,
+   "median_n_steps": 37.0,
+   "has_any_verification": 0.5063414634146342,
+   "share_edit_mean": 0.21872958093250053,
+   "share_verify_mean": 0.05848068966255771,
+   "nonzero_rc_share_mean": 0.12030142108299094,
    "runs_per_unit_median": 10.0
   }
  },
  "criteria": {
   "nano-agent-Qwen_Qwen3-32B": {
-   "signal": false,
-   "practical": false,
-   "struct_over_length": false
-  },
-  "nano-agent-agentica-org_DeepSWE-Preview": {
    "signal": false,
    "practical": false,
    "struct_over_length": false
@@ -113,5 +93,5 @@
   }
  },
  "leaderboard_runs": 7864,
- "seconds": 5.9
+ "seconds": 4.5
 }

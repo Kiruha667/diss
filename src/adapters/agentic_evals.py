@@ -27,11 +27,12 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import os
 import re
 from pathlib import Path
 from typing import Iterator
 
-from src.common import RAW
+from src.common import OUTPUTS, RAW
 
 SOURCE = "agentic_evals"
 REPO = "ASSERT-KTH/agentic-evals-artifacts"
@@ -41,6 +42,14 @@ RAW_DIR = RAW / "agentic_evals"
 SETTINGS = {"nano-agent-Qwen_Qwen3-32B": "Qwen/Qwen3-32B",
             "nano-agent-agentica-org_DeepSWE-Preview": "agentica-org/DeepSWE-Preview",
             "nano-agent-mistral_devstral-2512": "mistral/devstral-2512"}
+# Settings of the repeat analyses (E8, E9, E10, E15). Since 2026-11-12 nano-agent x DeepSWE-Preview is excluded: its
+# harness labels belong to another system (reports/KTH_DEEPSWE_LABELS.md; deviation in E8_PROTOCOL.md and
+# E15_PROTOCOL.md). KTH_WITH_DEEPSWE=1 reproduces the earlier three-setting numbers (report appendices); their outputs
+# go to outputs/kth_with_deepswe/. Data loading (E8 build, E10 parsing) still covers all three settings.
+EXCLUDED_SETTINGS = ("nano-agent-agentica-org_DeepSWE-Preview",)
+WITH_DEEPSWE = os.environ.get("KTH_WITH_DEEPSWE") == "1"
+ANALYSIS_SETTINGS = tuple(s for s in SETTINGS if WITH_DEEPSWE or s not in EXCLUDED_SETTINGS)
+KTH_OUTPUTS = OUTPUTS / "kth_with_deepswe" if WITH_DEEPSWE else OUTPUTS
 TOOLS = ("shell", "apply_patch")
 _FAILED_RE = re.compile(r"^command failed with exit code (-?\d+)")
 _SAFE_PATH_RE = re.compile(r"^[A-Za-z0-9_./+@-]+$")
