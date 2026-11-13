@@ -28,7 +28,7 @@ from src.paper_kit.numbers import NUMBERS, POPULATIONS
 
 KIT = ROOT / "paper_kit"
 TEMPLATES = Path(__file__).parent / "templates"
-SKIP_CHECK = {"WRITER_PROMPT.md", "CHECK.md", "12_numbers_index.md"}
+SKIP_CHECK = {"WRITER_PROMPT.md", "CHECK.md", "12_numbers_index.md", "CHANGES.md"}  # CHANGES: log, "was -> is"
 PLACEHOLDER = re.compile(r"\{\{(src:)?([A-Za-z0-9_.+\-]+)(\|v)?\}\}")
 TAG = re.compile(r"\[источник: ([^\],;]+), стр\. (\d+)(?:; [^\]]*)?\]")
 # names with digits that are not numbers of the work (models, metrics, versions, stages)
@@ -228,7 +228,7 @@ def check() -> int:
             "T1, Qwen3-32B, precision@10%, номеров arXiv, дат, путей и самих ссылок) должно быть среди значений "
             "индекса и стоять на одной из строк источников, указанных в том же абзаце (пункте списка) или строке таблицы. "
             "Числа чужих работ — из `docs/LITERATURE.md`. `WRITER_PROMPT.md` — "
-            "текст автора, не проверяется. Не проверяются и плановые величины плана статьи (`11_paper_outline.md`): объём "
+            "текст автора, не проверяется; `CHANGES.md` — журнал изменений с прежними числами, не проверяется. Не проверяются и плановые величины плана статьи (`11_paper_outline.md`): объём "
             "в страницах (формат «0.6 с.») и число записей литературы — это оценка, а не данные.", ""]
     for title, items in (("Записи индекса, значение которых не найдено на строке источника", bad_index),
                          ("Числа вне индекса", not_indexed), ("Числа, которых нет на строке источника", not_in_source),

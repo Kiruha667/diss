@@ -36,6 +36,7 @@ Files of the kit (paths relative to this folder):
 - 12_numbers_index.md — every number of the kit with its source file and line.
 - 13_glossary.md — Russian / English terms.
 - CHECK.md — result of the automatic number check.
+- CHANGES.md — log of the kit's changes after its review (old numbers are there for the record; do not use them).
 
 Rule 3 was extended by the author on 2026-11-13 to allow the @misc entries (the rest of the text
 above is the author's original wording).
