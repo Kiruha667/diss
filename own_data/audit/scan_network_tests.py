@@ -6,7 +6,7 @@ need the external network. A test is 'network' if its body
     (a local server) calls of httpbin(...) are not network;
   - or contains a literal URL to a host other than localhost / 127.0.0.1 (reported separately: such a test may
     expect a connection error and then passes without the network).
-Helpers called from a test and fixtures are not followed (limitation, see LABEL_AUDIT_REQUESTS.md).
+Helpers called from a test and fixtures are not followed (limitation, see reports/LABEL_AUDIT_REQUESTS.md).
 usage: python scan_network_tests.py <instances.json> <instance_id>   -> JSON on stdout
 """
 import ast

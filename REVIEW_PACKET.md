@@ -34,7 +34,7 @@
   1 = не решено.
 - **ASSERT-KTH:** `resolved_ids` / `unresolved_ids` харнесса; пустые патчи и ошибки оценки исключены.
 - **Собственный корпус:** swebench 4.1.0 в Docker.
-- **Известный шум:** задачи `psf/requests` (недоступность httpbin.org при оценке; аудит — `own_data/LABEL_AUDIT_REQUESTS.md`).
+- **Известный шум:** задачи `psf/requests` (недоступность httpbin.org при оценке; аудит — `reports/LABEL_AUDIT_REQUESTS.md`).
   Метки в данных не менялись.
 - **LLM-судей нет.** Самооценка агента в E11 — объект изучения, а не метка.
 

@@ -1,22 +1,26 @@
 # Аудит меток лидерборда на задачах psf/requests
 
+> Перенесён из `own_data/` 2026-11-13 (`git mv`) по проверке набора для статьи (`review/PAPER_KIT_CHECK.md`),
+> чтобы числа аудита можно было использовать в наборе (`paper_kit/`). Содержание не менялось; пути к файлам
+> `own_data/` дописаны от корня репозитория.
+
 Вопрос: насколько метки корпуса (16 связок лидерборда SWE-bench Verified bash-only) на задачах psf/requests зависят от
 состояния сети во время оценки. Без вызовов LLM API. Скрипты и агрегаты — `own_data/audit/`; скачанные логи
-(27 МБ) — `data/raw/label_audit/` (не в git, AGENTS.md 2.3).
+(27 МБ) — `data/raw/label_audit/` (не в git, прежнее задание `archive/AGENTS_iteration1.md`, п. 2.3).
 
 ## 1. Скачанные логи
 
 8 задач psf/requests × 16 связок = 128 прогонов (`data/demo/runs.parquet`, `repo == psf/requests`). Из публичного
 бакета `swe-bench-submissions` по префиксу каждой связки (из её `metadata.yaml`, код адаптера) скачано
 `logs/<задача>/{report.json, test_output.txt, patch.diff, job-output.json}` — 504 файла, 26.9 МБ
-(`audit/fetch_requests_logs.py`, манифест `audit/lb_requests_manifest.json`). У связки `gemini-2.5-pro` в источнике нет
-`job-output.json` (8 файлов). Проверка на ключи до сохранения (код `diag/fetch_corpus.py`: поля вида
+(`own_data/audit/fetch_requests_logs.py`, манифест `own_data/audit/lb_requests_manifest.json`). У связки `gemini-2.5-pro` в источнике нет
+`job-output.json` (8 файлов). Проверка на ключи до сохранения (код `own_data/diag/fetch_corpus.py`: поля вида
 api_key/token/secret/password, ключи формата z.ai и `sk-`, ключ этой машины): **совпадений 0**.
 `resolved` в скачанных `report.json` совпадает с меткой корпуса во всех 128 прогонах.
 
 ## 2. Сбои сети в оценке лидерборда
 
-**Какие тесты сетевые** (`audit/network_tests.sh` + `scan_network_tests.py`). В контейнере образа задачи применяется
+**Какие тесты сетевые** (`own_data/audit/network_tests.sh` + `scan_network_tests.py`). В контейнере образа задачи применяется
 test patch строки SWE-bench Verified, как это делает harness, затем разбираются тестовые файлы. Тест считается
 сетевым, если вызывает `httpbin(...)` или использует `HTTPBIN`, а значение по умолчанию — внешний хост:
 `HTTPBIN = os.environ.get('HTTPBIN_URL', 'http://httpbin.org/')`.
@@ -33,10 +37,10 @@ test patch строки SWE-bench Verified, как это делает harness, 
 | `psf__requests-6028` | 0 / 2 | 0 / 185 | локальный сервер |
 
 Вызовы из вспомогательных функций и фикстур сканер не прослеживает, поэтому это нижняя граница. Для
-`psf__requests-1766` скан с test patch даёт 6 / 6 и 41 / 79. В диагностике (`DIAG_RESOLVE_RATE.md`) было 5 / 6 и
+`psf__requests-1766` скан с test patch даёт 6 / 6 и 41 / 79. В диагностике (`own_data/DIAG_RESOLVE_RATE.md`) было 5 / 6 и
 41 / 79: там файл разбирался без test patch, а тест `test_DIGESTAUTH_QUOTES_QOP_VALUE` появляется только в нём.
 
-**Признаки сбоя сети в `test_output.txt`** (`audit/analyze_requests_logs.py`). Считаются только места, где это
+**Признаки сбоя сети в `test_output.txt`** (`own_data/audit/analyze_requests_logs.py`). Считаются только места, где это
 ошибка, а не имя теста или код в патче:
 - страница или ответ 502/503/504 (`<title>503 Service Temporarily Unavailable</title>`, `<Response [503]>`,
   `assert 503 ==`);
@@ -79,18 +83,18 @@ test patch строки SWE-bench Verified, как это делает harness, 
 из патча. У `gemini-3-pro-high` на 2317 упал сетевой `test_redirect_with_wrong_gzipped_header`
 (`ContentDecodingError`); тест подменяет адаптер локально, сбоя сети нет.
 
-Полная таблица по 128 прогонам — `audit/requests_lb_audit.csv`.
+Полная таблица по 128 прогонам — `own_data/audit/requests_lb_audit.csv`.
 
 ## 3. Переоценка нашей оценкой
 
-**Что оценивалось.** 30 прогонов с resolved = 0 и признаками сбоя сети (`audit/reeval_list.json`). Патч из оценки
+**Что оценивалось.** 30 прогонов с resolved = 0 и признаками сбоя сети (`own_data/audit/reeval_list.json`). Патч из оценки
 лидерборда (`logs/<задача>/patch.diff` из бакета) оценён нашей оценкой: swebench 4.1.0, флаги как в протоколе
 (`--max_workers 1 --cache_level instance --timeout 1800`, образы `swebench/...:latest`), по одной связке за запуск
-(`audit/eval_requests.sh`). Перед каждой оценкой — проба `infra/httpbin_probe.sh` (http-запрос к httpbin.org из
+(`own_data/audit/eval_requests.sh`). Перед каждой оценкой — проба `own_data/infra/httpbin_probe.sh` (http-запрос к httpbin.org из
 контейнера образа задачи, раздел 11.3 протокола). **Все 30 проб вернули 200 с первой попытки** (2026-10-28,
-06:49–08:37 UTC, `audit/httpbin_probes.log`). Оценка одной связки — 79–588 с, медиана 129 с; на 2317 — 490–590 с
-из-за тайм-аутов https-тестов. Всего 1.8 ч. Отчёты — `audit/our_eval/<связка>/<задача>/{report.json, eval_meta.json}`,
-логи тестов — `data/raw/label_audit/our_eval/`. Сравнение — `audit/compare_reeval.py` → `audit/reeval_compare.csv`.
+06:49–08:37 UTC, `own_data/audit/httpbin_probes.log`). Оценка одной связки — 79–588 с, медиана 129 с; на 2317 — 490–590 с
+из-за тайм-аутов https-тестов. Всего 1.8 ч. Отчёты — `own_data/audit/our_eval/<связка>/<задача>/{report.json, eval_meta.json}`,
+логи тестов — `data/raw/label_audit/our_eval/`. Сравнение — `own_data/audit/compare_reeval.py` → `own_data/audit/reeval_compare.csv`.
 
 **Не оценена 1 связка: `minimax-m2` на 1724.** Её `patch.diff` в бакете пуст (0 байт), а harness пустые патчи не
 оценивает. Оценка лидерборда тоже шла на неизменённом репозитории: в её `test_output.txt` `git status` выдаёт «working
@@ -120,7 +124,7 @@ tree clean», а `git diff <base_commit>` пуст. В корпусе у это�
 проверить само исправление нельзя, метка **не определена**.
 
 Для одной пары вывод сверяется с наблюдением: патч `glm-4.6` на 1766 2026-10-27, до смены сертификата, наша оценка
-признала решённым (`DIAG_RESOLVE_RATE.md`, раздел 3, `run_id diag_corpus_glm46`). 2026-10-28 тот же патч даёт 0
+признала решённым (`own_data/DIAG_RESOLVE_RATE.md`, раздел 3, `run_id diag_corpus_glm46`). 2026-10-28 тот же патч даёт 0
 только из-за `test_mixed_case_scheme_acceptable` (`ssl_cert`).
 
 Столбцы: «лог лидерборда» — ответов 5xx / упавших сетевых тестов (раздел 2); «наш лог: сбои среды» — упавших из-за
@@ -168,7 +172,7 @@ tree clean», а `git diff <base_commit>` пуст. В корпусе у это�
 
 ## 4. Объём `test_output.txt` по всему корпусу (не скачивалось)
 
-Листинг `logs/` всех 16 связок (`audit/lb_logs_listing.csv.gz`, размеры объектов S3):
+Листинг `logs/` всех 16 связок (`own_data/audit/lb_logs_listing.csv.gz`, размеры объектов S3):
 
 | файл | объектов | объём |
 |---|---|---|
@@ -225,13 +229,13 @@ tree clean», а `git diff <base_commit>` пуст. В корпусе у это�
 
 - С исправленными метками 1724, 1766 и 1921 — лёгкие задачи (≥ 0.875). Их доля 0.50 по лидерборду, то есть место в
   коридоре [0.2; 0.6], — следствие сбоя httpbin.org. Это подтверждает исключение psf/requests в протоколе 1.2
-  (PROTOCOL.md, 11.2).
+  (`own_data/PROTOCOL.md`, 11.2).
 - glm-4.6 — модель нашего сбора. Её корпусные 0 на 1724 и 1766 — сбой сети, что сходится с выводом
-  `DIAG_RESOLVE_RATE.md` для 1766. 0 на 1921 — настоящий провал, 2317 — не определена.
+  `own_data/DIAG_RESOLVE_RATE.md` для 1766. 0 на 1921 — настоящий провал, 2317 — не определена.
 - Наша оценка подвержена той же проблеме. За два дня httpbin.org сменил сертификат и поведение `redirect-to`, и
   http-проба из раздела 11.3 протокола не ловит ни то, ни другое. Ходят ли на внешние хосты тесты задач пула вне
-  psf/requests, не проверялось (вопрос 4 в PROTOCOL.md, 11.6).
-- Метки корпуса в `data/demo` не изменены. Для анализа чувствительности есть `audit/reeval_compare.csv`.
+  psf/requests, не проверялось (вопрос 4 в `own_data/PROTOCOL.md`, 11.6).
+- Метки корпуса в `data/demo` не изменены. Для анализа чувствительности есть `own_data/audit/reeval_compare.csv`.
 
 **Ограничения.** Метка «без сбоев среды» — вывод, а не наблюдение; прямым наблюдением 2026-10-27 он подтверждён
 только для `glm-4.6` на 1766 (раздел 3). Прямая проверка остальных требует оценки с рабочим https к

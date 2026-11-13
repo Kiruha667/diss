@@ -1,4 +1,4 @@
-"""Label audit of the leaderboard on network-dependent tasks (own_data/LABEL_AUDIT_REQUESTS.md, steps 1 and 4).
+"""Label audit of the leaderboard on network-dependent tasks (reports/LABEL_AUDIT_REQUESTS.md, steps 1 and 4).
 No LLM API calls.
 
 (1) Lists logs/ of all 16 corpus runs in the public bucket swe-bench-submissions (prefix from each run's

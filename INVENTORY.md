@@ -191,7 +191,7 @@
 | `THINKING_CHECK.md`, `thinking_check.py`, `thinking_check.json` | проверка `thinking: disabled` (основание версии 1.1) | актуально; `thinking_check.py` требует `tiktoken` (`CLEANUP_FINDINGS.md` 3.8) |
 | `DIAG_RESOLVE_RATE.md` | диагностика доли решённых | актуально |
 | `GOLD_VALIDATION.md`, `gold_validation.py`, `gold_validation.json`, `gold_validation_pre.csv` | валидация окружения эталонными патчами (версия 1.2: 65 из 65) | актуально |
-| `LABEL_AUDIT_REQUESTS.md`, `label_audit_corpus.csv` | аудит меток `psf/requests` (httpbin.org) | актуально |
+| `label_audit_corpus.csv` | метки аудита `psf/requests` (httpbin.org); отчёт аудита перенесён в `reports/LABEL_AUDIT_REQUESTS.md` (2026-11-13) | актуально |
 | `runs_own.parquet`, `steps_own.parquet`, `scores_own.csv` | таблицы прогонов, шагов, рисков | актуально (`in_analysis` у `requests-1766` исправлен 2026-11-10, `LOG.md`) |
 | `tasks_pool.json`, `tasks_pilot.json`, `tasks_main.json`, `select_main_tasks.py`, `forecast_main.json` | пул задач, выбор, прогноз стоимости | актуально |
 | `eval_summary.json`, `make_eval_summary.py` | сводка `report.json` для наглядного ноутбука | вспомогательное |

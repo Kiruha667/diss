@@ -504,7 +504,7 @@ S, обученная на лидерборде: pylint — решённая 22%
 ## 8. Артефакты
 
 **Репозиторий** `github.com/Kiruha667/diss`:
-- Протоколы и отчёты: `reports/E7_*` … `E16_*`, `E11b_REPORT.md`, `E10_parser_check.md`, `G0_false_success.md`, `G0_manual_review.md`; `DEMO_REPORT.md`; `own_data/PROTOCOL.md`, `STAGE*_REPORT.md`, `THINKING_CHECK.md`, `DIAG_RESOLVE_RATE.md`, `LABEL_AUDIT_REQUESTS.md`, `GOLD_VALIDATION.md`, `LOG.md`.
+- Протоколы и отчёты: `reports/E7_*` … `E16_*`, `E11b_REPORT.md`, `E10_parser_check.md`, `G0_false_success.md`, `G0_manual_review.md`, `LABEL_AUDIT_REQUESTS.md` (аудит psf/requests, перенесён из `own_data/` 2026-11-13); `DEMO_REPORT.md`; `own_data/PROTOCOL.md`, `STAGE*_REPORT.md`, `THINKING_CHECK.md`, `DIAG_RESOLVE_RATE.md`, `GOLD_VALIDATION.md`, `LOG.md`.
 - Метки DeepSWE-Preview в KTH: `reports/KTH_DEEPSWE_LABELS.md`, `src/kth_deepswe_labels.py`, `outputs/kth_deepswe_labels.json`; прежние выходы повторов по трём настройкам — `outputs/kth_with_deepswe/` (воспроизведение: `KTH_WITH_DEEPSWE=1`).
 - Набор для статьи: `paper_kit/` (собирается `python -m src.paper_kit.build build`, проверка — `paper_kit/CHECK.md`).
 - Независимая рецензия (запись): `review/STAGE1.md`, `review/REVIEW.md`, скрипты `review/scripts/`, выходы `review/results/`.

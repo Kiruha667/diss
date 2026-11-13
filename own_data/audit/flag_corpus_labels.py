@@ -1,5 +1,5 @@
 """Flag of the corpus labels of the 128 psf/requests runs (PROTOCOL.md 11.9) from the label audit
-(LABEL_AUDIT_REQUESTS.md, audit/reeval_compare.csv). Existing labels are not changed.
+(reports/LABEL_AUDIT_REQUESTS.md, audit/reeval_compare.csv). Existing labels are not changed.
   likely_flipped — leaderboard 0, our evaluation without today's httpbin.org environment failures 1 and no
                    environment-failed FAIL_TO_PASS test;
   undetermined   — leaderboard 0, everything else passes but an environment-failed test is FAIL_TO_PASS (2317);

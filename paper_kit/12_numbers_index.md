@@ -229,6 +229,14 @@
 | `deep.disagree.qwen` | 0.002 | Qwen3-32B: то же | повторы KTH, три настройки (доказательство исключения) | `reports/KTH_DEEPSWE_LABELS.md` | 59 |
 | `deep.disagree.dev` | 0.000 | devstral-2512: то же | повторы KTH, три настройки (доказательство исключения) | `reports/KTH_DEEPSWE_LABELS.md` | 60 |
 | `deep.disagree` | 0.185 | DeepSWE-Preview: доля пар одинаковых патчей с разной меткой | повторы KTH, три настройки (доказательство исключения) | `reports/KTH_DEEPSWE_LABELS.md` | 61 |
+| `req.n` | 128 прогонов | аудит: прогонов на 8 задачах psf/requests (16 связок) | аудит psf/requests: 128 прогонов (8 задач × 16 связок) | `reports/LABEL_AUDIT_REQUESTS.md` | 13 |
+| `req.netfail` | 31 | аудит: прогонов со сбоем httpbin.org в логе оценки лидерборда | аудит psf/requests: 128 прогонов (8 задач × 16 связок) | `reports/LABEL_AUDIT_REQUESTS.md` | 64 |
+| `req.netfail0` | 30 | аудит: из них с resolved = 0 | аудит psf/requests: 128 прогонов (8 задач × 16 связок) | `reports/LABEL_AUDIT_REQUESTS.md` | 64 |
+| `req.flip` | 19 | аудит: меток, которые меняются с 0 на 1 при исправной среде | аудит psf/requests: 128 прогонов (8 задач × 16 связок) | `reports/LABEL_AUDIT_REQUESTS.md` | 192 |
+| `req.undet` | 7 | аудит: меток, которые не определены (сбой задевает FAIL_TO_PASS) | аудит psf/requests: 128 прогонов (8 задач × 16 связок) | `reports/LABEL_AUDIT_REQUESTS.md` | 207 |
+| `req.stay` | 4 | аудит: меток, которые остаются 0 | аудит psf/requests: 128 прогонов (8 задач × 16 связок) | `reports/LABEL_AUDIT_REQUESTS.md` | 210 |
+| `req.corpus` | 19–26 меток из 7 975 | аудит: затронутых меток во всём корпусе | корпус: 7 975 траекторий, 500 задач | `reports/LABEL_AUDIT_REQUESTS.md` | 228 |
+| `req.corpus.pct` | 0.24–0.33 % | аудит: то же, доля | корпус: 7 975 траекторий, 500 задач | `reports/LABEL_AUDIT_REQUESTS.md` | 228 |
 | `rev.g0.power` | 24 п.п. | G0: наименьшая разность, которую видит проверка по 100 сообщениям | популяция 7 864, с пустыми патчами; выборка 100 сообщений | `review/REVIEW.md` | 39 |
 | `rev.s20` | 20 | разных признаков S | — | `review/REVIEW.md` | 248 |
 | `rev.s21` | 21 | столбцов признаков S | — | `review/REVIEW.md` | 248 |
