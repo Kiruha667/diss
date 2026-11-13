@@ -1,0 +1,13 @@
+{
+ "index_entries": 203,
+ "index_value_not_on_line": [],
+ "index_by_source_dir": {
+  "reports/": 176,
+  "review/": 18,
+  "docs/": 9,
+  "outputs/": 0
+ },
+ "kit_numeric_tokens_with_tag": 585,
+ "kit_tokens_not_on_cited_line": [],
+ "kit_units_with_numbers_without_tag": []
+}

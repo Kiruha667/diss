@@ -1,0 +1,34 @@
+file,verdict,detail
+e10_checks.csv.gz,identical,max |diff| 0.00e+00
+e10_descriptive.csv,identical,max |diff| 0.00e+00
+e10_features.csv.gz,identical,max |diff| 0.00e+00
+e10_kth.csv,identical,max |diff| 0.00e+00
+e10_kth_risks.csv.gz,identical,max |diff| 0.00e+00
+e10_leaderboard.csv,identical,max |diff| 0.00e+00
+e10_oof_risk.csv.gz,identical,max |diff| 0.00e+00
+e10_selection.csv,identical,max |diff| 0.00e+00
+e10_summary.json,identical,
+e10_unknown.csv,identical,max |diff| 0.00e+00
+e15_ceiling.csv,identical,max |diff| 0.00e+00
+e15_kth_selection.csv,identical,max |diff| 0.00e+00
+e15_kth_within.csv,identical,max |diff| 0.00e+00
+e15_kth_within_diffs.csv,identical,max |diff| 0.00e+00
+e15_leaderboard.csv,identical,max |diff| 0.00e+00
+e15_leaderboard_diffs.csv,identical,max |diff| 0.00e+00
+e15_noise.csv,identical,max |diff| 0.00e+00
+e15_summary.json,2 diffs,/variance/E8_labelled/fit_seconds: 17.7 vs 19.8; /variance/all_attempts/fit_seconds: 16.5 vs 19.5
+e15_variance.csv,identical,max |diff| 0.00e+00
+e16_attempts.csv,identical,max |diff| 0.00e+00
+e16_extra.csv,identical,max |diff| 0.00e+00
+e16_metrics.csv,identical,max |diff| 0.00e+00
+e16_parsed.csv,identical,max |diff| 0.00e+00
+e16_summary.json,identical,
+e8_metrics.csv,identical,max |diff| 0.00e+00
+e8_runs.csv.gz,identical,max |diff| 0.00e+00
+e8_summary.json,identical,
+e9_link_e8.csv,identical,max |diff| 0.00e+00
+e9_per_task.csv.gz,identical,max |diff| 0.00e+00
+e9_results.csv,identical,max |diff| 0.00e+00
+e9_risks.csv.gz,identical,max |diff| 0.00e+00
+e9_summary.json,identical,
+kth_deepswe_labels.json,identical,
