@@ -133,7 +133,10 @@ def mask(line: str) -> str:
     s = re.sub(r"#\d+", " ", s)  # issue numbers
     s = re.sub(r"^\s*(#+\s*)?(\d+\.)+\s", " ", s)  # numbered headings and list items
     s = re.sub(r"^\s*\|\s*\d+\.\s", "| ", s)
-    s = re.sub(r"(?:Рисун\w*|Рис\.|рис\.|Fig\.?|Figure|Табл\w*|табл\w*|Table)\s*\d+", " ", s)
+    s = re.sub(r"(?:Рисун\w*|рисун\w*|Рис\.|рис\.|Fig\.?|Figure|Табл\w*|табл\w*|Table)\s*\d+", " ", s)
+    # the paper plan (11_paper_outline.md): page estimates ("0.6 с.") and the number of references are a plan, not data
+    s = re.sub(r"\d+(?:\.\d+)?\s?с\.", " ", s)
+    s = re.sub(r"\d+\s+запис\w*", " ", s)
     return s
 
 
@@ -225,7 +228,8 @@ def check() -> int:
             "T1, Qwen3-32B, precision@10%, номеров arXiv, дат, путей и самих ссылок) должно быть среди значений "
             "индекса и стоять на одной из строк источников, указанных в том же абзаце (пункте списка) или строке таблицы. "
             "Числа чужих работ — из `docs/LITERATURE.md`. `WRITER_PROMPT.md` — "
-            "текст автора, не проверяется.", ""]
+            "текст автора, не проверяется. Не проверяются и плановые величины плана статьи (`11_paper_outline.md`): объём "
+            "в страницах (формат «0.6 с.») и число записей литературы — это оценка, а не данные.", ""]
     for title, items in (("Записи индекса, значение которых не найдено на строке источника", bad_index),
                          ("Числа вне индекса", not_indexed), ("Числа, которых нет на строке источника", not_in_source),
                          ("Строки с числами без ссылки", no_tag)):

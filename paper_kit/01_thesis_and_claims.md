@@ -48,6 +48,9 @@ confirmed on independent pairs and is no stronger than the trajectory model with
 | У21 | Тексты агента (финальное сообщение, рассуждения) к `M+S` ничего не добавляют | подтверждено | (`M+S+A`) − (`M+S`): −0.008 [−0.019; +0.002] [источник: reports/E7_REPORT.md, стр. 239; популяция 7 732]; (`M+S+R`) − (`M+S`): +0.008 [−0.016; +0.033] [источник: reports/E7_REPORT.md, стр. 240; популяция 7 732]; внутри задачи A −0.027 [−0.043; −0.010] [источник: reports/E7_REPORT.md, стр. 239; популяция 7 732] | `reports/E7_REPORT.md`, «Популяция статьи»; рецензия, С5 | "Adding the agent's final message or its reasoning (TF-IDF) to model plus structure does not improve discrimination" | "the agent's text adds a small gain" (прирост E7 — относительно более слабой базы `T+M+S`) |
 | У20 | Метки одной настройки KTH не относятся к её траекториям | подтверждено | 968 попыток без патча с меткой, из них 193 «решено» [источник: reports/KTH_DEEPSWE_LABELS.md, стр. 49; повторы KTH, три настройки (доказательство исключения)] | `reports/KTH_DEEPSWE_LABELS.md` | "Labels of one public setting are inconsistent with its trajectories; we exclude it" | обвинять авторов набора; "the dataset is broken" |
 
+**В статью не входят** (только диссертация; `11_paper_outline.md`, §2): У15, У18, У19. У9, У16 и У17 в статье — без
+таблиц, по одной-две фразы.
+
 **Общие запреты** (рецензия, §10): «по словам агента достоверность не оценить» как общий вывод; «сигнал есть
 только у агентов с самопроверкой»; «на новых моделях качество не сохраняется»; числа «три вместе» и любые числа
 DeepSWE-Preview; «первыми показали разложение» (см. `02_related_work.md`); «парадокс Симпсона» и «меняет знак» для

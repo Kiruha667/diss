@@ -4,7 +4,7 @@
 подачей). Числа чужих работ взяты из `docs/LITERATURE.md` и помечены ссылкой на него. Ключи BibTeX — в
 `references.bib`; авторы и названия статей — со страниц arXiv (API arXiv, 12.11.2026). Источники, на которых стоит
 статья, но которых нет на arXiv (SWE-bench Verified, mini-SWE-agent, лидерборд bash-only, набор KTH, issue #484,
-Vals AI), — записи `@misc` с URL и датой обращения (13.11.2026; §3). Описания работ сверены с аннотациями arXiv
+Vals AI), — записи `@misc` с URL и датой обращения (13.11.2026). Описания работ сверены с аннотациями arXiv
 (проверка набора, `review/PAPER_KIT_CHECK.md`, §3.2). Работы, которые в `docs/LITERATURE.md`
 помечены «не прочитано» или «как прямой аналог не цитировать» (StopLoss 2610.25525, Cross-Task Behavioral
 Consistency 2608.13598, работы из ссылок Insecure Reporters), в набор не включены.
@@ -71,6 +71,21 @@ words and check outcomes, and a variance decomposition with an evaluation-noise 
 | Mehta, Confident and Wrong (`mehta2026confident`) | тихие семантические провалы кодовых агентов | ближайший по явлению; модели оценки нет | §1 |
 | Li et al., Last Step Matters (`li2026laststep`) | запрошенная уверенность в конце работы информативна в deep research | контраст: у нас запрошенная уверенность почти не различает законченные попытки | §5 |
 | Chen et al., Agent-Generated Tests (`chen2026agenttests`) | тот же лидерборд, другой набор моделей (шесть): внутри модели поведение с тестами «differs less between resolved and unresolved» | согласуется с E10 (исходы проверок ничего не добавляют между моделями) | §4 |
+
+## 3. Что цитировать в статье (16 записей; план — `11_paper_outline.md`)
+
+**В статье:** `shi2026hardissue`, `esfandyaridoulabi2026disentangling`, `jimenez2024swebench`, `openai2024sweverified`,
+`minisweagent2025`, `swebench2026bashonly`, `bjarnason2026randomness`, `assertkth2026artifacts`,
+`swebench2025issue484`, `mehtiyev2026beyond`, `kaddour2026agentic`, `khullar2026selfattribution`, `huang2026insecure`,
+`chen2026agenttests`, `jain2025r2egym` (обученные верификаторы — одной ссылкой), `valsai2026swebench`.
+
+**Только диссертация:** `shi2026earlyeval`, `wang2026failfast`, `cho2026automata`, `advani2026confident`,
+`mehta2026confident`, `li2026laststep`, `pan2025swegym`, `shum2025swerm`, `yang2024sweagent`, `shu2026resolverate`,
+`ge2026psychometrics` (E12 и У19 в статью не входят).
+
+У работ с числом авторов больше шести в списке литературы статьи — «et al.» (стиль IEEE это допускает).
+
+## 4. Чего нет в литературе
 
 Не найдено (рецензия, `review/REVIEW.md`, §6): работа, которая спрашивает вероятность успеха у того же кодового
 агента в его контексте и оценивает внутри единицы; работа, которая сравнивает частоту заявлений в финальных сообщениях
