@@ -4,7 +4,8 @@
 
 - **Что это.** Публичные траектории лидерборда SWE-bench Verified в режиме bash-only: каркас mini-SWE-agent (версии
   v1.x и v2.0.0), разные LLM; связка «агент × модель» = версия каркаса × модель. Задачи — SWE-bench Verified
-  (`jimenez2024swebench`).
+  (`openai2024sweverified`, `jimenez2024swebench`); каркас — `minisweagent2025`; лидерборд и бакет —
+  `swebench2026bashonly`.
 - **Состав.** {{e0.combos}} связок, {{e0.tasks}} задач. По поколениям каркаса — {{e13.gen.k}} v1.x и
   {{e13.gen.k|v}} v2.0.0 ({{e13.gen.v1|v}} и {{e13.gen.v2|v}} отправленных прогонов {{src:e13.gen.v1}}). Доля решённых
   по связкам в популяции статьи — {{e13.ne.resolved.range}}.
@@ -28,7 +29,7 @@
 
 ## 2. Повторы ASSERT-KTH (уровень попытки)
 
-- **Что это.** `ASSERT-KTH/agentic-evals-artifacts` (`bjarnason2026randomness`), каркас nano-agent, температура 0.6,
+- **Что это.** `ASSERT-KTH/agentic-evals-artifacts` (`assertkth2026artifacts`, `bjarnason2026randomness`), каркас nano-agent, температура 0.6,
   {{kth.runs_per_task|v}} прогонов на задачу SWE-bench Verified {{src:kth.runs_per_task}}. Единица — настройка × задача.
 - **В анализе две настройки:** Qwen3-32B и devstral-2512. Из попыток каждой настройки исключены попытки с
   пустым патчем и с ошибкой оценки (строка «исключено» в таблице).
@@ -70,7 +71,7 @@ GPT-5.2-codex в бакете — копия GPT-5.2-high (`reports/E14_REPORT.m
 ## 4. Метки и их известный шум
 
 - **psf/requests.** Тесты части задач обращаются к внешнему httpbin.org; его сбои дают провал при любом патче. Это
-  известно (SWE-bench issue #484). Количественная оценка на лидерборде bash-only сделана в
+  известно (SWE-bench issue #484, `swebench2025issue484`). Количественная оценка на лидерборде bash-only сделана в
   `own_data/LABEL_AUDIT_REQUESTS.md`; её числа не в `reports/` и в набор не входят — в статье только качественно или
   [TODO: перенести аудит в отчёт].
 - **Шум оценки на повторах** (одинаковый патч — разные метки): у devstral-2512 и Qwen3-32B почти нулевой

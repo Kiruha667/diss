@@ -1,5 +1,9 @@
-% References of the paper kit. Only works open on arXiv; titles and author lists as returned by the arXiv API
-% (export.arxiv.org, 2026-11-12). Diacritics written as LaTeX escapes for BibTeX.
+% References of the paper kit.
+% 1. Works open on arXiv: titles and author lists as returned by the arXiv API (export.arxiv.org, 2026-11-12);
+%    diacritics written as LaTeX escapes. Two of them are cited as the conference version (year of the conference).
+% 2. Sources the paper rests on that are not arXiv papers (benchmark, scaffold, leaderboard, dataset, issue, Vals AI):
+%    @misc with URL and access date. Pages read 2026-11-13; openai.com refused automated access (HTTP 403), so its URL
+%    and release month are taken from the link on the Vals AI page.
 
 @misc{shi2026hardissue,
   title         = {{Hard Issue, Weak Model, or Bad Run? Rethinking Failure Prediction for Coding Agents}},
@@ -173,14 +177,15 @@
   url           = {https://arxiv.org/abs/2604.00594}
 }
 
-@misc{pan2025swegym,
+@inproceedings{pan2025swegym,
   title         = {{Training Software Engineering Agents and Verifiers with SWE-Gym}},
   author        = {Jiayi Pan and Xingyao Wang and Graham Neubig and Navdeep Jaitly and Heng Ji and Alane Suhr and Yizhe Zhang},
-  year          = {2024},
+  booktitle     = {Proceedings of the 42nd International Conference on Machine Learning (ICML)},
+  year          = {2025},
   eprint        = {2412.21139},
   archivePrefix = {arXiv},
   primaryClass  = {cs.SE},
-  note          = {Accepted at ICML 2025},
+  note          = {arXiv first version 2024-12-30; accepted at ICML 2025},
   url           = {https://arxiv.org/abs/2412.21139}
 }
 
@@ -194,14 +199,15 @@
   url           = {https://arxiv.org/abs/2504.07164}
 }
 
-@misc{jimenez2024swebench,
+@inproceedings{jimenez2024swebench,
   title         = {{SWE-bench: Can Language Models Resolve Real-World GitHub Issues?}},
   author        = {Carlos E. Jimenez and John Yang and Alexander Wettig and Shunyu Yao and Kexin Pei and Ofir Press and Karthik Narasimhan},
-  year          = {2023},
+  booktitle     = {The Twelfth International Conference on Learning Representations (ICLR)},
+  year          = {2024},
   eprint        = {2310.06770},
   archivePrefix = {arXiv},
   primaryClass  = {cs.CL},
-  note          = {ICLR 2024},
+  note          = {arXiv first version 2023},
   url           = {https://arxiv.org/abs/2310.06770}
 }
 
@@ -213,4 +219,62 @@
   archivePrefix = {arXiv},
   primaryClass  = {cs.SE},
   url           = {https://arxiv.org/abs/2405.15793}
+}
+
+% ------------------------------------------------------------------ not on arXiv (@misc, URL, access date)
+
+@misc{openai2024sweverified,
+  title        = {{Introducing SWE-bench Verified}},
+  author       = {{OpenAI}},
+  year         = {2024},
+  month        = aug,
+  howpublished = {\url{https://openai.com/index/introducing-swe-bench-verified/}},
+  url          = {https://openai.com/index/introducing-swe-bench-verified/},
+  note         = {Accessed 2026-11-13 (the page refused automated access; URL and release month as linked from the Vals AI SWE-bench Verified page). Data: Hugging Face dataset princeton-nlp/SWE-bench\_Verified, revision c104f840cc67f8b6eec6f759ebc8b2693d585d4a, a human-validated subset of 500 SWE-bench test instances}
+}
+
+@misc{minisweagent2025,
+  title        = {{mini-SWE-agent}},
+  author       = {{SWE-agent}},
+  year         = {2025},
+  howpublished = {\url{https://github.com/SWE-agent/mini-swe-agent}},
+  url          = {https://github.com/SWE-agent/mini-swe-agent},
+  note         = {GitHub repository, MIT license. Versions in the corpus: 1.0.0, 1.9.1, 1.13.3, 1.15.0, 1.17.0, 1.17.1, 1.17.2 and 2.0.0 (releases 1.9.1 to 2.0.0 seen on the releases page; 1.0.0 not checked). Accessed 2026-11-13}
+}
+
+@misc{swebench2026bashonly,
+  title        = {{SWE-bench Leaderboards: Bash Only}},
+  author       = {{SWE-bench}},
+  year         = {2026},
+  howpublished = {\url{https://www.swebench.com/}},
+  url          = {https://www.swebench.com/},
+  note         = {Leaderboard tab ``Bash Only'' (SWE-bench Verified, mini-SWE-agent). Trajectories and evaluation logs from the public bucket s3://swe-bench-submissions/bash-only/ (not versioned), downloaded 2026-09-23/24 (16 runs) and 2026-11-08 (4 runs). Accessed 2026-11-13}
+}
+
+@misc{assertkth2026artifacts,
+  title        = {{agentic-evals-artifacts}},
+  author       = {{ASSERT-KTH}},
+  year         = {2026},
+  howpublished = {\url{https://huggingface.co/datasets/ASSERT-KTH/agentic-evals-artifacts}},
+  url          = {https://huggingface.co/datasets/ASSERT-KTH/agentic-evals-artifacts},
+  note         = {Hugging Face dataset, revision 5db0c4b69382d160a313d7ceaded915398c63e13, license CC BY 4.0; trajectories and evaluation results of arXiv:2602.07150. Accessed 2026-11-13}
+}
+
+@misc{swebench2025issue484,
+  title        = {{[Dataset \& Code Fix] Resolve gold patch validation failures caused by environment and dependency mismatches (Astropy \& PSF Requests)}},
+  author       = {{wentinghome}},
+  year         = {2025},
+  month        = oct,
+  howpublished = {\url{https://github.com/SWE-bench/SWE-bench/issues/484}},
+  url          = {https://github.com/SWE-bench/SWE-bench/issues/484},
+  note         = {GitHub issue \#484 of SWE-bench/SWE-bench, opened 2025-10-16 by user wentinghome, closed 2026-03-18; lists psf\_\_requests-1724, -1766, -1921 and -2317, whose tests call http://httpbin.org/, which ``intermittently returns 503 errors''. Accessed 2026-11-13}
+}
+
+@misc{valsai2026swebench,
+  title        = {{SWE-bench Verified Leaderboard and Methodology}},
+  author       = {{Vals AI}},
+  year         = {2026},
+  howpublished = {\url{https://www.vals.ai/benchmarks/swebench}},
+  url          = {https://www.vals.ai/benchmarks/swebench},
+  note         = {Updated 2026-09-01; marked as an archived benchmark (``performance on this benchmark has saturated''); top entry Claude Opus 5 (mini-SWE-agent), 97.00\%. Accessed 2026-11-13}
 }

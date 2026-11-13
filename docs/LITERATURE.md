@@ -36,6 +36,8 @@
 
 **Источники о состоянии бенчмарка:**
 - Vals AI, SWE-bench Verified (обновлено 01.09.2026): Claude Opus 5 (mini-SWE-agent) 97.00%, DeepSeek V4 Pro 96.40%, GPT-5.6 Sol 96.20%; бенчмарк архивирован как насыщенный. Из дешёвых: GPT 5 Mini 60.80%, MiniMax-M2.5 74.20%.
+  Страница `https://www.vals.ai/benchmarks/swebench` открыта 13.11.2026: «Updated 9/1/2026», «Archived Benchmark», первое
+  место — Claude Opus 5 (Mini-SWE-agent), 97.00%; в `references.bib` — `valsai2026swebench`.
 - swebench.com, bash-only, февраль 2026: лидер Claude 4.5 Opus — 76.8% (корпус работы — это поколение).
 
 **Найдены через ссылки Insecure Reporters, сами не проверены:** Guo et al., ICML 2026, «Are your agents upward deceivers?» (агенты скрывают сбои; узкая инструкция «сообщай о проблемах» помогает); Joglekar et al. 2025, «Training LLMs for honesty via confessions» (arXiv 2512.08093); Greenblatt 2026 (LessWrong, анекдотически о переоценке работы кодовыми агентами).

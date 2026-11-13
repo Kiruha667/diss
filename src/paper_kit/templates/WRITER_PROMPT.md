@@ -4,7 +4,9 @@ folder. Rules:
    exactly, including confidence intervals. Do not round differently, do not invent numbers.
 2. Use claims only at the strength given in 01_thesis_and_claims.md ("allowed wording").
    Never use the "forbidden wordings".
-3. Cite only works in references.bib. Do not add references.
+3. Cite only works in references.bib: the arXiv papers and the @misc entries for SWE-bench
+   Verified, mini-SWE-agent, the bash-only leaderboard, the ASSERT-KTH dataset, SWE-bench
+   issue #484 and Vals AI. Do not add references.
 4. Follow 11_paper_outline.md for structure and page budget; use tables and figures from
    10_figures_tables.md.
 5. Position the work against arXiv 2611.08285 and 2610.05572 as in 02_related_work.md:
@@ -34,6 +36,9 @@ Files of the kit (paths relative to this folder):
 - 12_numbers_index.md — every number of the kit with its source file and line.
 - 13_glossary.md — Russian / English terms.
 - CHECK.md — result of the automatic number check.
+
+Rule 3 was extended by the author on 2026-11-13 to allow the @misc entries (the rest of the text
+above is the author's original wording).
 
 The kit is in Russian; use the English terms of 13_glossary.md. The source tags "[источник: FILE, стр. N]" in the kit
 point to the repository (reports/, outputs/, review/); keep them out of the paper text, use 12_numbers_index.md for

@@ -103,7 +103,8 @@ def build() -> None:
     KIT.mkdir(exist_ok=True)
     for t in sorted(TEMPLATES.glob("*")):
         text = t.read_text(encoding="utf-8")
-        (KIT / t.name).write_text(PLACEHOLDER.sub(sub, text), encoding="utf-8")
+        # placeholders only in markdown: BibTeX uses {{...}} for protected capitals
+        (KIT / t.name).write_text(PLACEHOLDER.sub(sub, text) if t.suffix == ".md" else text, encoding="utf-8")
     rows = ["# 12. Индекс чисел", "",
             "Все числа набора. Порядок — по файлу-источнику и строке. Сгенерировано `python -m src.paper_kit.build "
             "build` из `src/paper_kit/numbers.py`; проверка — `CHECK.md`. Популяция — к чему относится число "
