@@ -3,10 +3,12 @@
   python -m src.paper_kit.build build  -> paper_kit/*.md from src/paper_kit/templates/*.md, paper_kit/12_numbers_index.md
   python -m src.paper_kit.build check  -> paper_kit/CHECK.md (exit code 1 if anything fails)
 
-Templates: `{{key}}` -> "VALUE [источник: FILE, стр. N]"; `{{key|v}}` -> "VALUE"; `{{src:key}}` -> "[источник: FILE, стр. N]".
+Templates: `{{key}}` -> "VALUE [источник: FILE, стр. N; POPULATION]"; `{{key|v}}` -> "VALUE"; `{{src:key}}` ->
+"[источник: FILE, стр. N; POPULATION]" (no population part for settings, thresholds and counts of features).
 Keys and values live in src/paper_kit/numbers.py: every key has a value string, a meaning, a source file (reports/,
-outputs/ or review/) and an anchor — a substring that occurs on exactly one line of the source; the build stops if the
-anchor is not unique or the value is not on that line. 12_numbers_index.md lists the keys used in the kit.
+outputs/ or review/), an anchor — a substring that occurs on exactly one line of the source — and a population (a code
+of POPULATIONS, or "na" where none applies); the build stops if the anchor is not unique, the value is not on that line
+or the population is missing. 12_numbers_index.md lists the keys used in the kit.
 
 The check (CHECK.md):
 1. every index entry: the value is on the cited source line;
@@ -22,13 +24,13 @@ import sys
 from pathlib import Path
 
 from src.common import ROOT
-from src.paper_kit.numbers import NUMBERS
+from src.paper_kit.numbers import NUMBERS, POPULATIONS
 
 KIT = ROOT / "paper_kit"
 TEMPLATES = Path(__file__).parent / "templates"
 SKIP_CHECK = {"WRITER_PROMPT.md", "CHECK.md", "12_numbers_index.md"}
 PLACEHOLDER = re.compile(r"\{\{(src:)?([A-Za-z0-9_.+\-]+)(\|v)?\}\}")
-TAG = re.compile(r"\[источник: ([^\],]+), стр\. (\d+)\]")
+TAG = re.compile(r"\[источник: ([^\],;]+), стр\. (\d+)(?:; [^\]]*)?\]")
 # names with digits that are not numbers of the work (models, metrics, versions, stages)
 MASK_WORDS = ["Claude 4.5 Opus", "Opus 4.5", "Opus 4.6", "Claude Opus 4.5", "Claude Opus 4.6", "GPT-5.2", "GPT-5",
               "Llama", "IEEE", "all-MiniLM-L6-v2", "SWE-bench Verified", "SWE-bench Pro", "τ²-bench", "τ²", "v1.x",
@@ -75,6 +77,8 @@ def resolve() -> dict[str, dict]:
         i = hits[0]
         if norm(n["value"]) not in norm(lines[i]):
             errors.append(f"{key}: value {n['value']!r} not on {n['file']}:{i + 1}")
+        if n.get("pop") not in POPULATIONS:
+            errors.append(f"{key}: population {n.get('pop')!r} is not one of POPULATIONS")
         res[key] = {**n, "line": i + 1}
     if errors:
         raise SystemExit("STOP:\n" + "\n".join(errors))
@@ -92,7 +96,8 @@ def build() -> None:
         n = res[key]
         if key not in used:
             used.append(key)
-        tag = f"[источник: {n['file']}, стр. {n['line']}]"
+        label = POPULATIONS[n["pop"]]
+        tag = f"[источник: {n['file']}, стр. {n['line']}" + (f"; {label}]" if label else "]")
         return tag if src else (n["value"] if v else f"{n['value']} {tag}")
 
     KIT.mkdir(exist_ok=True)
@@ -101,11 +106,13 @@ def build() -> None:
         (KIT / t.name).write_text(PLACEHOLDER.sub(sub, text), encoding="utf-8")
     rows = ["# 12. Индекс чисел", "",
             "Все числа набора. Порядок — по файлу-источнику и строке. Сгенерировано `python -m src.paper_kit.build "
-            "build` из `src/paper_kit/numbers.py`; проверка — `CHECK.md`.", "",
-            "| ключ | число | что означает | файл-источник | строка |", "|---|---|---|---|---|"]
+            "build` из `src/paper_kit/numbers.py`; проверка — `CHECK.md`. Популяция — к чему относится число "
+            "(обозначения — `03_data.md`, §6); «—» — настройка, порог или счёт признаков, популяции нет.", "",
+            "| ключ | число | что означает | популяция | файл-источник | строка |", "|---|---|---|---|---|---|"]
     for key in sorted(used, key=lambda k: (res[k]["file"], res[k]["line"], k)):
         n = res[key]
-        rows.append(f"| `{key}` | {n['value']} | {n['meaning']} | `{n['file']}` | {n['line']} |")
+        rows.append(f"| `{key}` | {n['value']} | {n['meaning']} | {POPULATIONS[n['pop']] or '—'} | `{n['file']}` | "
+                    f"{n['line']} |")
     (KIT / "12_numbers_index.md").write_text("\n".join(rows) + "\n", encoding="utf-8")
     print(f"built {len(list(TEMPLATES.glob('*')))} files, {len(used)} numbers in the index")
 
@@ -205,6 +212,9 @@ def check() -> int:
             f"{len(index_keys) - len(bad_index)} из {len(index_keys)}.",
             "- Источники записей индекса: " + ", ".join(f"`{d}/` — {k}" for d, k in sorted(
                 __import__("collections").Counter(res[x]["file"].split("/")[0] for x in index_keys).items())) + ".",
+            "- Популяции записей индекса: " + "; ".join(f"{POPULATIONS[p] or '— (популяции нет)'} — {k}" for p, k in sorted(
+                __import__("collections").Counter(res[x]["pop"] for x in index_keys).items(),
+                key=lambda t: -t[1])) + ".",
             f"- Проверено файлов набора: {len(files)} (кроме {', '.join(sorted(SKIP_CHECK))}); абзацев и строк таблиц с "
             f"числами: {n_lines}; чисел: {n_tokens}.",
             f"- Чисел вне индекса: {len(not_indexed)}; чисел, которых нет на строках источников, указанных в том же "

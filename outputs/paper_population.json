@@ -1,0 +1,271 @@
+{
+ "g0": {
+  "claim_share_empty_patches": 0.6136363636363636,
+  "empty_patches": 132,
+  "P_ne": {
+   "runs": 7732,
+   "resolved": 5266,
+   "unresolved": 2466,
+   "claim_resolved": 0.3564375237371819,
+   "claim_unresolved": 0.3710462287104623,
+   "diff_pooled": [
+    -0.014608704973280373,
+    -0.03891730022976826,
+    0.008820341249188698
+   ],
+   "diff_within_combo": [
+    0.030835252057445247,
+    0.009405663249871625,
+    0.05283440626930685
+   ],
+   "combos_positive_diff": 12,
+   "combos": 16,
+   "false_success_share_unresolved": [
+    0.3706407137064071,
+    0.35179452356029167,
+    0.3918436323161933
+   ],
+   "no_final_message": 0,
+   "mutual_information_bits": 0.00014464626586918605,
+   "outcome_entropy_bits": 0.9032187803623004,
+   "normalized_mi": 0.00016014532582146415
+  },
+  "P_all": {
+   "runs": 7864,
+   "resolved": 5266,
+   "unresolved": 2598,
+   "claim_resolved": 0.3564375237371819,
+   "claim_unresolved": 0.3833718244803695,
+   "diff_pooled": [
+    -0.02693430074318759,
+    -0.051379625256587964,
+    -0.003527481924650825
+   ],
+   "diff_within_combo": [
+    0.027218870295958045,
+    0.005774299214727391,
+    0.04868122945835872
+   ],
+   "combos_positive_diff": 12,
+   "combos": 16,
+   "false_success_share_unresolved": [
+    0.3829869130100077,
+    0.3635310706576442,
+    0.40445994600614876
+   ],
+   "no_final_message": 0,
+   "mutual_information_bits": 0.0004976362377475674,
+   "outcome_entropy_bits": 0.9153001064204176,
+   "normalized_mi": 0.0005436864196309752
+  }
+ },
+ "e14": {
+  "corpus_v2_runs": 3945,
+  "corpus_v2_empty_dropped": 11,
+  "new_runs": 984,
+  "new_empty_dropped": 1,
+  "new_unresolved": 222,
+  "check_vs_e14": {
+   "e14_summary": [
+    0.6358297141108482,
+    0.5874768113046794,
+    0.6809655277912293
+   ],
+   "here": [
+    0.6358297141108482,
+    0.5874768113046794,
+    0.6809655277912293
+   ]
+  }
+ },
+ "e7": {
+  "runs": 7732,
+  "tasks": 500,
+  "unresolved_share": 0.31893429901707193,
+  "check_vs_e15": {
+   "S": {
+    "auroc": [
+     0.653935,
+     0.653935
+    ],
+    "within": [
+     0.602157,
+     0.602157
+    ]
+   },
+   "M": {
+    "auroc": [
+     0.584196,
+     0.584196
+    ],
+    "within": [
+     0.734422,
+     0.734422
+    ]
+   },
+   "M+S": {
+    "auroc": [
+     0.677858,
+     0.677858
+    ],
+    "within": [
+     0.65766,
+     0.65766
+    ]
+   }
+  },
+  "convergence_warnings": 0,
+  "seconds": 972.1
+ },
+ "e12": {
+  "runs": 7732,
+  "M+S_vs_e7_p_ne_max_abs_diff": 4.99928876074307e-09,
+  "convergence_warnings": 0,
+  "pca_explained_variance": {
+   "fold0": 0.55,
+   "fold1": 0.5514,
+   "fold2": 0.5494,
+   "fold3": 0.548,
+   "fold4": 0.5496
+  }
+ },
+ "e13": {
+  "runs": 7732,
+  "transfer": {
+   "convergence_warnings": 0,
+   "test_v2": {
+    "runs": 3945,
+    "tasks": 500,
+    "unresolved_share": 0.27249683143219267
+   },
+   "test_v1": {
+    "runs": 3787,
+    "tasks": 500,
+    "unresolved_share": 0.36730921573805125
+   }
+  },
+  "check_patch": {
+   "posthoc_non_empty": [
+    0.012497770668559172,
+    0.002196107601672248,
+    0.02331468086244737
+   ],
+   "here": [
+    0.012497770668559172,
+    0.002196107601672248,
+    0.02331468086244737
+   ]
+  },
+  "combos": {
+   "n": 16,
+   "auroc_S_mean": 0.6431954660924007,
+   "auroc_S_min": 0.5777643616774254,
+   "auroc_S_max": 0.6936075274032399,
+   "combo_min": "gemini-3-pro-preview@high | 2.0.0",
+   "combo_max": "minimax-m2 | 1.17.0",
+   "spearman_rho": [
+    -0.18543051377715697,
+    -0.61213412090947,
+    0.4308775743569669
+   ],
+   "table": [
+    {
+     "combo": "GLM-4.5 | 1.9.1",
+     "runs": 486,
+     "resolved_share": 0.557613,
+     "auroc_S": 0.64428
+    },
+    {
+     "combo": "claude-haiku-4-5-20251001@high | 2.0.0",
+     "runs": 499,
+     "resolved_share": 0.671343,
+     "auroc_S": 0.672661
+    },
+    {
+     "combo": "claude-sonnet-4-5-20250929 | 1.13.3",
+     "runs": 493,
+     "resolved_share": 0.716024,
+     "auroc_S": 0.685006
+    },
+    {
+     "combo": "claude-sonnet-4-5-20250929@high | 2.0.0",
+     "runs": 497,
+     "resolved_share": 0.716298,
+     "auroc_S": 0.648617
+    },
+    {
+     "combo": "deepseek-v3.2@high | 2.0.0",
+     "runs": 499,
+     "resolved_share": 0.701403,
+     "auroc_S": 0.65628
+    },
+    {
+     "combo": "devstral-2512 | 1.17.2",
+     "runs": 420,
+     "resolved_share": 0.640476,
+     "auroc_S": 0.642187
+    },
+    {
+     "combo": "devstral-small-2512 | 1.17.2",
+     "runs": 451,
+     "resolved_share": 0.625277,
+     "auroc_S": 0.650468
+    },
+    {
+     "combo": "gemini-2.5-pro | 1.0.0",
+     "runs": 493,
+     "resolved_share": 0.543611,
+     "auroc_S": 0.62903
+    },
+    {
+     "combo": "gemini-3-flash-preview@high | 2.0.0",
+     "runs": 496,
+     "resolved_share": 0.764113,
+     "auroc_S": 0.614302
+    },
+    {
+     "combo": "gemini-3-pro-preview | 1.15.0",
+     "runs": 499,
+     "resolved_share": 0.743487,
+     "auroc_S": 0.619672
+    },
+    {
+     "combo": "gemini-3-pro-preview@high | 2.0.0",
+     "runs": 475,
+     "resolved_share": 0.743158,
+     "auroc_S": 0.577764
+    },
+    {
+     "combo": "glm-4.6 | 1.17.1",
+     "runs": 471,
+     "resolved_share": 0.58811,
+     "auroc_S": 0.641557
+    },
+    {
+     "combo": "glm-5@high | 2.0.0",
+     "runs": 488,
+     "resolved_share": 0.745902,
+     "auroc_S": 0.621699
+    },
+    {
+     "combo": "kimi-k2.5@high | 2.0.0",
+     "runs": 495,
+     "resolved_share": 0.715152,
+     "auroc_S": 0.606062
+    },
+    {
+     "combo": "minimax-m2 | 1.17.0",
+     "runs": 474,
+     "resolved_share": 0.64346,
+     "auroc_S": 0.693608
+    },
+    {
+     "combo": "minimax-m2.5@high | 2.0.0",
+     "runs": 496,
+     "resolved_share": 0.764113,
+     "auroc_S": 0.687933
+    }
+   ]
+  }
+ }
+}

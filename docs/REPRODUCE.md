@@ -40,6 +40,7 @@
 | E12 | `python -m src.e12_task_difficulty` | как E7 + all-MiniLM-L6-v2 | HF | ≈ 4 мин | — | нет |
 | E13 | `python -m src.e13_generations_patch patches` (скачивает 7 864 `patch.diff`), затем `run` | как E7; `logs/<task>/patch.diff`; данные E8 | бакет | `run` ≈ 1 мин | — | нет |
 | E14 | `python -m src.e14_new_models` | `data/raw/swebench_bashonly_new/`: 4 прогона февраля 2026 (ниже) | бакет | ≈ 2.5 мин | — | нет |
+| популяция статьи (пересчёт G0, E7, E12, E13, E14 на 7 732 прогонах без пустых патчей) | `python -m src.paper_population run` (части `g0 e7 e12 e13 e14`), затем `report` — раздел «Популяция статьи» в отчётах этих этапов | как E7, E12, E13, E14; `outputs/g0_final_messages.csv` | — | ≈ 18 мин (E7 — 16 мин) | — | нет |
 | G0, ручная проверка | `python -m src.g0_human_check sample` (сделано), `analyze` (после разметки автора) | `runs.parquet`, `e7_texts.parquet`, `outputs/g0_final_messages.csv` | — | секунды | — | нет |
 | собственный корпус | `own_data/infra/` (PowerShell + WSL2 + Docker), протокол `own_data/PROTOCOL.md` | API z.ai (glm-4.6), образы SWE-bench | z.ai, Docker Hub | не сведено; по прогонам — `own_data/LOG.md` | Docker в WSL2 | **да**: `ZAI_API_KEY`; расход $4.88 |
 

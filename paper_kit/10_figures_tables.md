@@ -15,7 +15,7 @@
 - **Подпись (EN):** "Precision@10% (review budget of one tenth of the runs) on submitted runs without empty patches. Model identity plus
   length (M + length) matches the trajectory model (M+S); task difficulty estimated from other models' outcomes is a
   ceiling, not a deployable predictor. Dashed line: base rate of unresolved runs (0.319). Error bars: cluster-bootstrap
-  confidence intervals over tasks." [источник: reports/E15_REPORT.md, стр. 44]
+  confidence intervals over tasks." [источник: reports/E15_REPORT.md, стр. 44; популяция 7 732]
 
 ### Рисунок 2 — уровень попытки (`figures/fig2_run_level.pdf`)
 
@@ -25,7 +25,7 @@
 - **Подпись (EN):** "Within-unit AUROC on repeated runs (ASSERT-KTH, two settings). On all pairs the structure model
   is close to the single flag 'attempt not finished'; among pairs of finished attempts it is not distinguishable from
   chance. Only the agent's own check outcomes keep a small signal for devstral-2512 (0.549 [0.502; 0.593] on finished
-  pairs). Error bars: bootstrap confidence intervals over units." [источник: reports/E15_REPORT.md, стр. 147]
+  pairs). Error bars: bootstrap confidence intervals over units." [источник: reports/E15_REPORT.md, стр. 147; повторы KTH, devstral-2512]
 
 ### Рисунок 3 — разложение дисперсии (`figures/fig3_variance.pdf`)
 
@@ -33,7 +33,7 @@
 - **Данные:** `outputs/e15_variance.csv` (популяция E8, две настройки, латентная шкала).
 - **Подпись (EN):** "Latent variance of the outcome on repeated runs (mixed logistic model, two settings): task
   50.0%, attempt 8.6%. Identical patches almost never receive different labels,
-  so the within-unit AUROC ceiling is about one." [источник: reports/E15_REPORT.md, стр. 238] [источник: reports/E15_REPORT.md, стр. 240]
+  so the within-unit AUROC ceiling is about one." [источник: reports/E15_REPORT.md, стр. 238; повторы KTH, две настройки] [источник: reports/E15_REPORT.md, стр. 240; повторы KTH, две настройки]
 
 ### Рисунок 4 — ответы на обычный вопрос (`figures/fig4_self_assessment.pdf`)
 
@@ -41,7 +41,7 @@
 - **Данные:** `outputs/e16_attempts.csv` (`C3_number`, `label`).
 - **Подпись (EN):** "Answers of devstral-2512 to 'probability that the hidden tests pass', asked in its own context
   after a finished attempt. Answers concentrate at the top of the scale for both outcomes; within-unit AUROC
-  0.551 [0.520; 0.584]." [источник: reports/E16_REPORT.md, стр. 53]
+  0.551 [0.520; 0.584]." [источник: reports/E16_REPORT.md, стр. 53; E16: законченные попытки devstral-2512, 142 единицы]
 
 ## Таблицы
 

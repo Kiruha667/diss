@@ -124,11 +124,20 @@ def tfidf():
     return TfidfVectorizer(ngram_range=(1, 2), max_features=5000)
 
 
-def oof_risks(pop: pd.DataFrame, y: np.ndarray, fold: np.ndarray) -> tuple[dict[str, np.ndarray], dict]:
+SPEC = {"S": (["S"], []), "M": (["M"], []), "T": (["repo"], ["T"]), "T+M": (["repo", "M"], ["T"]),
+        "T+M+S": (["repo", "M", "S"], ["T"]), "T+M+S+A": (["repo", "M", "S"], ["T", "A"]),
+        "T+M+S+R": (["repo", "M", "S"], ["T", "R"]), "M+S": (["M", "S"], [])}  # name -> (dense blocks, TF-IDF blocks)
+
+
+def oof_risks(pop: pd.DataFrame, y: np.ndarray, fold: np.ndarray,
+              spec: dict | None = None) -> tuple[dict[str, np.ndarray], dict]:
+    """Out-of-fold risks of the models in `spec` (default: the protocol's SPEC; src.paper_population adds M+S+A and
+    M+S+R)."""
     from sklearn.linear_model import LogisticRegression
     from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-    risk = {m: np.zeros(len(pop)) for m in MODELS}
+    spec = SPEC if spec is None else spec
+    risk = {m: np.zeros(len(pop)) for m in spec}
     groups = pop.task_id.to_numpy()
     tasks = np.array(sorted(pop.task_id.unique()))
     task_pos = pd.Series(np.arange(len(tasks)), index=tasks)[pop.task_id].to_numpy()
@@ -150,9 +159,6 @@ def oof_risks(pop: pd.DataFrame, y: np.ndarray, fold: np.ndarray) -> tuple[dict[
                "A": tfidf().fit(pop.final_full[tr]).transform(pop.final_full),
                "R": tfidf().fit(pop.reasoning_full[tr]).transform(pop.reasoning_full)}
         timing[f"fold{k}_tfidf_s"] = round(time.time() - t0, 1)
-        spec = {"S": (["S"], []), "M": (["M"], []), "T": (["repo"], ["T"]), "T+M": (["repo", "M"], ["T"]),
-                "T+M+S": (["repo", "M", "S"], ["T"]), "T+M+S+A": (["repo", "M", "S"], ["T", "A"]),
-                "T+M+S+R": (["repo", "M", "S"], ["T", "R"]), "M+S": (["M", "S"], [])}
         for name, (dblocks, tblocks) in spec.items():
             xd = np.hstack([dense[b] for b in dblocks])
             sc = StandardScaler().fit(xd[tr])
