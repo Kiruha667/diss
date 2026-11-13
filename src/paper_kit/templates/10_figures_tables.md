@@ -23,9 +23,12 @@
   базы «попытка не закончена», `S` (внутри настройки и на двух вместе), `S+O`; панели — devstral-2512 и обе настройки.
 - **Данные:** `outputs/e15_kth_within.csv`.
 - **Подпись (EN):** "Within-unit AUROC on repeated runs (ASSERT-KTH, two settings). On all pairs the structure model
-  is close to the single flag 'attempt not finished'; among pairs of finished attempts it is not distinguishable from
-  chance. Only the agent's own check outcomes keep a small signal for devstral-2512 ({{e15k.dev.so2.ff|v}} on finished
-  pairs). Error bars: bootstrap confidence intervals over units." {{src:e15k.dev.so2.ff}}
+  is close to the single flag 'attempt not finished'. Among pairs of finished attempts it is not distinguishable from
+  chance in either setting ({{e15k.dev.s2.ff|v}} for devstral-2512 with within-setting training); pooled over both
+  settings it is {{e15k.both.s1.ff|v}} with pooled training and {{e15k.both.s2.ff|v}} with within-setting training.
+  The agent's own check outcomes keep a small signal for devstral-2512 ({{e15k.dev.so2.ff|v}} on finished pairs; no
+  correction for multiple comparisons). Error bars: bootstrap confidence intervals over units."
+  {{src:e15k.dev.s2.ff}} {{src:e15k.both.s1.ff}} {{src:e15k.both.s2.ff}} {{src:e15k.dev.so2.ff}}
 
 ### Рисунок 3 — разложение дисперсии (`figures/fig3_variance.pdf`)
 
