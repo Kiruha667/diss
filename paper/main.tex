@@ -1,0 +1,38 @@
+% The paper: IEEE conference, two columns. Plan: paper_kit/11_paper_outline.md (one file in sections/ per part of the
+% plan); numbers: paper_kit/12_numbers_index.md; references: refs.bib = copy of paper_kit/references.bib; figures: copy
+% of paper_kit/figures/.
+%   latexmk -pdf main.tex          (in paper/)  -> main.pdf (not committed)
+%   python -m src.paper_build      (repo root)  -> latexmk + paper/BUILD.md (pages, box warnings, unresolved references)
+%   python -m src.paper_check      (repo root)  -> paper/CHECK.md (\numsrc against the index, numbers without \numsrc,
+%                                                  \cite keys); rewrites stale index line numbers in \numsrc
+\documentclass[conference]{IEEEtran}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{cite}
+\graphicspath{{figures/}}
+
+% \numsrc{key@Lline}{value}: where a number comes from (key and line of its row in paper_kit/12_numbers_index.md).
+% Editorial provenance only: the first argument is never printed, the value is printed as is.
+\newcommand{\numsrc}[2]{#2}
+% An open item of the draft, printed in brackets so that it is visible; listed in CHECK.md.
+\newcommand{\TODO}[1]{[TODO: #1]}
+
+\begin{document}
+% IEEEtran.bst: "et al." after the first author for works with more than six authors (paper_kit/11_paper_outline.md)
+\bstctlcite{IEEEtran:BSTcontrol}
+
+\input{sections/00_front}
+\input{sections/01_introduction}
+\input{sections/02_data}
+\input{sections/03_decomposition}
+\input{sections/04_attempt}
+\input{sections/05_words}
+\input{sections/06_transfer}
+\input{sections/07_related_conclusion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEtran_control,refs}
+\end{document}

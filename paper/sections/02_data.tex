@@ -1,0 +1,41 @@
+% Section II of the paper: DISS_ARTICLE_PACKET_01.tex (article packet 01), its body without the preamble and the
+% embedded bibliography (references: paper/refs.bib).
+% Source main of the packet: c9344538396741d09116537a54559e2240162075, checked 2026-11-13.
+% numsrc first argument: key@Lline in paper_kit/12_numbers_index.md; kept current by python -m src.paper_check.
+% numsrc annotations are editorial provenance and are not printed.
+
+\section{Data and protocol}
+\label{sec:data-protocol}
+
+\subsection{Problem Formulation and Data}
+\label{sec:problem-data}
+
+% Evidence: paper_kit/04_methods.md, Section 1; paper_kit/02_related_work.md, Section 1.
+For a task $x$ and an agent--model combination $m$, let $\tau$ be the full execution trajectory ending in a submitted patch. We treat submission as an operational claim of completion and estimate the risk that the submitted result is unresolved. Hidden benchmark tests define the outcome; neither these tests nor the reference patch is available to the risk model. Assessment takes place after submission, in contrast to prefix-based failure prediction~\cite{shi2026hardissue}.
+
+% Evidence: paper_kit/03_data.md, Section 1. Primary population P_ne.
+The main corpus comprises bash-only mini-SWE-agent trajectories on SWE-bench Verified~\cite{jimenez2024swebench,yang2024sweagent}: \numsrc{e15.ne.runs@L48}{7\,732} submitted runs with non-empty patches and an unresolved proportion of \numsrc{e15.ne.base@L47}{0.319}. Non-submitted runs are excluded; submitted empty patches enter only a population-sensitivity comparison.
+
+% Evidence: paper_kit/03_data.md, Section 2. No DeepSWE outcome estimates are used.
+Repeated runs come from ASSERT-KTH's nano-agent corpus~\cite{bjarnason2026randomness}, collected with \numsrc{kth.runs_per_task@L145}{10} runs per task. Qwen3-32B and devstral-2512 contribute \numsrc{e8.qwen.runs@L155}{4247} and \numsrc{e8.dev.runs@L154}{4978} labeled attempts, respectively. A unit is a setting--task combination. An attempt is \emph{finished} when its last message is an agent message without a tool call; otherwise it is \emph{cut-off}. DeepSWE-Preview is excluded: labels attached to absent patches, conflicting labels for identical patches, and result filenames identifying another scaffold show that the labels do not belong to these trajectories.
+
+% Evidence: paper_kit/03_data.md, Sections 3--4.
+A separate transfer set contains \numsrc{e14.runs@L40}{985} runs from Opus 4.5 high and Opus 4.6, held out from training and sharing the newer scaffold log format. Known label noise includes failures of the external service used by some \texttt{psf/requests} tests.
+
+\subsection{Methodology}
+\label{sec:methodology}
+
+% Evidence: paper_kit/04_methods.md, Sections 2--3; paper_kit/13_glossary.md.
+\emph{Features and models.} Structure $S$ includes lengths, edit/verify/other phase shares and transitions, repeated commands, nonzero return codes, and behavior after the last edit: \numsrc{rev.s21@L196}{21} columns with \numsrc{rev.s20@L195}{20} distinct features. Command rules assign phases; rejected or unsuccessful edits still count as edits. $M$ encodes the agent--model combination; $LEN$ contains length features and $N$ the log step count. Block $O$ contains \numsrc{e10.o19@L19}{19} features describing the outcomes of the agent's own checks, including unknown outcomes. Features are standardized before logistic regression; task-grouped \texttt{GroupKFold} produces out-of-fold risks without training on the evaluated task. T1 pools settings; T2 fits each setting separately; T3 fits within-setting models on finished attempts only. [TODO: index the regularization strength and fold count.]
+
+% Evidence: paper_kit/04_methods.md, Sections 4--5; paper_kit/05_results_decomposition.md.
+\emph{Decomposition and evaluation.} We compare $D$, $M$, $M+N$, $M+LEN$, $S$, and $M+S$, and measure the increment from $D+M$ to $D+M+S$. Here $D$ is the unresolved proportion among other models on the same task: a diagnostic ceiling using their outcomes, not a predictor for unseen tasks. Pooled AUROC compares all unresolved--resolved pairs; within-task AUROC restricts comparisons to the same task; within-unit AUROC further fixes the setting~\cite{esfandyaridoulabi2026disentangling}. Repeated-run evaluation separates all pairs from pairs of finished attempts and includes the untrained ``attempt not finished'' baseline. Ties receive their expected contribution.
+
+% Evidence: paper_kit/04_methods.md, Section 5; paper_kit/06_results_run_level.md, Section 3.
+\emph{Applications and diagnostics.} Triage measures precision and recall at a fixed review budget. Best-of-$k$ selection uses \numsrc{e15k.k@L113}{$k=5$} and \numsrc{e9.nsub@L171}{200} random subsets per task, comparing the lowest-risk attempt with random selection among submitted or finished attempts. A mixed logistic model decomposes outcome variance into setting, task, task--setting, and attempt components on the latent scale; we also report an observed-scale decomposition. Label disagreements between byte-identical patches estimate evaluation noise and a within-unit AUROC ceiling.
+
+% Evidence: paper_kit/07_results_agent_words.md, Sections 1--2 and 4.
+\emph{The agent's words.} A regular-expression detector identifies spontaneous success claims; its errors and model-stratified associations are assessed separately. Elicitation retrospectively continues devstral-2512 conversations via OpenRouter to Mistral: C3 asks for the probability that hidden tests pass; C4 adds ``Be honest in your response.'' E11b compares finished attempts; E16 distinguishes all \numsrc{e16.pairs.all@L132}{1\,475} finished-attempt pairs, including retained answers, from \numsrc{e16.pairs.new@L134}{595} pairs containing only newly collected answers. Identity with the original serving model cannot be established. [TODO: index collection and elicitation temperatures.]
+
+% Evidence: paper_kit/04_methods.md, Section 6; paper_kit/06_results_run_level.md, opening paragraph.
+\emph{Uncertainty and protocol.} Leaderboard intervals are \numsrc{e15.ci@L49}{95\%}. Bootstrap settings are \numsrc{e8.boot@L146}{1000 resamples, seed 42}; paired differences use the same resamples. Resampling is by task for the leaderboard and selection, and by unit for within-unit metrics. Within-unit permutation tests use Holm correction across settings where specified. Protocols precede the corresponding analyses in the commit sequence; E15 consolidates partly known results, whereas E16 is confirmatory. Commit ordering does not independently certify when analyses occurred.
