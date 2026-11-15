@@ -29,7 +29,7 @@
 
 ## 2. Повторы ASSERT-KTH (уровень попытки)
 
-- **Что это.** `ASSERT-KTH/agentic-evals-artifacts` (`assertkth2026artifacts`, `bjarnason2026randomness`), каркас nano-agent, температура 0.6,
+- **Что это.** `ASSERT-KTH/agentic-evals-artifacts` (`assertkth2026artifacts`, `bjarnason2026randomness`), каркас nano-agent, температура сбора {{kth.temp}} (протокол — {{src:kth.temp.proto}}; в коде проекта только комментарий адаптера — {{code.kth.temp}}),
   {{kth.runs_per_task|v}} прогонов на задачу SWE-bench Verified {{src:kth.runs_per_task}}. Единица — настройка × задача.
 - **В анализе две настройки:** Qwen3-32B и devstral-2512. Из попыток каждой настройки исключены попытки с
   пустым патчем и с ошибкой оценки (строка «исключено» в таблице).

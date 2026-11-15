@@ -25,6 +25,7 @@
 | `e10.unknown.dev` | 16.5% | E10: доля проверок unknown у devstral-2512 | повторы KTH, devstral-2512 | `reports/E10_REPORT.md` | 56 |
 | `e10.o19` | 19 признаков | E10: основной набор O | — | `reports/E10_REPORT.md` | 73 |
 | `e10.sel.dev.so` | +1.58 п.п. [+0.50; +2.66] | E10: выбор из 5 по S+O, devstral, к случайной среди отправивших | повторы KTH, devstral-2512 | `reports/E10_REPORT.md` | 133 |
+| `e11.temp` | 0 | температура опроса E11 | — | `reports/E11_PROTOCOL.md` | 64 |
 | `e11.pairs` | 100 | E11: пар (решённая и нерешённая попытка одной задачи) | E11: 100 пар попыток devstral-2512 | `reports/E11_REPORT.md` | 6 |
 | `e11.c4.ff` | 0.500 [0.431; 0.569] | E11: AUROC C4 на парах законченных | E11: 100 пар попыток devstral-2512 | `reports/E11_REPORT.md` | 22 |
 | `e11.hfm` | 0.565 [0.505; 0.630] | E11: AUROC признака «есть финальное сообщение» | E11: 100 пар попыток devstral-2512 | `reports/E11_REPORT.md` | 23 |
@@ -35,6 +36,7 @@
 | `e11b.c4_c3` | −0.054 [−0.103; +0.000] | E11b: C4 − C3 | E11b: 112 пар законченных попыток devstral-2512 | `reports/E11b_REPORT.md` | 16 |
 | `e11b.c3` | 0.571 [0.518; 0.625] | E11b: AUROC C3 (описательно) | E11b: 112 пар законченных попыток devstral-2512 | `reports/E11b_REPORT.md` | 45 |
 | `e11b.pairs` | 112 | E11b: пар законченных попыток | E11b: 112 пар законченных попыток devstral-2512 | `reports/E11b_REPORT.md` | 77 |
+| `e11b.temp` | temperature 0 | температура опроса E11b (как в E11) | — | `reports/E11b_REPORT.md` | 94 |
 | `e12.ne.t2` | 0.559 [0.515; 0.602] | E12: эмбеддинг описания задачи, AUROC, P_ne | популяция 7 732 | `reports/E12_REPORT.md` | 86 |
 | `e12.ne.diff` | −0.018 [−0.048; +0.012] | E12: (T2+M+S) − (M+S), AUROC, P_ne | популяция 7 732 | `reports/E12_REPORT.md` | 91 |
 | `e13.gen.k` | 8 связок | связок в каждом поколении | — | `reports/E13_REPORT.md` | 27 |
@@ -56,6 +58,8 @@
 | `e14.ne.within` | 0.615 [0.567; 0.662] | E14: S, обучение внутри новых связок, P_ne | Opus 4.5 и 4.6: 984 прогона; обучение — v2.0.0 популяции 7 732 | `reports/E14_REPORT.md` | 123 |
 | `e14.ne.opus45` | 0.652 [0.591; 0.711] | E14: перенос S, Opus 4.5, P_ne | Opus 4.5 и 4.6: 984 прогона; обучение — v2.0.0 популяции 7 732 | `reports/E14_REPORT.md` | 126 |
 | `e14.ne.opus46` | 0.634 [0.579; 0.692] | E14: перенос S, Opus 4.6, P_ne | Opus 4.5 и 4.6: 984 прогона; обучение — v2.0.0 популяции 7 732 | `reports/E14_REPORT.md` | 130 |
+| `m.lr.C` | C=1 | сила регуляризации логистической регрессии (L2), без подбора; лидерборд (E15, как E7) | — | `reports/E15_PROTOCOL.md` | 39 |
+| `m.folds.t1` | 5 | фолдов GroupKFold по задаче, повторы KTH, схема T1 (на объединении настроек) | — | `reports/E15_PROTOCOL.md` | 105 |
 | `e15v.disc.dev` | 0 расхождений из 2 609 пар | одинаковые патчи с разной меткой, devstral-2512 | повторы KTH, devstral-2512 | `reports/E15_REPORT.md` | 35 |
 | `e15v.disc.qwen` | 4 из 2 276 | одинаковые патчи с разной меткой, Qwen3-32B | повторы KTH, Qwen3-32B | `reports/E15_REPORT.md` | 35 |
 | `e15.ne.base` | 0.319 | доля нерешённых в P_ne | популяция 7 732 | `reports/E15_REPORT.md` | 44 |
@@ -148,6 +152,7 @@
 | `e15v.same.dev` | 1 241 из 4 978 | попыток в группах одинаковых патчей, devstral-2512 | повторы KTH, devstral-2512 | `reports/E15_REPORT.md` | 272 |
 | `e15v.same.qwen` | 1 177 из 4 247 | попыток в группах одинаковых патчей, Qwen3-32B | повторы KTH, Qwen3-32B | `reports/E15_REPORT.md` | 272 |
 | `e15v.thr` | 0.9 | порог правила чтения 3.7 (потолок выше — исход определяется попыткой) | — | `reports/E15_REPORT.md` | 293 |
+| `e16.temp` | temperature 0 | температура опроса E16 | — | `reports/E16_PROTOCOL.md` | 52 |
 | `e16.mostly` | 95 или 100 | E16: типичные ответы C3 | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md` | 21 |
 | `e16.share100.fail` | 49.4% | E16: доля ответа «100» у нерешённых | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md` | 22 |
 | `e16.share100.ok` | 62.2% | E16: доля ответа «100» у решённых | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md` | 22 |
@@ -171,7 +176,10 @@
 | `e7.ne.R` | +0.008 [−0.016; +0.033] | E7: (M+S+R) − (M+S), общий AUROC (R — рассуждения), P_ne | популяция 7 732 | `reports/E7_REPORT.md` | 240 |
 | `e7.ne.A.tms` | +0.008 [+0.003; +0.013] | E7, критерий г: (T+M+S+A) − (T+M+S), общий AUROC, P_ne | популяция 7 732 | `reports/E7_REPORT.md` | 241 |
 | `e7.ne.R.tms` | +0.021 [+0.009; +0.032] | E7, критерий г: (T+M+S+R) − (T+M+S), общий AUROC, P_ne | популяция 7 732 | `reports/E7_REPORT.md` | 242 |
+| `kth.temp.proto` | 0.6 | температура сбора повторов KTH, протокол E8 | — | `reports/E8_PROTOCOL.md` | 43 |
+| `m.lr.C.kth` | C=1 | то же на повторах KTH (E8; та же модель в E9, E10, E15) | — | `reports/E8_PROTOCOL.md` | 110 |
 | `kth.runs_per_task` | 10 | прогонов на задачу в повторах KTH | повторы KTH, две настройки | `reports/E8_REPORT.md` | 9 |
+| `kth.temp` | 0.6 | температура сбора повторов KTH (nano-agent; задана корпусом, не кодом проекта) | — | `reports/E8_REPORT.md` | 9 |
 | `e8.boot` | 1000 выборок, seed 42 | бутстрэп (число выборок, seed) | — | `reports/E8_REPORT.md` | 14 |
 | `e8.dev.holm` | 0.002 | E8: p после поправки Холма, devstral-2512 | повторы KTH, devstral-2512 | `reports/E8_REPORT.md` | 20 |
 | `e8.dev.p2` | 0.581 [0.545; 0.618] | E8: P2 внутри единиц, devstral-2512 | повторы KTH, devstral-2512 | `reports/E8_REPORT.md` | 20 |
@@ -200,6 +208,7 @@
 | `e8.both.fin` | 88.8% | доля законченных финальным сообщением, обе | повторы KTH, две настройки | `reports/E8_REPORT.md` | 45 |
 | `e8.dev.fin` | 80.6% | доля законченных финальным сообщением, devstral-2512 | повторы KTH, две настройки | `reports/E8_REPORT.md` | 45 |
 | `e8.qwen.fin` | 98.4% | доля законченных финальным сообщением, Qwen3-32B | повторы KTH, две настройки | `reports/E8_REPORT.md` | 45 |
+| `m.folds.t2` | n_splits=5 | фолдов GroupKFold по задаче внутри настройки, повторы KTH, схемы T2 и T3 (фолды E9) | — | `reports/E9_PROTOCOL.md` | 42 |
 | `e9.nsub` | 200 | E9: случайных подвыборок по k попыток на задачу | — | `reports/E9_PROTOCOL.md` | 67 |
 | `e9.dev.p2` | +0.77 п.п. [−0.31; +1.85] | E9: выбор из 5 по S (T2), devstral, к случайной среди отправивших | повторы KTH, devstral-2512 | `reports/E9_REPORT.md` | 17 |
 | `e9.both` | +0.08 [−0.68; +0.83] | E9: то же, обе настройки вместе, п.п. | повторы KTH, две настройки | `reports/E9_REPORT.md` | 19 |
@@ -252,3 +261,9 @@
 | `rev.edit.own` | 9 из 20 | рецензия: шагов «правка», которые создают собственные тестовые скрипты | популяция 7 864, с пустыми патчами | `review/REVIEW.md` | 357 |
 | `rev.phase.auroc` | 0.665 (было 0.662) | рецензия: AUROC S при широком определении проверки | популяция 7 864, с пустыми патчами | `review/REVIEW.md` | 362 |
 | `rev.pages` | 6 | рецензия: объём статьи, страниц | — | `review/REVIEW.md` | 544 |
+| `code.kth.temp` | temperature 0.6 | в коде: какие настройки KTH загружает адаптер (комментарий) | — | `src/adapters/agentic_evals.py` | 41 |
+| `code.folds` | N_FOLDS = 5 | в коде: фолды лидерборда (`src/folds.py`, `outputs/folds.csv`) | — | `src/common.py` | 60 |
+| `code.elicit.temp` | "temperature": 0 | в коде: запрос опроса (`e11.request`; его же вызывают E11b и E16) | — | `src/e11_elicitation.py` | 127 |
+| `code.lr.C` | C=1.0 | в коде: модели лидерборда E15 (`lb_risks`) | — | `src/e15_consolidation.py` | 161 |
+| `code.folds.kth` | n_splits=5 | в коде: фолды повторов KTH, схемы T1–T3 (E15, `kth_risks`) | — | `src/e15_consolidation.py` | 346 |
+| `code.lr.C.kth` | C=1.0 | в коде: модель повторов KTH (`e8.new_model`; E9, E10, E15) | — | `src/e8_repeats.py` | 199 |

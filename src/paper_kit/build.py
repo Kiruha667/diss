@@ -6,7 +6,7 @@
 Templates: `{{key}}` -> "VALUE [источник: FILE, стр. N; POPULATION]"; `{{key|v}}` -> "VALUE"; `{{src:key}}` ->
 "[источник: FILE, стр. N; POPULATION]" (no population part for settings, thresholds and counts of features).
 Keys and values live in src/paper_kit/numbers.py: every key has a value string, a meaning, a source file (reports/,
-outputs/ or review/), an anchor — a substring that occurs on exactly one line of the source — and a population (a code
+outputs/ or review/; src/ for parameters of the methods, next to the protocol line they implement), an anchor — a substring that occurs on exactly one line of the source — and a population (a code
 of POPULATIONS, or "na" where none applies); the build stops if the anchor is not unique, the value is not on that line
 or the population is missing. 12_numbers_index.md lists the keys used in the kit.
 

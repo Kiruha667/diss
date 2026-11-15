@@ -124,6 +124,37 @@ n("e13.gen.v1", "3908", "прогонов поколения v1 (8 связок)
 n("e13.gen.v2", "3956", "прогонов поколения v2 (8 связок), P_all", E13, "- **Поколения.** v1")
 n("e13.gen.k", "8 связок", "связок в каждом поколении", E13, "- **Поколения.** v1", p="na")
 
+# ---------------------------------------------------------------- parameters of the methods: protocols and code
+# (a protocol line and the code line that implements it; no population)
+pop("na")
+E8P, E11P, E15P, E16P = ("reports/E8_PROTOCOL.md", "reports/E11_PROTOCOL.md", "reports/E15_PROTOCOL.md",
+                         "reports/E16_PROTOCOL.md")
+n("m.lr.C", "C=1", "сила регуляризации логистической регрессии (L2), без подбора; лидерборд (E15, как E7)", E15P,
+  "Обучение как в E7: `StandardScaler` на обучающих строках")
+n("m.lr.C.kth", "C=1", "то же на повторах KTH (E8; та же модель в E9, E10, E15)", E8P,
+  "Модель везде одна: `StandardScaler` + `LogisticRegression(C=1")
+n("code.lr.C", "C=1.0", "в коде: модели лидерборда E15 (`lb_risks`)", "src/e15_consolidation.py",
+  "mdl = LogisticRegression(C=1.0, max_iter=5000)")
+n("code.lr.C.kth", "C=1.0", "в коде: модель повторов KTH (`e8.new_model`; E9, E10, E15)", "src/e8_repeats.py",
+  "return make_pipeline(StandardScaler(), LogisticRegression(C=1.0")
+n("m.folds.t1", "5", "фолдов GroupKFold по задаче, повторы KTH, схема T1 (на объединении настроек)", E15P,
+  "| **T1 — на трёх настройках** |")
+n("m.folds.t2", "n_splits=5", "фолдов GroupKFold по задаче внутри настройки, повторы KTH, схемы T2 и T3 (фолды E9)",
+  E9P, "  - `GroupKFold(n_splits=5, shuffle=True, random_state=42)` по `task_id` на популяции E8")
+n("code.folds", "N_FOLDS = 5", "в коде: фолды лидерборда (`src/folds.py`, `outputs/folds.csv`)", "src/common.py")
+n("code.folds.kth", "n_splits=5", "в коде: фолды повторов KTH, схемы T1–T3 (E15, `kth_risks`)",
+  "src/e15_consolidation.py", "for k, (_, te) in enumerate(GroupKFold(n_splits=5")
+n("kth.temp", "0.6", "температура сбора повторов KTH (nano-agent; задана корпусом, не кодом проекта)", E8,
+  "- **Что взято** — настройки nano-agent при температуре 0.6")
+n("kth.temp.proto", "0.6", "температура сбора повторов KTH, протокол E8", E8P, "температура 0.6 — основная в статье")
+n("code.kth.temp", "temperature 0.6", "в коде: какие настройки KTH загружает адаптер (комментарий)",
+  "src/adapters/agentic_evals.py", "# the three settings of reports/E8_PROTOCOL.md: nano-agent, temperature 0.6")
+n("e11.temp", "0", "температура опроса E11", E11P, "- **temperature** 0.")
+n("e11b.temp", "temperature 0", "температура опроса E11b (как в E11)", E11B, "- **Остальное — как в E11.**")
+n("e16.temp", "temperature 0", "температура опроса E16", E16P, "`allow_fallbacks = false`), seed 42, temperature 0")
+n("code.elicit.temp", '"temperature": 0', "в коде: запрос опроса (`e11.request`; его же вызывают E11b и E16)",
+  "src/e11_elicitation.py", '"tool_choice": "none", "temperature": 0, "max_tokens": MAX_TOKENS}')
+
 # ---------------------------------------------------------------- E15, part 2: KTH, two settings
 pop("kth.dev")
 n("e15k.k", "k = 5", "главное k выбора из k", E15, "### 2.5. Выбор одной попытки из k = 5 (E9, E10)", p="na")
