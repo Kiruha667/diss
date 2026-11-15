@@ -1,6 +1,8 @@
 """Tests of the paper check (src/paper_check.py): \\numsrc against the numbers index, numbers without \\numsrc, \\cite."""
 from pathlib import Path
 
+import pytest
+
 from src import paper_check as pc
 
 INDEX = """# 12. Индекс чисел
@@ -81,3 +83,11 @@ def test_copies_must_match(tmp_path):
     (root / "paper" / "refs.bib").write_text(BIB + "\n@misc{extra,\n}\n", encoding="utf-8")
     rep = pc.check(root, fix=False)
     assert len(rep.copies) == 2
+
+
+@pytest.mark.skipif(not (pc.ROOT / "paper" / "sections").exists(), reason="no paper/")
+def test_real_paper_resolves():
+    """The paper of the repository: every \\numsrc key is in the index with the same value; every \\cite is in refs.bib;
+    no number outside \\numsrc. (Stale line numbers are not checked here: python -m src.paper_check fixes them.)"""
+    rep = pc.check(pc.ROOT, fix=False)
+    assert rep.unknown == [] and rep.mismatch == [] and rep.missing_cites == [] and rep.bare == [] and rep.copies == []

@@ -52,8 +52,8 @@ def version(exe: str, prog: str) -> str:
 
 
 def where(log: str, pos: int) -> str:
-    """The input file open at log offset pos: the last section file opened before it and not closed."""
-    files = list(re.finditer(r"\((\./[^\s()]+\.tex)", log[:pos]))
+    """The input file at log offset pos: the last section file (or main.bbl, the bibliography) opened before it."""
+    files = list(re.finditer(r"\((\./[^\s()]+\.(?:tex|bbl))", log[:pos]))
     return files[-1].group(1)[2:] if files else "main.tex"
 
 
