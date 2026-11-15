@@ -1,0 +1,36 @@
+\section{The Agent's Words}
+\label{sec:words}
+
+% Packet 02, source main: 8487ff00d66cc1a7d29316e9c2bd1127f3feccf5.
+% Claims: U12--U14 only; U15 is dissertation-only in the current outline.
+% Budget: about 0.8 page including the kit's Table III; no confidence-distribution figure.
+
+Detected success claims are as frequent for unresolved as for resolved runs: \numsrc{g0.ne.claim.fail@L229}{$37.1\%$} versus \numsrc{g0.ne.claim.ok@L228}{$35.6\%$} on the article population; within a model, resolved runs carry slightly more of them (Table~\ref{tab:agent-words}). The detector misses claims, and the corrected estimates come from an audit of \numsrc{g0.hc.n@L216}{$100$} messages from the earlier population of \numsrc{e15.all.runs@L99}{$7\,864$} submitted runs including empty patches, with model-assisted labels reviewed by the author. That audit detects only differences larger than \numsrc{rev.g0.power@L249}{$24\,\mathrm{pp}$}, so the corrected association remains unestablished.
+
+\begin{table}[t]
+\centering
+\caption{Claims and elicited self-assessment. Claim-frequency differences are resolved minus unresolved: detected claims use the article population, whereas corrections use the earlier audit including empty patches (fraction units). Elicited scores and their differences are within-unit AUROC on finished devstral-2512 pairs.}
+\label{tab:agent-words}
+\footnotesize
+\begin{tabular}{@{}lr@{}}
+\toprule
+Comparison or condition & Estimate [interval] \\
+\midrule
+\emph{Spontaneous claims} & \\
+Detector, pooled & \numsrc{g0.ne.diff@L230}{$-1.5\,\mathrm{pp}\,[-3.9;\,+0.9]$} \\
+Detector, within model & \numsrc{g0.ne.within@L231}{$+3.1\,\mathrm{pp}\,[+0.9;\,+5.3]$} \\
+Correction, strict & \numsrc{g0.hc.strict@L218}{$-0.157\,[-0.321;\,+0.017]$} \\
+Correction, broad & \numsrc{g0.hc.broad@L221}{$-0.057\,[-0.208;\,+0.094]$} \\
+\midrule
+\emph{Elicited self-assessment} & \\
+C4, first check & \numsrc{e11b.c4@L35}{$0.518\,[0.469;\,0.562]$} \\
+C4 $-$ C3, first check & \numsrc{e11b.c4_c3@L36}{$-0.054\,[-0.103;\,+0.000]$} \\
+C3, confirmatory, all pairs & \numsrc{e16.all@L160}{$0.551\,[0.520;\,0.584]$} \\
+C3, newly collected answers & \numsrc{e16.new@L163}{$0.534\,[0.489;\,0.581]$} \\
+C3 $-$ $(S+O)$, all pairs & \numsrc{e16.c3_so@L165}{$+0.005\,[-0.045;\,+0.055]$} \\
+C3 $-$ claim detector, all pairs & \numsrc{e16.c3_g0@L166}{$+0.014\,[-0.028;\,+0.055]$} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Adding ``Be honest'' to the question does not improve discrimination on finished attempts; that comparison uses \numsrc{e11b.pairs@L38}{$112$} pairs, and C4 was not repeated in the confirmatory check. The plain question gives a weak signal across all \numsrc{e16.pairs.all@L161}{$1\,475$} finished-attempt pairs, including retained answers,\footnote{The structure analysis defines finishing by a last agent message without a tool call; elicitation requires a non-empty final message, yielding \numsrc{e16.pairs.all@L161}{$1\,475$} rather than \numsrc{e15k.dev.pairs.ff@L115}{$1\,493$} devstral-2512 pairs.} but is not confirmed on the \numsrc{e16.pairs.new@L164}{$595$} pairs containing only new answers and is no stronger than the trajectory model with the agent's own check outcomes ($S+O$). Answers concentrate at \numsrc{e16.mostly@L156}{$95\,\mathrm{or}\,100$} percent for both outcomes.
