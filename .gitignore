@@ -27,5 +27,18 @@ outputs/g0_human_key.csv
 *.docx
 *.pdf
 
+# the paper (paper/, LaTeX): the built PDF and the intermediate files of latexmk are never committed; the build is
+# reported in paper/BUILD.md (python -m src.paper_build). Figure PDFs are covered by *.pdf above.
+paper/main.pdf
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.log
+paper/*.out
+paper/*.synctex.gz
+paper/*.toc
+
 # working spreadsheets of the G0 human check (author's marks, review files): never committed; the marks go to CSV
 *.xlsx

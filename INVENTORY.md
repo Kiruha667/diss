@@ -50,6 +50,7 @@
 | `reports/` | протоколы и отчёты | все | см. ниже |
 | `src/` | код | все | см. ниже |
 | `tests/` | модульные тесты (`python -m pytest tests`: 36 passed) | итерация 1–2, G0 | см. ниже |
+| `paper/` | статья, LaTeX (IEEEtran, конференция): `main.tex`, `sections/` (по разделу плана `paper_kit/11_paper_outline.md`), `refs.bib` и `figures/` — копии из `paper_kit/`, `CHECK.md`, `BUILD.md`; PDF в git не входит | статья | актуально (новое) |
 | `.venv/`, `.pytest_cache/` | локальное окружение и кэш, в git не входят | — | вспомогательное |
 
 ## data/ (в git)
@@ -119,6 +120,8 @@
 | `e16_c3_confirm.py` | E16 | актуально |
 | `kth_deepswe_labels.py` | доказательства по меткам DeepSWE-Preview в KTH (`reports/KTH_DEEPSWE_LABELS.md`) | актуально |
 | `paper_figures.py`, `paper_kit/` | рисунки и сборка набора для статьи `paper_kit/` (шаблоны, индекс чисел, проверка) | актуально |
+| `paper_population.py` | пересчёт G0, E7, E12, E13, E14 на популяции статьи (7 732) | актуально |
+| `paper_check.py`, `paper_build.py` | статья `paper/`: проверка `\numsrc` против индекса набора, чисел без `\numsrc` и `\cite` (`paper/CHECK.md`); сборка `latexmk` и отчёт `paper/BUILD.md` | актуально |
 
 ## notebooks/
 
@@ -148,6 +151,8 @@
 | `test_g0.py` | G0 | актуально |
 | `test_e5.py` | E5 (признаки `S`) | актуально |
 | `test_e6.py`, `test_exgentic.py` | E6 и адаптер Exgentic | устарело (E6), тесты проходят |
+| `test_e15.py` | E15 | актуально |
+| `test_paper_check.py` | проверка статьи `src/paper_check.py` | актуально |
 
 Тестов для E7–E14 нет; в коде этих этапов стоят проверки воспроизведения с остановкой (`CLEANUP_FINDINGS.md` 3.3).
 
