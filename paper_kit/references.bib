@@ -2,8 +2,9 @@
 % 1. Works open on arXiv: titles and author lists as returned by the arXiv API (export.arxiv.org, 2026-11-12);
 %    diacritics written as LaTeX escapes. Two of them are cited as the conference version (year of the conference).
 % 2. Sources the paper rests on that are not arXiv papers (benchmark, scaffold, leaderboard, dataset, issue, Vals AI):
-%    @misc with URL and access date. Pages read 2026-11-13; openai.com refused automated access (HTTP 403), so its URL
-%    and release month are taken from the link on the Vals AI page.
+%    misc entries with URL and access date. Pages read 2026-11-13; openai.com refused automated access (HTTP 403), so
+%    its URL and release month are taken from the link on the Vals AI page.
+% BibTeX has no comments: outside an entry, any at-sign starts an entry, so comments here never contain one.
 
 @misc{shi2026hardissue,
   title         = {{Hard Issue, Weak Model, or Bad Run? Rethinking Failure Prediction for Coding Agents}},
@@ -221,7 +222,7 @@
   url           = {https://arxiv.org/abs/2405.15793}
 }
 
-% ------------------------------------------------------------------ not on arXiv (@misc, URL, access date)
+% ------------------------------------------------------------------ not on arXiv (misc, URL, access date)
 
 @misc{openai2024sweverified,
   title        = {{Introducing SWE-bench Verified}},
