@@ -1,0 +1,24 @@
+\section{Attempt Level}
+\label{sec:attempt}
+
+% Packet 02, source main: 8487ff00d66cc1a7d29316e9c2bd1127f3feccf5.
+% Claims: U5--U11. Budget: about 1.2 pages, including the kit's Fig. 2; no Table II or variance figure.
+% Sources: paper_kit/06_results_run_level.md; E15 for training-specific contrasts and E8 for Qwen all pairs.
+
+Within a unit, the structure model is only modestly above chance on all pairs, in one of the settings, devstral-2512. With pooled training its within-unit AUROC is \numsrc{e15k.dev.s1.all@L117}{$0.581\,[0.545;\,0.618]$}, compared with \numsrc{e8.qwen.p2@L188}{$0.530\,[0.489;\,0.571]$} for Qwen3-32B. For devstral-2512 the structure model is not distinguishable from the single flag ``attempt not finished'': the gain over that flag is \numsrc{e15k.dev.s1_nf@L124}{$+0.037\,[-0.000;\,+0.076]$} with pooled training and \numsrc{e15k.dev.s2_nf@L125}{$+0.017\,[-0.021;\,+0.057]$} with within-setting training. Pooled over both settings, however, it adds \numsrc{e15k.both.s1_nf@L132}{$+0.033\,[+0.004;\,+0.062]$} beyond the flag with pooled training, versus \numsrc{e15k.both.s2_nf@L133}{$+0.008\,[-0.021;\,+0.036]$} with within-setting training.
+
+% Figure and caption: paper_kit/10_figures_tables.md, Fig. 2. Image is an unchanged kit copy.
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig2_run_level}
+\caption{Within-unit AUROC on repeated runs (ASSERT-KTH, two settings). On all pairs the structure model is close to the single flag `attempt not finished'. Among pairs of finished attempts it is not distinguishable from chance in either setting (\numsrc{e15k.dev.s2.ff@L120}{$0.510\,[0.459;\,0.557]$} for devstral-2512 with within-setting training); pooled over both settings it is \numsrc{e15k.both.s1.ff@L128}{$0.534\,[0.503;\,0.563]$} with pooled training and \numsrc{e15k.both.s2.ff@L130}{$0.503\,[0.471;\,0.533]$} with within-setting training. The agent's own check outcomes keep a small signal for devstral-2512 (\numsrc{e15k.dev.so2.ff@L123}{$0.549\,[0.502;\,0.593]$} on finished pairs; no correction for multiple comparisons). Error bars: bootstrap confidence intervals over units.}
+\label{fig:run-level}
+\end{figure*}
+
+Among attempts the agent finished, structure gives at most a very weak signal (Fig.~\ref{fig:run-level}): it is not distinguishable from chance in either setting, and pooled over both settings the interval excludes chance only with pooled training. For Qwen3-32B, within-setting training gives \numsrc{e15k.qwen.s2.ff@L131}{$0.498\,[0.456;\,0.539]$} on finished pairs. For devstral-2512, the outcomes of the agent's own test runs keep a small within-unit signal on finished pairs, with increments over $S$ of \numsrc{e15k.dev.so_s_ff@L126}{$+0.038\,[+0.011;\,+0.069]$} under within-setting training and \numsrc{e15k.dev.so_s_ff.t1@L127}{$+0.020\,[-0.008;\,+0.050]$} under pooled training; these comparisons are not corrected for multiplicity.
+
+% Latent versus observed scales must stay separate. Ceiling does not prove that stronger features exist.
+Half of latent outcome variance lies between tasks (\numsrc{e15v.lat.task.pt@L143}{$50.0\%$}). The attempt accounts for \numsrc{e15v.lat.attempt.pt@L146}{$8.6\%$} of latent variance pooled over the two settings (\numsrc{e15v.att.dev@L148}{$11.6\%$} within devstral-2512 and \numsrc{e15v.att.qwen@L149}{$16.9\%$} within Qwen3-32B), against \numsrc{e15v.obs.attempt@L147}{$26.0\%\,[24.0;\,28.3]$} on the observed scale. Identical patches almost never get different labels, yielding estimated within-unit AUROC ceilings of \numsrc{e15v.ceil.dev@L150}{$1.000$} and \numsrc{e15v.ceil.qwen@L151}{$0.992$} for devstral-2512 and Qwen3-32B, respectively, so the weak signal is not explained by evaluation noise; this estimate uses non-random groups of identical patches.
+
+% Best-of-k: two sentences, no table. Distinguish the submitted and finished baselines and T1/T2.
+Choosing among \numsrc{e15k.k@L134}{$k\,=\,5$} attempts by $S$ beats a random submitted attempt only with pooled training (devstral-2512: \numsrc{e15k.sel.dev.s1@L136}{$+1.60\,[+0.55;\,+2.70]$} percentage points) and adds nothing measurable beyond ``pick a finished attempt'' (pooled: \numsrc{e15k.sel.dev.s1fin@L137}{$+0.71\,[-0.18;\,+1.68]$}; within-setting: \numsrc{e15k.sel.dev.s2fin@L138}{$+0.02\,[-0.94;\,+0.88]$} percentage points). For $S+O$, the gains beyond that finished-attempt rule are \numsrc{e15k.sel.dev.so1fin@L139}{$+1.12\,[+0.21;\,+2.06]$} with pooled training and \numsrc{e15k.sel.dev.so2fin@L140}{$+0.76\,[-0.07;\,+1.68]$} with within-setting training, in percentage points; the former is borderline, without correction for multiple comparisons.

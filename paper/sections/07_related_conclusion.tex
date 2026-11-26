@@ -1,12 +1,15 @@
 \section{Related Work}
 \label{sec:related}
 
-% Plan (paper_kit/11_paper_outline.md, part 7; about 0.35 page together with the conclusion): 2611.08285 (parallel
-% work), 2610.05572, Mehtiyev and Assuncao (an answer to "structure discriminates consistently"), Kaddour et al.,
-% Khullar et al., Chen et al., trained verifiers. Keys for the paper: paper_kit/02_related_work.md, section 3.
-\TODO{text of the related work section}
+Concurrent work reaches the same decomposition on the same benchmark~\cite{shi2026hardissue}. We add post-submission assessment on full trajectories, within-unit evaluation on repeated runs, the finished/cut-off split, the agent's own words and check outcomes, and transfer across scaffold log formats. EsfandyariDoulabi et al.~\cite{esfandyaridoulabi2026disentangling} motivate within-unit evaluation by distinguishing task difficulty from variation across runs. Mehtiyev and Assun\c{c}\~ao report that ``trajectory structure discriminates consistently'' in comparisons across models and tasks~\cite{mehtiyev2026beyond}. We ask what structure adds beyond model and length, then compare outcomes within a task and within a model--task unit.
+
+Kaddour et al.~\cite{kaddour2026agentic} use a separate agent to assess a patch. Khullar et al.~\cite{khullar2026selfattribution} find that agents judge their own work less well in the original context than in a fresh one. Our question continues the original conversation. Huang et al.~\cite{huang2026insecure} study whether an honesty prompt elicits disclosure of a planted defect. Chen et al.~\cite{chen2026agenttests} find smaller differences in testing behavior between resolved and unresolved runs within a model. Our result on selecting finished attempts using structure alone does not extend to trained verifiers that can inspect the patch~\cite{jain2025r2egym}.
 
 \section{Conclusion}
 \label{sec:conclusion}
 
-\TODO{text of the conclusion}
+Task difficulty, model identity, and trajectory length account for nearly all the pooled signal that makes triage useful. Among finished attempts at the same task by the same model, structure gives at most a very weak signal, and whether the combined result clears chance depends on the training scheme. Detected success claims are similarly frequent across outcomes overall, the honesty prompt does not improve discrimination, and the weak signal from the plain question lacks confirmation on newly collected pairs. The structure model transfers to the held-out models in the same log format without measurable loss, while AUROC falls across formats that also differ in model composition.
+
+\section*{Use of Generative AI}
+
+The authors used Claude and GPT to analyze code, produce preliminary message labels that the author reviewed, and prepare the manuscript. All reported numerical results were taken from the outputs of reproducible scripts in the project repository. The authors take responsibility for the content. \TODO{align with the conference AI policy}

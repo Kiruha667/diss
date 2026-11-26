@@ -1,8 +1,6 @@
 \section{Transfer and Limitations}
 \label{sec:transfer}
 
-% Plan (paper_kit/11_paper_outline.md, part 6; about 0.5 page; claims U16-U17 of 01_thesis_and_claims.md):
-% transfer in one paragraph without a table -- new models of the same log format without loss, a change of format
-% with loss; limitations: benchmark saturation, selection of combinations, one model in self-assessment, two settings
-% in the repeats, phase rules, multiplicity. Sources: paper_kit/08_transfer_limitations.md.
-\TODO{text of the transfer and limitations section}
+The structure model transferred to the held-out Opus models in the same log format with no measurable loss. Its pooled AUROC was \numsrc{e14.ne.transfer@L57}{$0.631\,[0.583;\,0.676]$}, compared with \numsrc{e14.ne.within@L58}{$0.615\,[0.567;\,0.662]$} when trained on the new combinations themselves. Across log formats, AUROC was lower in both directions. On newer-format runs, training on the older format gave \numsrc{e13.ne.v1v2@L45}{$0.613\,[0.583;\,0.644]$}, versus \numsrc{e13.ne.v2v2@L46}{$0.645\,[0.614;\,0.673]$} with newer-format training. On older-format runs, the corresponding estimates were \numsrc{e13.ne.v2v1@L47}{$0.598\,[0.574;\,0.623]$} and \numsrc{e13.ne.v1v1@L48}{$0.665\,[0.639;\,0.689]$} for newer- and older-format training. Model sets also differ across formats, so these comparisons cannot isolate the effect of log format. The association between model strength and predictability depends on how the predictor is trained and remains unestablished. In our representation of the issue text, it adds nothing to $M+S$.
+
+SWE-bench Verified is saturated for leading models~\cite{valsai2026swebench}. Selecting agent--model combinations with visible reasoning excludes OpenAI models from this corpus. Repeated runs cover two settings, and we elicited self-assessments from one model. Our command rules recognize a narrow set of verification actions and count attempted edits even when they fail. Some benchmark tests depend on an external service~\cite{swebench2025issue484}. For the audit of success claims, a model assigned preliminary message labels and the author reviewed them, limiting their independence. We did not adjust for multiplicity across analyses, so borderline results warrant caution.

@@ -1,8 +1,35 @@
 \section{Decomposition}
 \label{sec:decomposition}
 
-% Plan (paper_kit/11_paper_outline.md, part 3; about 1.0 page; claims U1-U4 and U21 of 01_thesis_and_claims.md):
-% Table I -- task difficulty (ceiling), model, model + length, S, M+S, with columns precision@10% and recall@10%
-% (Figure 1 is not needed); structure beyond difficulty and model; the agent's texts on top of M+S.
-% Sources: paper_kit/05_results_decomposition.md; table: paper_kit/10_figures_tables.md (Table I).
-\TODO{text of the decomposition section and Table I}
+% Packet 02, source main: 8487ff00d66cc1a7d29316e9c2bd1127f3feccf5.
+% Claims: paper_kit/01_thesis_and_claims.md, U1--U4, U21.
+% Budget: paper_kit/11_paper_outline.md, Section 3 (about 1.0 page including Table I).
+% All leaderboard results below use P_ne. Internal analysis names remain in source comments only.
+
+Table~\ref{tab:decomposition} separates task difficulty, model identity, and trajectory information on the article population of \numsrc{e15.ne.runs@L66}{$7\,732$} submitted runs with non-empty patches. Task difficulty estimated from other models' outcomes alone reaches \numsrc{e15.ne.D@L68}{$0.926\,[0.912;\,0.936]$}; this is a ceiling, not a deployable predictor. Within a task, model identity alone ranks runs better than the trajectory models. One untested explanation is that trajectory features mainly distinguish easy from hard tasks and may add noise when task difficulty is fixed. Pooled AUROC alone cannot establish attempt-level discrimination.
+
+\begin{table*}[t]
+\centering
+\caption{Main decomposition on submitted runs without empty patches. $D$ uses other models' outcomes on the same task and is a ceiling; $M$ is model identity, $N$ the log step count, $LEN$ length features, and $S$ trajectory structure. Precision and recall refer to the highest-risk tenth of runs. Intervals are task-cluster bootstrap intervals.}
+\label{tab:decomposition}
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Predictor & Pooled AUROC & Within-task AUROC & precision@10\% & recall@10\% \\
+\midrule
+$D$ (ceiling) & \numsrc{e15.ne.D@L68}{$0.926\,[0.912;\,0.936]$} & --- & \numsrc{e15.ne.D.p10@L69}{$0.972\,[0.957;\,0.983]$} & \numsrc{e15.ne.D.rec@L70}{$0.305$} \\
+$M$ & \numsrc{e15.ne.M@L71}{$0.584\,[0.572;\,0.599]$} & \numsrc{e15.ne.M.within@L74}{$0.734\,[0.707;\,0.763]$} & \numsrc{e15.ne.M.p10@L72}{$0.445\,[0.410;\,0.488]$} & \numsrc{e15.ne.M.rec@L73}{$0.140$} \\
+$M+N$ & \numsrc{e15.ne.MN@L75}{$0.673\,[0.649;\,0.698]$} & \numsrc{e15.ne.MN.within@L78}{$0.661\,[0.636;\,0.687]$} & \numsrc{e15.ne.MN.p10@L76}{$0.578\,[0.522;\,0.633]$} & \numsrc{e15.ne.MN.rec@L77}{$0.181$} \\
+$M+LEN$ & \numsrc{e15.ne.MLEN@L79}{$0.675\,[0.652;\,0.697]$} & \numsrc{e15.ne.MLEN.within@L84}{$0.667\,[0.641;\,0.693]$} & \numsrc{e15.ne.MLEN.p10@L80}{$0.605\,[0.545;\,0.659]$} & \numsrc{e15.ne.MLEN.rec@L83}{$0.190$} \\
+$S$ & \numsrc{e15.ne.S@L85}{$0.654\,[0.630;\,0.676]$} & \numsrc{e15.ne.S.within@L88}{$0.602\,[0.576;\,0.629]$} & \numsrc{e15.ne.S.p10@L86}{$0.561\,[0.506;\,0.614]$} & \numsrc{e15.ne.S.rec@L87}{$0.176$} \\
+$M+S$ & \numsrc{e15.ne.MS@L89}{$0.678\,[0.653;\,0.701]$} & \numsrc{e15.ne.MS.within@L94}{$0.658\,[0.632;\,0.685]$} & \numsrc{e15.ne.MS.p10@L90}{$0.603\,[0.542;\,0.658]$} & \numsrc{e15.ne.MS.rec@L93}{$0.189$} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Beyond task difficulty and model, structure adds \numsrc{e15.diff.DMS_DM.ne@L110}{$+0.001\,[-0.000;\,+0.002]$} AUROC. The gain of $M+S$ over model identity plus length is \numsrc{e15.diff.MS_MLEN.ne@L108}{$+0.003\,[-0.003;\,+0.009]$}; over model identity plus the log step count it is \numsrc{e15.diff.MS_MN.ne@L107}{$+0.005\,[-0.003;\,+0.012]$}. Trajectory structure is not distinguishable from model identity plus length, or plus the number of steps alone.
+
+The model remains useful for triage: ranking submitted runs by risk puts about twice the base rate of failures into the top tenth, with lift \numsrc{e15.lift.ne@L106}{$1.89$} against an unresolved proportion of \numsrc{e15.ne.base@L65}{$0.319$}. Its recall at that budget is \numsrc{e15.ne.MS.rec@L93}{$0.189$}, compared with a maximum possible \numsrc{e15.ne.maxrec@L96}{$0.313$}; the similar precision of $M+LEN$ in Table~\ref{tab:decomposition} limits what this application establishes about structure.
+
+% Text ablations: E7, "Populyatsiya stat'i", on P_ne, relative to M+S rather than T+M+S.
+Adding the agent's final message or its reasoning (TF-IDF) to model plus structure does not improve discrimination: the pooled AUROC increments are \numsrc{e7.ne.A@L174}{$-0.008\,[-0.019;\,+0.002]$} and \numsrc{e7.ne.R@L176}{$+0.008\,[-0.016;\,+0.033]$}, respectively.

@@ -1,7 +1,18 @@
 \section{Introduction}
 \label{sec:introduction}
 
-% Plan (paper_kit/11_paper_outline.md, part 1; about 0.6 page): the agent submits a patch and thereby claims success;
-% three levels of signal (pooled, within task, within unit); contributions as a list, without "first"; positioning
-% against arXiv 2611.08285 and 2610.05572 in three sentences instead of Table IV (paper_kit/02_related_work.md, section 1).
-\TODO{text of the introduction}
+When a coding agent submits a patch, it makes an operational claim of success: the proposed change resolves the issue. A reviewer sees the patch and the record of the agent's work. On SWE-bench Verified~\cite{jimenez2024swebench,openai2024sweverified}, hidden tests subsequently determine whether the submission resolves the task. Can the trajectory help a reviewer decide which submissions to inspect before those test outcomes are available?
+
+The answer depends on which runs are compared. A pooled ranking can succeed by assigning higher risk to runs on difficult tasks. A within-task ranking holds the issue fixed, but runs can still come from different models. A within-unit ranking compares attempts by the same model in the same setting on the same task. Only the last comparison directly tests whether the score can distinguish a successful attempt from an unsuccessful retry under those conditions.
+
+Shi and Assun\c{c}\~ao~\cite{shi2026hardissue} use prefixes of ongoing runs to separate task, model, and run effects. EsfandyariDoulabi et al.~\cite{esfandyaridoulabi2026disentangling} show why pooled discrimination can obscure weak discrimination within a unit. We assess the full trajectory at submission and use repeated runs from ASSERT-KTH~\cite{assertkth2026artifacts} to compare pairs in which both attempts finished.
+
+\emph{Research questions.} What accounts for the pooled signal used to triage submissions? How much does trajectory structure distinguish repeated attempts when the task and model are fixed and both attempts finish? Do the agent's own statements distinguish resolved from unresolved runs? How well does the structure model transfer to new models or log formats?
+
+\emph{Contributions.}
+\begin{itemize}
+\item We compare structure with task difficulty, model identity, and length, and measure how often a high-risk submission is unresolved.
+\item We evaluate repeated attempts against a simple completion flag, then compare finished attempts using their trajectory structure and the outcomes of the agent's own checks.
+\item We distinguish spontaneous claims in final messages from confidence elicited by asking about hidden tests.
+\item We evaluate transfer to held-out models sharing a log format and transfer between formats on the same benchmark.
+\end{itemize}
