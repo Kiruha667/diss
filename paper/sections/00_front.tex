@@ -1,13 +1,11 @@
-% Title, authors, abstract, keywords (paper_kit/11_paper_outline.md, first row; about 0.35 page).
-% Abstract: the thesis of paper_kit/01_thesis_and_claims.md in three or four sentences.
 \title{Can We Trust `Done'? What a Coding Agent's Trajectory Says About Its Submitted Patch---and What It Does Not}
-\author{\TODO{authors, affiliations, and submission metadata}}
+\author{\TODO{authors}}
 \maketitle
 
 \begin{abstract}
-\TODO{abstract: the thesis of the kit in three or four sentences}
+Using full trajectories from SWE-bench Verified to assess submitted patches before hidden test outcomes are available, we find that task difficulty, model identity, and trajectory length account for nearly all the pooled signal. Ranking submissions by model identity and trajectory structure gives precision \numsrc{e15.ne.MS.p10@L90}{$0.603\,[0.542;\,0.658]$} in the highest-risk tenth (lift \numsrc{e15.lift.ne@L106}{$1.89$}), but replacing length with structure alongside model identity changes the area under the receiver operating characteristic curve (AUROC) by only \numsrc{e15.diff.MS_MLEN.ne@L108}{$+0.003\,[-0.003;\,+0.009]$}. Among finished attempts on the same task by the same model, the structure model trained within each setting yields AUROC \numsrc{e15k.dev.s2.ff@L120}{$0.510\,[0.459;\,0.557]$} for devstral-2512, with chance inside each setting's interval, while the combined estimate clears chance only under pooled training. Detected success claims are similarly frequent overall for resolved and unresolved runs, and the agent's answer to the plain question about passing hidden tests (C3) gives AUROC \numsrc{e16.all@L160}{$0.551\,[0.520;\,0.584]$} on all finished devstral-2512 pairs, a weak signal that pairs containing only newly collected answers do not confirm.
 \end{abstract}
 
 \begin{IEEEkeywords}
-\TODO{keywords}
+Coding agents, trajectories, triage, self-assessment, transfer
 \end{IEEEkeywords}
