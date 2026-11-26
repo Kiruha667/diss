@@ -6,7 +6,7 @@
 % Budget: paper_kit/11_paper_outline.md, Section 3 (about 1.0 page including Table I).
 % All leaderboard results below use P_ne. Internal analysis names remain in source comments only.
 
-Table~\ref{tab:decomposition} separates task difficulty, model identity, and trajectory information on the article population of \numsrc{e15.ne.runs@L66}{$7\,732$} submitted runs with non-empty patches. Task difficulty estimated from other models' outcomes alone reaches \numsrc{e15.ne.D@L68}{$0.926\,[0.912;\,0.936]$}; this is a ceiling, not a deployable predictor. Within a task, model identity alone discriminates better than the trajectory models, so pooled performance should not be read as evidence of attempt-level discrimination.
+Table~\ref{tab:decomposition} separates task difficulty, model identity, and trajectory information on the article population of \numsrc{e15.ne.runs@L66}{$7\,732$} submitted runs with non-empty patches. Task difficulty estimated from other models' outcomes alone reaches \numsrc{e15.ne.D@L68}{$0.926\,[0.912;\,0.936]$}; this is a ceiling, not a deployable predictor. Within a task, model identity alone ranks runs better than the trajectory models. One untested explanation is that trajectory features mainly distinguish easy from hard tasks and may add noise when task difficulty is fixed. Pooled AUROC alone cannot establish attempt-level discrimination.
 
 \begin{table*}[t]
 \centering

@@ -71,17 +71,26 @@ Source main: `8487ff00d66cc1a7d29316e9c2bd1127f3feccf5`. Every numeric use in th
 | `paper/sections/05_agent_words.tex:8` | `rev.g0.power@L249` | $24\,\mathrm{pp}$ | популяция 7 864, с пустыми патчами; выборка 100 сообщений | `review/REVIEW.md:39` |
 | `paper/sections/05_agent_words.tex:20` | `g0.ne.diff@L230` | $-1.5\,\mathrm{pp}\,[-3.9;\,+0.9]$ | популяция 7 732 | `reports/G0_false_success.md:188` |
 | `paper/sections/05_agent_words.tex:21` | `g0.ne.within@L231` | $+3.1\,\mathrm{pp}\,[+0.9;\,+5.3]$ | популяция 7 732 | `reports/G0_false_success.md:189` |
-| `paper/sections/05_agent_words.tex:22` | `g0.hc.strict@L218` | $-0.157\,[-0.321;\,+0.017]$ | популяция 7 864, с пустыми патчами; выборка 100 сообщений | `reports/G0_HUMAN_CHECK.md:34` |
-| `paper/sections/05_agent_words.tex:23` | `g0.hc.broad@L221` | $-0.057\,[-0.208;\,+0.094]$ | популяция 7 864, с пустыми патчами; выборка 100 сообщений | `reports/G0_HUMAN_CHECK.md:35` |
-| `paper/sections/05_agent_words.tex:26` | `e11b.c4@L35` | $0.518\,[0.469;\,0.562]$ | E11b: 112 пар законченных попыток devstral-2512 | `reports/E11b_REPORT.md:15` |
-| `paper/sections/05_agent_words.tex:27` | `e11b.c4_c3@L36` | $-0.054\,[-0.103;\,+0.000]$ | E11b: 112 пар законченных попыток devstral-2512 | `reports/E11b_REPORT.md:16` |
-| `paper/sections/05_agent_words.tex:28` | `e16.all@L160` | $0.551\,[0.520;\,0.584]$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:53` |
-| `paper/sections/05_agent_words.tex:29` | `e16.new@L163` | $0.534\,[0.489;\,0.581]$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:54` |
-| `paper/sections/05_agent_words.tex:30` | `e16.c3_so@L165` | $+0.005\,[-0.045;\,+0.055]$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:67` |
-| `paper/sections/05_agent_words.tex:31` | `e16.c3_g0@L166` | $+0.014\,[-0.028;\,+0.055]$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:68` |
-| `paper/sections/05_agent_words.tex:36` | `e11b.pairs@L38` | $112$ | E11b: 112 пар законченных попыток devstral-2512 | `reports/E11b_REPORT.md:77` |
-| `paper/sections/05_agent_words.tex:36` | `e16.pairs.all@L161` | $1\,475$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:53` |
-| `paper/sections/05_agent_words.tex:36` | `e16.pairs.all@L161` | $1\,475$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:53` |
-| `paper/sections/05_agent_words.tex:36` | `e15k.dev.pairs.ff@L115` | $1\,493$ | повторы KTH, devstral-2512 | `reports/E15_REPORT.md:128` |
-| `paper/sections/05_agent_words.tex:36` | `e16.pairs.new@L164` | $595$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:54` |
-| `paper/sections/05_agent_words.tex:36` | `e16.mostly@L156` | $95\,\mathrm{or}\,100$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:21` |
+| `paper/sections/05_agent_words.tex:24` | `g0.hc.strict@L218` | $-0.157\,[-0.321;\,+0.017]$ | популяция 7 864, с пустыми патчами; выборка 100 сообщений | `reports/G0_HUMAN_CHECK.md:34` |
+| `paper/sections/05_agent_words.tex:25` | `g0.hc.broad@L221` | $-0.057\,[-0.208;\,+0.094]$ | популяция 7 864, с пустыми патчами; выборка 100 сообщений | `reports/G0_HUMAN_CHECK.md:35` |
+| `paper/sections/05_agent_words.tex:28` | `e11b.c4@L35` | $0.518\,[0.469;\,0.562]$ | E11b: 112 пар законченных попыток devstral-2512 | `reports/E11b_REPORT.md:15` |
+| `paper/sections/05_agent_words.tex:29` | `e11b.c4_c3@L36` | $-0.054\,[-0.103;\,+0.000]$ | E11b: 112 пар законченных попыток devstral-2512 | `reports/E11b_REPORT.md:16` |
+| `paper/sections/05_agent_words.tex:30` | `e16.all@L160` | $0.551\,[0.520;\,0.584]$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:53` |
+| `paper/sections/05_agent_words.tex:31` | `e16.new@L163` | $0.534\,[0.489;\,0.581]$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:54` |
+| `paper/sections/05_agent_words.tex:32` | `e16.c3_so@L165` | $+0.005\,[-0.045;\,+0.055]$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:67` |
+| `paper/sections/05_agent_words.tex:33` | `e16.c3_g0@L166` | $+0.014\,[-0.028;\,+0.055]$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:68` |
+| `paper/sections/05_agent_words.tex:38` | `e11b.pairs@L38` | $112$ | E11b: 112 пар законченных попыток devstral-2512 | `reports/E11b_REPORT.md:77` |
+| `paper/sections/05_agent_words.tex:38` | `e16.pairs.all@L161` | $1\,475$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:53` |
+| `paper/sections/05_agent_words.tex:38` | `e16.pairs.all@L161` | $1\,475$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:53` |
+| `paper/sections/05_agent_words.tex:38` | `e15k.dev.pairs.ff@L115` | $1\,493$ | повторы KTH, devstral-2512 | `reports/E15_REPORT.md:128` |
+| `paper/sections/05_agent_words.tex:38` | `e16.pairs.new@L164` | $595$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:54` |
+| `paper/sections/05_agent_words.tex:38` | `e16.mostly@L156` | $95\,\mathrm{or}\,100$ | E16: законченные попытки devstral-2512, 142 единицы | `reports/E16_REPORT.md:21` |
+
+## Правки 1–4
+
+| Пункт | Было → стало |
+|---|---|
+| 1. Ранжирование внутри задачи | Преимущество модели агента без признаков траектории констатировалось без объяснения → добавлена непроверенная гипотеза. Если признаки в основном различают задачи по сложности, их вариация между запусками одной задачи может вносить шум в ранжирование. Сравнение опирается на столбец Within-task AUROC в таблице декомпозиции. |
+| 2. Доля дисперсии на уровне попытки | «About a tenth» объединяло общую оценку и оценки по настройкам → приведены точные доли на латентной шкале для обеих настроек вместе и для каждой отдельно. Доля на наблюдаемой шкале дана отдельно с исходным интервалом. |
+| 3. Единицы разности частот | Измерения детектора и оценки с поправкой стояли под общим заголовком → строки разделены на два блока с единицами в заголовках и подписи. Детектор даёт разность в процентных пунктах, поправка — разность долей. Направление одинаково: resolved − unresolved. Исходные значения и интервалы сохранены. |
+| 4. Флаг незавершённой попытки | В статье уже различались результат для devstral и результат по обеим настройкам → абзац сохранён дословно, включая оценку совместного обучения (`e15k.both.s1_nf@L132`). У7 в 01_thesis_and_claims.md уже текста статьи — нужна правка набора. Это относится к заголовку У7: он называет только devstral, хотя допустимая формулировка и численные основания в той же строке уже охватывают обе настройки. |
